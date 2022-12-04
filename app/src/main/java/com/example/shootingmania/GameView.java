@@ -8,15 +8,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorManager;
 import android.os.Handler;
 import android.text.TextPaint;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.View;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -30,8 +25,6 @@ public class GameView extends View {
     final long UPDATE_MILLIS = 30;
     public static int dHeight;
     public static int dWidth;
-    private final Point dialogBoxYesCenter;
-    private final Point dialogBoxNoCenter;
     private String TAG = "GameView";
     private Rect gameBackground;
     private Paint gameBackgroundColor;
@@ -51,17 +44,10 @@ public class GameView extends View {
     private Rect menuButton;
     private Paint menuButtonPaint;
     Point menuButtonPosition = new Point(790,150);
-    Rect userTouchPointer = new Rect(0,0,0,0);
+    private Rect userTouchPointer = new Rect(0,0,0,0);
     private boolean debugForButtonTouchArea = false;
-    private Paint dialogBoxPaint = new Paint();
-    private Point dialogBoxCenter;
-    private int dialogBoxWidth = 800;
-    private int dialogBoxHeight = 500;
-    private int dialogBoxYesNoWidth = 230;
-    private int dialogBoxYesNoHeight = 150;
-    private Rect dialogBox;
     private boolean gotoMenu = false;
-    private Rect noButton, yesButton;
+    private DialogBox menuDialogBox;
 
     public GameView(Context context) {
         super(context);
@@ -71,10 +57,10 @@ public class GameView extends View {
         gameManager = new GameManager(this);
         inputControlsManager = new InputControlsManager(context, display, gameManager);
 
-        Point size = new Point();
-        display.getRealSize(size);
-        dWidth = size.x;
-        dHeight = size.y;
+        Point displaySize = new Point();
+        display.getRealSize(displaySize);
+        dWidth = displaySize.x;
+        dHeight = displaySize.y;
         gameBackground = new Rect(0, 0, dWidth, dHeight);
         gameBackgroundColor = new Paint();
         gameBackgroundColor.setColor(Color.parseColor("#DEEBF7"));
@@ -93,13 +79,7 @@ public class GameView extends View {
         menuButtonPaint.setColor(Color.parseColor("#EF8F3F"));
         menuButtonPaint.setAlpha(255);    //Set Transparent
 
-        dialogBoxPaint.setColor(Color.parseColor("#FFFFFF"));
-        dialogBoxCenter = new Point(dWidth/2,dHeight/2);
-        dialogBoxYesCenter = new Point(dialogBoxCenter.x - dialogBoxCenter.x/3, dialogBoxCenter.y + dialogBoxCenter.y/10);
-        dialogBoxNoCenter = new Point(dialogBoxCenter.x + dialogBoxCenter.x/3, dialogBoxCenter.y + dialogBoxCenter.y/10);
-        dialogBox = new Rect(dialogBoxCenter.x - dialogBoxWidth/2, dialogBoxCenter.y - dialogBoxHeight/2, dialogBoxCenter.x + dialogBoxWidth/2, dialogBoxCenter.y + dialogBoxHeight/2);
-        yesButton = new Rect(dialogBoxYesCenter.x - dialogBoxYesNoWidth/2 , dialogBoxYesCenter.y - dialogBoxYesNoHeight/2,dialogBoxYesCenter.x + dialogBoxYesNoWidth/2 , dialogBoxYesCenter.y + dialogBoxYesNoHeight/2);
-        noButton = new Rect(dialogBoxNoCenter.x - dialogBoxYesNoWidth/2 , dialogBoxNoCenter.y - dialogBoxYesNoHeight/2,dialogBoxNoCenter.x + dialogBoxYesNoWidth/2 , dialogBoxNoCenter.y + dialogBoxYesNoHeight/2);
+        menuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
 
         this.runnable = new Runnable() {
             @Override
@@ -129,6 +109,8 @@ public class GameView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        //Update game data before any drawing of game element sprite
+        gameManager.run();
         updateGameData();
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
@@ -157,6 +139,7 @@ public class GameView extends View {
         //canvas.drawCircle(gun.posX, gun.posY, 10, paint);
 
         //UI
+        textPaint.setTextAlign(TextPaint.Align.LEFT);
         canvas.drawText("SCORE: " + Integer.toString(scorePoints),50,150, textPaint);
         canvas.drawText("MENU",menuButtonPosition.x,menuButtonPosition.y, textPaint);
         if (debugForButtonTouchArea) {
@@ -164,17 +147,7 @@ public class GameView extends View {
         }
         //Menu Design
         if(gotoMenu) {
-            canvas.drawRect(dialogBox, dialogBoxPaint);
-            textPaint.setTextAlign(TextPaint.Align.CENTER);
-
-            canvas.drawText("BACK TO MENU ?", dialogBoxCenter.x, dialogBoxCenter.y - dialogBoxHeight/4, textPaint);
-            canvas.drawText("YES", dialogBoxCenter.x - dialogBoxCenter.x/3, dialogBoxCenter.y + dialogBoxHeight/4, textPaint);
-            canvas.drawText("NO", dialogBoxCenter.x + dialogBoxCenter.x/3 , dialogBoxCenter.y + dialogBoxHeight/4, textPaint);
-            if (debugForButtonTouchArea) {
-                canvas.drawRect(yesButton, menuButtonPaint);
-                canvas.drawRect(noButton, menuButtonPaint);
-            }
-            textPaint.setTextAlign(TextPaint.Align.LEFT);
+            menuDialogBox.draw(canvas);
         }
         if (debugForButtonTouchArea) {
             canvas.drawRect(userTouchPointer, new Paint(R.color.black));
@@ -234,19 +207,19 @@ public class GameView extends View {
         }
     }
 
-    public void backToMainMenu(Rect userTouchPointer) {
+    public void backToMainMenu() {
         gotoMenu = !gotoMenu;
         if (gotoMenu) {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while(gotoMenu) {
-                        if (Rect.intersects(yesButton,getUserTouchPointer())) {
+                        if (Rect.intersects(menuDialogBox.yesButton,getUserTouchPointer())) {
                             Intent intent = new Intent(context, MainActivity.class);
                             context.startActivity(intent);
                             gotoMenu = false;
                         }
-                        if (Rect.intersects(noButton,getUserTouchPointer())) {
+                        if (Rect.intersects(menuDialogBox.noButton,getUserTouchPointer())) {
                             gotoMenu = false;
                         }
                     }
@@ -261,18 +234,76 @@ public class GameView extends View {
         return userTouchPointer;
     }
 
-    public void touchPointInteraction(Rect userTouchPointer) {
+    public void touchPointInteraction(Rect _userTouchPointer) {
+        userTouchPointer = _userTouchPointer;
 
         if (Rect.intersects(menuButton,userTouchPointer))
         {
             //Return to main menu
-            backToMainMenu(userTouchPointer);
+            backToMainMenu();
         }
         for (Target t : targets) {
             t.verifyShoot(gun.shoot(aimCross), t.animateFrame(t.frame));
             shootTriggeredFrame = 3;
         }
     }
+}
+
+class DialogBox {
+    private boolean DEBUG_FOR_TOUCH_AREA = false;
+    private String dialogString;
+    public Rect dialogBox, yesButton, noButton;
+    private Point centerXY;
+    private Point yesButtonCenterXY, noButtonCenterXY;
+    private Paint dialogBoxPaint;
+    private TextPaint textPaint;
+    private Paint yesNoButtonPaint;
+    private int TEXT_SIZE = 80;
+    private int dialogBoxWidth = 800;
+    private int dialogBoxHeight = 500;
+    private int dialogBoxYesNoWidth = 230;
+    private int dialogBoxYesNoHeight = 150;
 
 
+    public DialogBox(Context context, Point _centerXY, String _dialogString) {
+        //Center posistion of dialog box
+        this.dialogString = _dialogString;
+        this.centerXY = _centerXY;
+        yesButtonCenterXY = new Point(centerXY.x - centerXY.x/3, centerXY.y + centerXY.y/10);
+        noButtonCenterXY = new Point(centerXY.x + centerXY.x/3, centerXY.y + centerXY.y/10);
+
+        dialogBox = new Rect(centerXY.x - dialogBoxWidth/2, centerXY.y - dialogBoxHeight/2, centerXY.x + dialogBoxWidth/2, centerXY.y + dialogBoxHeight/2);
+        yesButton = new Rect(yesButtonCenterXY.x - dialogBoxYesNoWidth/2 , yesButtonCenterXY.y - dialogBoxYesNoHeight/2,yesButtonCenterXY.x + dialogBoxYesNoWidth/2 , yesButtonCenterXY.y + dialogBoxYesNoHeight/2);
+        noButton = new Rect(noButtonCenterXY.x - dialogBoxYesNoWidth/2 , noButtonCenterXY.y - dialogBoxYesNoHeight/2,noButtonCenterXY.x + dialogBoxYesNoWidth/2 , noButtonCenterXY.y + dialogBoxYesNoHeight/2);
+
+        dialogBoxPaint = new Paint();
+
+        textPaint = new TextPaint();
+        textPaint.setTextAlign(TextPaint.Align.LEFT);
+        textPaint.setTextSize(this.TEXT_SIZE);
+        textPaint.setColor(Color.parseColor("#EF8F3F"));
+        textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
+
+        yesNoButtonPaint = new Paint();
+        yesNoButtonPaint.setColor(Color.parseColor("#EF8F3F"));
+        yesNoButtonPaint.setAlpha(255);    //Set Transparent
+    }
+
+    public void draw(Canvas canvas) {
+        //Dialog box UI
+        dialogBoxPaint.setColor(Color.parseColor("#FFFFFF"));
+        canvas.drawRect(dialogBox, dialogBoxPaint);
+        canvas.drawRect(yesButton, dialogBoxPaint);
+        canvas.drawRect(noButton, dialogBoxPaint);
+
+        //Yes No Button UI
+        textPaint.setTextAlign(TextPaint.Align.CENTER);
+        canvas.drawText(this.dialogString, centerXY.x, centerXY.y - dialogBoxHeight/4, textPaint);
+        canvas.drawText("YES", centerXY.x - centerXY.x/3, centerXY.y + dialogBoxHeight/4, textPaint);
+        canvas.drawText("NO", centerXY.x + centerXY.x/3 , centerXY.y + dialogBoxHeight/4, textPaint);
+        if (DEBUG_FOR_TOUCH_AREA) {
+            canvas.drawRect(yesButton, yesNoButtonPaint);
+            canvas.drawRect(noButton, yesNoButtonPaint);
+        }
+    }
 }

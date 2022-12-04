@@ -3,12 +3,10 @@ package com.example.shootingmania;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 
 public class Gun {
     private static final long VIBRATION_STRENGTH = 50;
@@ -49,16 +47,19 @@ public class Gun {
     public Gun(Context context) {
         this.context = context;
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        gun[0] = Sprite.createSprite(context, Sprite.NAME.GUN);   //1st Frame
+        //Sprites assignment
+        gun[0] = Sprite.createSprite(context, Sprite.NAME.GUN);
         gun[1] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_1);
         gun[2] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_2);
         gun[3] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_3);
         gun[4] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_4);
+        //Sound effect
         shootSound = gunSoundEffect.load(context, R.raw.gun_shoot,1);
         reloadSound = gunSoundEffect.load(context,R.raw.gun_reload,1);
     }
 
     public Bitmap animateFrame(int frame) {
+        //Animate frame passes the bitmap responding to the current frame to gameView class for draw
         return gun[frame];
     }
 
@@ -80,8 +81,6 @@ public class Gun {
         generateSoundEffect(shootSound);
         Point point = new Point(aimCross.posX, aimCross.posY);
         vibrator.vibrate(VibrationEffect.createOneShot(VIBRATION_STRENGTH, VibrationEffect.EFFECT_HEAVY_CLICK));
-        //vibrator.cancel();
-        //vibrator.vibrate(10);
         //Recoil must only happen after the shoot point is taken
         aimCross.recoil();
         return point;
@@ -89,7 +88,7 @@ public class Gun {
 
     public int getCurrentFrame() {
         if (state == STATE.SHOOTING) {
-            if (currentFrame < 1 && currentFrame > 4) { //
+            if (currentFrame < 1 && currentFrame > 4) {
                 currentFrame = 2;
                 return currentFrame;
             }
