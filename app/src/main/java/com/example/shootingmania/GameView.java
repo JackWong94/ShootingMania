@@ -24,6 +24,9 @@ import androidx.core.content.res.ResourcesCompat;
 import java.util.ArrayList;
 
 public class GameView extends View {
+    private GameManager gameManager;
+    private InputControlsManager inputControlsManager;
+    private Display display;
     final long UPDATE_MILLIS = 30;
     public static int dHeight;
     public static int dWidth;
@@ -41,12 +44,7 @@ public class GameView extends View {
     private AimCross aimCross;
     private ArrayList<Target> targets;
     private int numberOfTarget = 1;
-    private SensorManager sensorManager;
-    private Sensor accelerometer;
-    private float sensorSensitivityX = 3;
-    private float sensorSensitivityY = 3;
-    private int sensorAccelerationX = 10;    //Increase smoothness
-    private int sensorAccelerationY = 10;    //Increase smoothness
+
     private int shootTriggeredFrame = 0;
     private int scorePoints = 0;
     private TextPaint textPaint;
@@ -69,30 +67,9 @@ public class GameView extends View {
         super(context);
         this.context = context;
         this.handler = new Handler();
-        Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
-        SensorControlListener sensorControlListener = new SensorControlListener(display) {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) {
-                    return;
-                }
-                switch (display.getRotation()) {
-                    case Surface.ROTATION_0:
-                        userInputBySensorControlX(event.values[0]);
-                        userInputBySensorControlY(event.values[1]);
-                        break;
-                    case Surface.ROTATION_90:
-                        break;
-                    case Surface.ROTATION_180:
-                        break;
-                    case Surface.ROTATION_270:
-                        break;
-                }
-            }
-        };
-        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(sensorControlListener, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
+        gameManager = new GameManager(this);
+        inputControlsManager = new InputControlsManager(context, display, gameManager);
 
         Point size = new Point();
         display.getRealSize(size);
@@ -145,22 +122,9 @@ public class GameView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent e){
-        if (e.getAction() == MotionEvent.ACTION_DOWN) {
-            userTouchPointer = new Rect((int) e.getX()-10, (int) e.getY()-10,(int) e.getX()+10, (int) e.getY()+10);
-            Log.i("JACK", Integer.toString(userTouchPointer.centerX()));
-            if (Rect.intersects(menuButton,userTouchPointer))
-            {
-                Log.i("JACK", "BACK TO MENU");
-                //Return to main menu
-                backToMainMenu(userTouchPointer);
-                return true;
-            }
-            for (Target t : targets) {
-                t.verifyShoot(gun.shoot(aimCross), t.animateFrame(t.frame));
-                shootTriggeredFrame = 3;
-            }
-        }
-        return true;
+        //GameView Class Inform InputControlsManager for touch event on the view
+        //InputControlsManager will process events and pass to GameManager to decide the actions to be done
+        return inputControlsManager.gameScreenPressedDetected(e);
     }
 
     @Override
@@ -233,14 +197,14 @@ public class GameView extends View {
         //Effective range = -9 ~ 9 +-sensor sensitivity
         Float centerY = 0f;
         x_dir_rotation -= centerY;
-        if (x_dir_rotation > sensorSensitivityX) {
-            x_dir_rotation = sensorSensitivityX;
+        if (x_dir_rotation > AccelerometerSensor.sensorSensitivityX) {
+            x_dir_rotation = AccelerometerSensor.sensorSensitivityX;
         }
-        if (x_dir_rotation < -sensorSensitivityX) {
-            x_dir_rotation = -sensorSensitivityX;
+        if (x_dir_rotation < -AccelerometerSensor.sensorSensitivityX) {
+            x_dir_rotation = -AccelerometerSensor.sensorSensitivityX;
         }
-        aimCross.posX -= sensorSensitivityX*sensorAccelerationX*x_dir_rotation;
-        gun.posX -= sensorSensitivityX*sensorAccelerationX*x_dir_rotation;
+        aimCross.posX -= AccelerometerSensor.sensorSensitivityX*AccelerometerSensor.sensorAccelerationX*x_dir_rotation;
+        gun.posX -= AccelerometerSensor.sensorSensitivityX*AccelerometerSensor.sensorAccelerationX*x_dir_rotation;
         if (aimCross.posX < targetMoveArea.left + aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2) {
             aimCross.posX = targetMoveArea.left + aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2;
             gun.posX = aimCross.posX;
@@ -255,13 +219,13 @@ public class GameView extends View {
         //Effective range = -9 ~ 9 +-sensor sensitivity
         Float centerY = 6f;
         y_dir_rotation -= centerY;
-        if (y_dir_rotation > sensorSensitivityY) {
-            y_dir_rotation = sensorSensitivityY;
+        if (y_dir_rotation > AccelerometerSensor.sensorSensitivityY) {
+            y_dir_rotation = AccelerometerSensor.sensorSensitivityY;
         }
-        if (y_dir_rotation < -sensorSensitivityY) {
-            y_dir_rotation = -sensorSensitivityY;
+        if (y_dir_rotation < -AccelerometerSensor.sensorSensitivityY) {
+            y_dir_rotation = -AccelerometerSensor.sensorSensitivityY;
         }
-        aimCross.posY += sensorSensitivityY*sensorAccelerationY*y_dir_rotation;
+        aimCross.posY += AccelerometerSensor.sensorSensitivityY*AccelerometerSensor.sensorAccelerationY*y_dir_rotation;
         if (aimCross.posY < targetMoveArea.top){
             aimCross.posY = targetMoveArea.top;
         }
@@ -296,4 +260,19 @@ public class GameView extends View {
     public Rect getUserTouchPointer() {
         return userTouchPointer;
     }
+
+    public void touchPointInteraction(Rect userTouchPointer) {
+
+        if (Rect.intersects(menuButton,userTouchPointer))
+        {
+            //Return to main menu
+            backToMainMenu(userTouchPointer);
+        }
+        for (Target t : targets) {
+            t.verifyShoot(gun.shoot(aimCross), t.animateFrame(t.frame));
+            shootTriggeredFrame = 3;
+        }
+    }
+
+
 }
