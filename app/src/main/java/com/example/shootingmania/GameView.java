@@ -146,10 +146,7 @@ public class GameView extends View {
         canvas.drawText("SCORE: " + Integer.toString(scorePoints),scoreDisplayPosition.x,scoreDisplayPosition.y, textPaint);
 
         menuButton.draw(canvas);
-        /*canvas.drawText("MENU",menuButtonPosition.x,menuButtonPosition.y, textPaint);
-        if (debugForButtonTouchArea) {
-            canvas.drawRect(menuButton,menuButtonPaint);
-        }*/
+
         //Menu Design
         if(gotoMenu) {
             menuDialogBox.draw(canvas);
@@ -219,14 +216,15 @@ public class GameView extends View {
                 @Override
                 public void run() {
                     while(gotoMenu) {
-                        if (Rect.intersects(menuDialogBox.yesButton,getUserTouchPointer())) {
+                        if (menuDialogBox.yesButton.clicked(getUserTouchPointer())) {
                             Intent intent = new Intent(context, MainActivity.class);
                             context.startActivity(intent);
                             gotoMenu = false;
                         }
-                        if (Rect.intersects(menuDialogBox.noButton,getUserTouchPointer())) {
+                        if (menuDialogBox.noButton.clicked(getUserTouchPointer())) {
                             gotoMenu = false;
                         }
+
                     }
                 }
             });
@@ -258,7 +256,8 @@ public class GameView extends View {
 class DialogBox {
     private boolean DEBUG_FOR_TOUCH_AREA = false;
     private String dialogString;
-    public Rect dialogBox, yesButton, noButton;
+    public Rect dialogBox;
+    TextButton yesButton, noButton;
     private Point centerXY;
     private Point yesButtonCenterXY, noButtonCenterXY;
     private Paint dialogBoxPaint;
@@ -267,9 +266,6 @@ class DialogBox {
     private int TEXT_SIZE = 80;
     private int dialogBoxWidth = 800;
     private int dialogBoxHeight = 500;
-    private int dialogBoxYesNoWidth = 230;
-    private int dialogBoxYesNoHeight = 150;
-
 
     public DialogBox(Context context, Point _centerXY, String _dialogString) {
         //Center position of dialog box
@@ -280,8 +276,8 @@ class DialogBox {
 
         dialogBox = new Rect(centerXY.x - dialogBoxWidth/2, centerXY.y - dialogBoxHeight/2, centerXY.x + dialogBoxWidth/2, centerXY.y + dialogBoxHeight/2);
 
-        yesButton = new Rect(yesButtonCenterXY.x - dialogBoxYesNoWidth/2 , yesButtonCenterXY.y - dialogBoxYesNoHeight/2,yesButtonCenterXY.x + dialogBoxYesNoWidth/2 , yesButtonCenterXY.y + dialogBoxYesNoHeight/2);
-        noButton = new Rect(noButtonCenterXY.x - dialogBoxYesNoWidth/2 , noButtonCenterXY.y - dialogBoxYesNoHeight/2,noButtonCenterXY.x + dialogBoxYesNoWidth/2 , noButtonCenterXY.y + dialogBoxYesNoHeight/2);
+        yesButton = new TextButton(context,"YES", new Point(yesButtonCenterXY.x, yesButtonCenterXY.y));
+        noButton = new TextButton(context,"NO", new Point(noButtonCenterXY.x, noButtonCenterXY.y));
 
         dialogBoxPaint = new Paint();
 
@@ -300,18 +296,10 @@ class DialogBox {
         //Dialog box UI
         dialogBoxPaint.setColor(Color.parseColor("#FFFFFF"));
         canvas.drawRect(dialogBox, dialogBoxPaint);
-        canvas.drawRect(yesButton, dialogBoxPaint);
-        canvas.drawRect(noButton, dialogBoxPaint);
+        yesButton.draw(canvas);
+        noButton.draw(canvas);
 
-        //Yes No Button UI
-        textPaint.setTextAlign(TextPaint.Align.CENTER);
         canvas.drawText(this.dialogString, centerXY.x, centerXY.y - dialogBoxHeight/4, textPaint);
-        canvas.drawText("YES", centerXY.x - centerXY.x/3, centerXY.y + dialogBoxHeight/4, textPaint);
-        canvas.drawText("NO", centerXY.x + centerXY.x/3 , centerXY.y + dialogBoxHeight/4, textPaint);
-        if (DEBUG_FOR_TOUCH_AREA) {
-            canvas.drawRect(yesButton, yesNoButtonPaint);
-            canvas.drawRect(noButton, yesNoButtonPaint);
-        }
     }
 }
 
@@ -347,8 +335,8 @@ class TextButton {
 
     public void draw(Canvas canvas) {
         Paint paint = new Paint(R.color.black);
-        paint.setAlpha(100);
-        canvas.drawText("MENU",position.x,position.y, textPaint);
+        paint.setAlpha(0);
+        canvas.drawText(text ,position.x,position.y, textPaint);
         canvas.drawRect(area, paint);
     }
 }
