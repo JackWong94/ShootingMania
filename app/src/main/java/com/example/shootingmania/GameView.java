@@ -49,7 +49,6 @@ public class GameView extends View {
     private Rect userTouchPointer = new Rect(0,0,0,0);
 
     private boolean debugForButtonTouchArea = false;
-    private boolean gotoMenu = false;
     private DialogBox menuDialogBox;
 
     public GameView(Context context) {
@@ -71,13 +70,13 @@ public class GameView extends View {
         targetMoveAreaColor = new Paint();
         targetMoveAreaColor.setColor(Color.parseColor("#0AAAFF"));
 
-        scoreDisplayPosition = new Point(280,150);
-        menuButtonPosition = new Point(scoreDisplayPosition.x + 600,150);
+        scoreDisplayPosition = new Point(50,150);
+        menuButtonPosition = new Point(scoreDisplayPosition.x + 850,150);
         menuButton = new TextButton(context, "MENU",  menuButtonPosition);
 
         int TEXT_SIZE = 80;
         textPaint = new TextPaint();
-        textPaint.setTextAlign(TextPaint.Align.CENTER);
+        textPaint.setTextAlign(TextPaint.Align.LEFT);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
         textPaint.setTextSize(TEXT_SIZE);
         textPaint.setColor(Color.parseColor("#EF8F3F"));
         textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
@@ -142,20 +141,16 @@ public class GameView extends View {
         //canvas.drawCircle(gun.posX, gun.posY, 10, paint);
 
         //UI
-        textPaint.setTextAlign(TextPaint.Align.CENTER);
         canvas.drawText("SCORE: " + Integer.toString(scorePoints),scoreDisplayPosition.x,scoreDisplayPosition.y, textPaint);
 
         menuButton.draw(canvas);
 
         //Menu Design
-        if(gotoMenu) {
-            menuDialogBox.draw(canvas);
-        }
+        menuDialogBox.draw(canvas);
+
         if (debugForButtonTouchArea) {
             canvas.drawRect(userTouchPointer, new Paint(R.color.black));
         }
-
-
 
         handler.postDelayed(runnable, UPDATE_MILLIS);
     }
@@ -210,31 +205,8 @@ public class GameView extends View {
     }
 
     public void backToMainMenu() {
-        gotoMenu = !gotoMenu;
-        if (gotoMenu) {
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while(gotoMenu) {
-                        if (menuDialogBox.yesButton.clicked(getUserTouchPointer())) {
-                            Intent intent = new Intent(context, MainActivity.class);
-                            context.startActivity(intent);
-                            gotoMenu = false;
-                        }
-                        if (menuDialogBox.noButton.clicked(getUserTouchPointer())) {
-                            gotoMenu = false;
-                        }
-
-                    }
-                }
-            });
-            thread.start();
-        }
-
-    }
-
-    public Rect getUserTouchPointer() {
-        return userTouchPointer;
+        Intent intent = new Intent(context, MainActivity.class);
+        context.startActivity(intent);
     }
 
     public void touchPointInteraction(Rect _userTouchPointer) {
@@ -242,9 +214,24 @@ public class GameView extends View {
         //GameView decide on the function that response to the touch surface on GameView
         userTouchPointer = _userTouchPointer;
 
-        if (menuButton.clicked(_userTouchPointer)) {
-            backToMainMenu();
+        //Detecting click on menuButton
+        if (menuButton.isClicked(_userTouchPointer)) {
+            //Toggle Back To Menu Dialog Box
+            if (menuDialogBox.popUp) {
+                menuDialogBox.hide();
+            } else {
+                menuDialogBox.show();
+            }
         }
+
+        //Detecting click on menuDialogBox when it is pop up
+        switch (menuDialogBox.isInteracted(_userTouchPointer)) {
+            case NO: menuDialogBox.hide();break;
+            case YES: backToMainMenu(); break;
+            default: break;
+        }
+
+
 
         for (Target t : targets) {
             t.verifyShoot(gun.shoot(aimCross), t.animateFrame(t.frame));
@@ -254,7 +241,7 @@ public class GameView extends View {
 }
 
 class DialogBox {
-    private boolean DEBUG_FOR_TOUCH_AREA = false;
+    public enum INTERACTION {YES, NO_INTERACTION, NO};
     private String dialogString;
     public Rect dialogBox;
     TextButton yesButton, noButton;
@@ -266,6 +253,7 @@ class DialogBox {
     private int TEXT_SIZE = 80;
     private int dialogBoxWidth = 800;
     private int dialogBoxHeight = 500;
+    public boolean popUp = false;
 
     public DialogBox(Context context, Point _centerXY, String _dialogString) {
         //Center position of dialog box
@@ -293,13 +281,35 @@ class DialogBox {
     }
 
     public void draw(Canvas canvas) {
-        //Dialog box UI
-        dialogBoxPaint.setColor(Color.parseColor("#FFFFFF"));
-        canvas.drawRect(dialogBox, dialogBoxPaint);
-        yesButton.draw(canvas);
-        noButton.draw(canvas);
+        if (popUp) {
+            //Dialog box UI
+            dialogBoxPaint.setColor(Color.parseColor("#FFFFFF"));
+            canvas.drawRect(dialogBox, dialogBoxPaint);
+            yesButton.draw(canvas);
+            noButton.draw(canvas);
 
-        canvas.drawText(this.dialogString, centerXY.x, centerXY.y - dialogBoxHeight/4, textPaint);
+            canvas.drawText(this.dialogString, centerXY.x, centerXY.y - dialogBoxHeight / 4, textPaint);
+        }
+    }
+
+    public void show() {
+        popUp = true;
+    }
+
+    public void hide() {
+        popUp = false;
+    }
+
+    public INTERACTION isInteracted(Rect userTouchPointer) {
+        if (popUp) {
+            if (yesButton.isClicked(userTouchPointer)) {
+                return INTERACTION.YES;
+            }
+            if (noButton.isClicked(userTouchPointer)) {
+                return  INTERACTION.NO;
+            }
+        }
+        return INTERACTION.NO_INTERACTION;
     }
 }
 
@@ -325,7 +335,7 @@ class TextButton {
         textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
     }
 
-    public boolean clicked(Rect _userTouchPointer) {
+    public boolean isClicked(Rect _userTouchPointer) {
         if (Rect.intersects(area, _userTouchPointer)) {
             return true;
         } else {
