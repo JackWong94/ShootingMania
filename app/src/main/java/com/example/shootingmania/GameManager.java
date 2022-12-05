@@ -2,8 +2,6 @@ package com.example.shootingmania;
 
 import android.content.Context;
 
-import java.util.ConcurrentModificationException;
-
 public class GameManager {
     private boolean isPause = false;
     GameView gameView;
