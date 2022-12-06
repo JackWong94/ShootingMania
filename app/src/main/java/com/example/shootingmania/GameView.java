@@ -3,6 +3,7 @@ package com.example.shootingmania;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -56,9 +57,11 @@ public class GameView extends View {
         this.context = context;
         this.handler = new Handler();
         display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
+
         gameManager = new GameManager(this);
         inputControlsManager = new InputControlsManager(context, display, gameManager);
 
+        //Display background settings
         Point displaySize = new Point();
         display.getRealSize(displaySize);
         dWidth = displaySize.x;
@@ -73,6 +76,7 @@ public class GameView extends View {
         scoreDisplayPosition = new Point(50,150);
         menuButtonPosition = new Point(scoreDisplayPosition.x + 850,150);
         menuButton = new TextButton(context, "MENU",  menuButtonPosition);
+        menuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
 
         int TEXT_SIZE = 80;
         textPaint = new TextPaint();
@@ -80,8 +84,6 @@ public class GameView extends View {
         textPaint.setTextSize(TEXT_SIZE);
         textPaint.setColor(Color.parseColor("#EF8F3F"));
         textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
-
-        menuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
 
         this.runnable = new Runnable() {
             @Override
@@ -114,11 +116,14 @@ public class GameView extends View {
         //Update game data before any drawing of game element sprite
         gameManager.run();
         updateGameData();
+
+
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
         super.onDraw(canvas);
         canvas.drawRect(gameBackground, gameBackgroundColor);
         canvas.drawRect(targetMoveArea, targetMoveAreaColor);
+
         for (Target t : targets) {
             canvas.drawBitmap(t.animateFrame(t.frame), t.posX - t.getTargetWidth(t.animateFrame(t.frame))/2, t.posY - t.getTargetHeight(t.animateFrame(t.frame))/2, null);
             //canvas.drawCircle(t.posX , t.posY , 10, paint);
@@ -163,18 +168,15 @@ public class GameView extends View {
         scorePoints = tempScore;
     }
 
+
+    public void backToMainMenu() {
+        Intent intent = new Intent(context, MainActivity.class);
+        context.startActivity(intent);
+    }
+
     public void userInputBySensorControlX(Float x_dir_rotation) {
-        //Effective range = -9 ~ 9 +-sensor sensitivity
-        Float centerY = 0f;
-        x_dir_rotation -= centerY;
-        if (x_dir_rotation > AccelerometerSensor.sensorSensitivityX) {
-            x_dir_rotation = AccelerometerSensor.sensorSensitivityX;
-        }
-        if (x_dir_rotation < -AccelerometerSensor.sensorSensitivityX) {
-            x_dir_rotation = -AccelerometerSensor.sensorSensitivityX;
-        }
-        aimCross.posX -= AccelerometerSensor.sensorSensitivityX*AccelerometerSensor.sensorAccelerationX*x_dir_rotation;
-        gun.posX -= AccelerometerSensor.sensorSensitivityX*AccelerometerSensor.sensorAccelerationX*x_dir_rotation;
+        aimCross.posX -= x_dir_rotation;
+        gun.posX -= x_dir_rotation;
         if (aimCross.posX < targetMoveArea.left + aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2) {
             aimCross.posX = targetMoveArea.left + aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2;
             gun.posX = aimCross.posX;
@@ -186,27 +188,13 @@ public class GameView extends View {
     }
 
     public void userInputBySensorControlY(Float y_dir_rotation) {
-        //Effective range = -9 ~ 9 +-sensor sensitivity
-        Float centerY = 6f;
-        y_dir_rotation -= centerY;
-        if (y_dir_rotation > AccelerometerSensor.sensorSensitivityY) {
-            y_dir_rotation = AccelerometerSensor.sensorSensitivityY;
-        }
-        if (y_dir_rotation < -AccelerometerSensor.sensorSensitivityY) {
-            y_dir_rotation = -AccelerometerSensor.sensorSensitivityY;
-        }
-        aimCross.posY += AccelerometerSensor.sensorSensitivityY*AccelerometerSensor.sensorAccelerationY*y_dir_rotation;
+        aimCross.posY += y_dir_rotation;
         if (aimCross.posY < targetMoveArea.top){
             aimCross.posY = targetMoveArea.top;
         }
         if (aimCross.posY > targetMoveArea.bottom){
             aimCross.posY = targetMoveArea.bottom;
         }
-    }
-
-    public void backToMainMenu() {
-        Intent intent = new Intent(context, MainActivity.class);
-        context.startActivity(intent);
     }
 
     public void touchPointInteraction(Rect _userTouchPointer) {

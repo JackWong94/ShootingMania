@@ -22,7 +22,8 @@ public class InputControlsManager {
 
         //Accelerometer user control
         realTimeInputControlsParameters.accelerometerSensorValue = new FloatPoint(0,0);
-        AccelerometerSensor accelerometerSensor = new AccelerometerSensor(display, context, this);
+        AccelerometerSensor accelerometerSensor = new AccelerometerSensor();
+        accelerometerSensor.registerListener(display, context, this);
     }
 
     //Touch screen user control related
@@ -56,12 +57,23 @@ class RealTimeInputControlsParameters {
 class AccelerometerSensor {
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    public static float sensorSensitivityX = 3;
-    public static float sensorSensitivityY = 3;
-    public static int sensorAccelerationX = 10;    //Increase smoothness
-    public static int sensorAccelerationY = 10;    //Increase smoothness
+    private static float sensorSensitivityX = 3;
+    private static float sensorSensitivityY = 3;
+    private static int sensorAccelerationX = 10;    //Increase smoothness
+    private static int sensorAccelerationY = 10;    //Increase smoothness
+    private FloatPoint xyAxisAcceleration;
+    FloatPoint tunedData;
+    //Effective X sensing range = -9 ~ 9 +-sensor sensitivity
+    Float centerX = 0f;
+    //Effective Y sensing range = -9 ~ 9 +-sensor sensitivity
+    Float centerY = 6f;
 
-    public AccelerometerSensor(Display display, Context context, InputControlsManager inputControlsManager) {
+
+    public AccelerometerSensor() {
+        xyAxisAcceleration = new FloatPoint(0,0);
+    }
+
+    public void registerListener(Display display, Context context, InputControlsManager inputControlsManager) {
         SensorControlListener sensorControlListener = new SensorControlListener(display) {
             @Override
             public void onSensorChanged(SensorEvent event) {
@@ -70,7 +82,9 @@ class AccelerometerSensor {
                 }
                 switch (display.getRotation()) {
                     case Surface.ROTATION_0:
-                        inputControlsManager.accelerometerValueChange(new FloatPoint(event.values[0], event.values[1]));
+                        xyAxisAcceleration.set(event.values[0], event.values[1]);
+                        xyAxisAcceleration = fineTuning(xyAxisAcceleration);
+                        inputControlsManager.accelerometerValueChange(xyAxisAcceleration);
                         break;
                     case Surface.ROTATION_90:
                         break;
@@ -86,5 +100,32 @@ class AccelerometerSensor {
         sensorManager.registerListener(sensorControlListener, accelerometer, SensorManager.SENSOR_DELAY_UI);
     }
 
+    private FloatPoint fineTuning(FloatPoint rawData){
+        //Set the center of the sensor
+        rawData.x -= centerX;
+        rawData.y -= centerY;
+        //Tune accelerometer sensitivity and acceleration base on preset value
+        //Sensitivity of sensor controls the range of angle rotation from center X axis
+        if (rawData.x > AccelerometerSensor.sensorSensitivityX) {
+            rawData.x = AccelerometerSensor.sensorSensitivityX;
+        }
+        if (rawData.x < -AccelerometerSensor.sensorSensitivityX) {
+            rawData.x = -AccelerometerSensor.sensorSensitivityX;
+        }
 
+        if (rawData.y > AccelerometerSensor.sensorSensitivityY) {
+            rawData.y = AccelerometerSensor.sensorSensitivityY;
+        }
+        if (rawData.y < -AccelerometerSensor.sensorSensitivityY) {
+            rawData.y = -AccelerometerSensor.sensorSensitivityY;
+        }
+
+        //Acceleration to amplify the direction changes speeds proportional to rotation angle
+        rawData.x = AccelerometerSensor.sensorSensitivityX*AccelerometerSensor.sensorAccelerationX*rawData.x;
+        rawData.y = AccelerometerSensor.sensorSensitivityY*AccelerometerSensor.sensorAccelerationY*rawData.y;
+
+        tunedData = new FloatPoint(rawData.x, rawData.y);
+
+        return tunedData;
+    }
 }
