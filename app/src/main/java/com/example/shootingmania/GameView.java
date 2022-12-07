@@ -3,7 +3,6 @@ package com.example.shootingmania;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,8 +16,6 @@ import android.view.View;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import java.util.ArrayList;
-
 public class GameView extends View {
     private GameManager gameManager;
     private InputControlsManager inputControlsManager;
@@ -29,38 +26,27 @@ public class GameView extends View {
     private String TAG = "GameView";
     private Rect gameBackground;
     private Paint gameBackgroundColor;
-    private Rect targetMoveArea;
-    private Paint targetMoveAreaColor;
+    private int displayScorePoints;
+    private Point displayScorePointsPosition;
+    private Paint displayScorePointsPositionTextPaint;
+    private TextButton displayMenuButton;
+    private Point displayMenuButtonPosition;
+    private DialogBox displayMenuDialogBox;
+    private Rect displayTargetMoveArea;
+    private Paint displayTargetMoveAreaColor;
     private Context context;
     private Handler handler;
     private Runnable runnable;
-    private Gun gun;
-    private AimCross aimCross;
-    private ArrayList<Target> targets;
-    private int numberOfTarget = 1;
-
-    private int shootTriggeredFrame = 0;
-    private int scorePoints = 0;
-    private TextPaint textPaint;
-
-    TextButton menuButton;
-    Point menuButtonPosition;
-    Point scoreDisplayPosition;
-
-    private Rect userTouchPointer = new Rect(0,0,0,0);
-
-    private boolean debugForButtonTouchArea = false;
-    private DialogBox menuDialogBox;
+    private Gun displayGun;
+    private AimCross displayAimCross;
+    private Target displayTarget;
+    private int TEXT_SIZE = 80;
 
     public GameView(Context context) {
         super(context);
         this.context = context;
         this.handler = new Handler();
         display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
-
-        gameManager = new GameManager(this);
-        inputControlsManager = new InputControlsManager(context, display, gameManager);
-
         //Display background settings
         Point displaySize = new Point();
         display.getRealSize(displaySize);
@@ -69,39 +55,36 @@ public class GameView extends View {
         gameBackground = new Rect(0, 0, dWidth, dHeight);
         gameBackgroundColor = new Paint();
         gameBackgroundColor.setColor(Color.parseColor("#DEEBF7"));
-        targetMoveArea = new Rect(0, 500, dWidth, 900);
-        targetMoveAreaColor = new Paint();
-        targetMoveAreaColor.setColor(Color.parseColor("#0AAAFF"));
 
-        scoreDisplayPosition = new Point(50,150);
-        menuButtonPosition = new Point(scoreDisplayPosition.x + 850,150);
-        menuButton = new TextButton(context, "MENU",  menuButtonPosition);
-        menuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
+        gameManager = new GameManager(this);
+        inputControlsManager = new InputControlsManager(context, display, gameManager);
 
-        int TEXT_SIZE = 80;
-        textPaint = new TextPaint();
-        textPaint.setTextAlign(TextPaint.Align.LEFT);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
-        textPaint.setTextSize(TEXT_SIZE);
-        textPaint.setColor(Color.parseColor("#EF8F3F"));
-        textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
+        //Get all display object from gameManager.gameData
+        displayScorePoints = gameManager.gameData.scorePoints;
+        displayScorePointsPosition = new Point(50,150);
+        displayScorePointsPositionTextPaint = new TextPaint();
+        displayScorePointsPositionTextPaint.setTextAlign(TextPaint.Align.LEFT);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
+        displayScorePointsPositionTextPaint.setTextSize(TEXT_SIZE);
+        displayScorePointsPositionTextPaint.setColor(Color.parseColor("#EF8F3F"));
+        displayScorePointsPositionTextPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
+        displayMenuButtonPosition = new Point(displayScorePointsPosition.x + 850,150);
+        displayMenuButton = new TextButton(context, "MENU",  displayMenuButtonPosition);
+        displayMenuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
+        displayTargetMoveArea = gameManager.gameData.targetMoveArea;
+        displayTargetMoveAreaColor = new Paint();
+        displayTargetMoveAreaColor.setColor(Color.parseColor("#0AAAFF"));
+        displayGun = gameManager.gameData.gun;
+        displayAimCross = gameManager.gameData.aimCross;
+        displayTarget = gameManager.gameData.target;
 
         this.runnable = new Runnable() {
             @Override
             public void run() {
                 invalidate();
+                gameManager.run();
             }
         };
 
-        targets = new ArrayList<>();
-        for (int i=0; i<numberOfTarget; i++) {
-            Target target = new Target(context);
-            target.setMovingArea(targetMoveArea);
-            targets.add(target);
-        }
-        aimCross = new AimCross(context);
-        aimCross.resetAimCrossPosition(targetMoveArea.centerX(), targetMoveArea.centerY());
-        gun = new Gun(context);
-        gun.resetGunPosition(dWidth/2, dHeight*4/5);
     }
 
     @Override
@@ -113,117 +96,54 @@ public class GameView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //Update game data before any drawing of game element sprite
-        gameManager.run();
-        updateGameData();
 
+        super.onDraw(canvas);
 
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
-        super.onDraw(canvas);
+
+        //Drawing sequence affecting the overlay sequence, be cautios during changing the sequence at these draw method
         canvas.drawRect(gameBackground, gameBackgroundColor);
-        canvas.drawRect(targetMoveArea, targetMoveAreaColor);
-
-        for (Target t : targets) {
-            canvas.drawBitmap(t.animateFrame(t.frame), t.posX - t.getTargetWidth(t.animateFrame(t.frame))/2, t.posY - t.getTargetHeight(t.animateFrame(t.frame))/2, null);
-            //canvas.drawCircle(t.posX , t.posY , 10, paint);
-            if (t.bulletMarks.size() > 0) {
-                for (BulletMarks b : t.bulletMarks) {
-                    canvas.drawBitmap(b.animateFrame(), b.posX - b.getTargetWidth() / 2, b.posY - b.getTargetHeight() / 2, null);
-                }
-            }
+        displayScorePoints = gameManager.gameData.scorePoints;
+        canvas.drawText("SCORE: " + Integer.toString(displayScorePoints),displayScorePointsPosition.x,displayScorePointsPosition.y, displayScorePointsPositionTextPaint);
+        displayMenuButton.draw(canvas);
+        displayMenuDialogBox.draw(canvas);
+        canvas.drawRect(displayTargetMoveArea, displayTargetMoveAreaColor);
+        canvas.drawBitmap(displayTarget.animateFrame(displayTarget.frame), displayTarget.posX - displayTarget.getTargetWidth(displayTarget.animateFrame(displayTarget.frame))/2, displayTarget.posY - displayTarget.getTargetHeight(displayTarget.animateFrame(displayTarget.frame))/2, null);
+        for (BulletMarks b : displayTarget.bulletMarks) {
+            canvas.drawBitmap(b.animateFrame(), b.posX - b.getTargetWidth() / 2, b.posY - b.getTargetHeight() / 2, null);
         }
-
-        if (shootTriggeredFrame > 0) {
-            canvas.drawBitmap(aimCross.animateFrame(1),aimCross.posX - aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2, aimCross.posY - aimCross.getAimCrossHeight((aimCross.animateFrame(0)))/2,null);
-            shootTriggeredFrame--;
-        } else {
-            canvas.drawBitmap(aimCross.animateFrame(0),aimCross.posX - aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2, aimCross.posY - aimCross.getAimCrossHeight((aimCross.animateFrame(0)))/2,null);
-            //canvas.drawCircle(aimCross.posX, aimCross.posY, 10, paint);
-        }
-
-        canvas.drawBitmap(gun.animateFrame(gun.getCurrentFrame()),gun.posX - gun.getGunWidth((gun.animateFrame(gun.getCurrentFrame())))/4, gun.posY - gun.getGunHeight((gun.animateFrame(gun.getCurrentFrame())))/2,null);
-        //canvas.drawCircle(gun.posX, gun.posY, 10, paint);
-
-        //UI
-        canvas.drawText("SCORE: " + Integer.toString(scorePoints),scoreDisplayPosition.x,scoreDisplayPosition.y, textPaint);
-
-        menuButton.draw(canvas);
-
-        //Menu Design
-        menuDialogBox.draw(canvas);
-
-        if (debugForButtonTouchArea) {
-            canvas.drawRect(userTouchPointer, new Paint(R.color.black));
-        }
+        canvas.drawBitmap(displayGun.animateFrame(displayGun.getCurrentFrame()),displayGun.posX - displayGun.getGunWidth((displayGun.animateFrame(displayGun.getCurrentFrame())))/4, displayGun.posY - displayGun.getGunHeight((displayGun.animateFrame(displayGun.getCurrentFrame())))/2,null);
+        canvas.drawBitmap(displayAimCross.animateFrame(displayAimCross.getCurrentFrame()),displayAimCross.posX - displayAimCross.getAimCrossWidth((displayAimCross.animateFrame(0)))/2, displayAimCross.posY - displayAimCross.getAimCrossHeight((displayAimCross.animateFrame(0)))/2,null);
 
         handler.postDelayed(runnable, UPDATE_MILLIS);
     }
-
-    public void updateGameData() {
-        int tempScore = 0;
-        for (Target t : targets) {
-            tempScore += t.returnTotalScore();
-        }
-        scorePoints = tempScore;
-    }
-
 
     public void backToMainMenu() {
         Intent intent = new Intent(context, MainActivity.class);
         context.startActivity(intent);
     }
 
-    public void userInputBySensorControlX(Float x_dir_rotation) {
-        aimCross.posX -= x_dir_rotation;
-        gun.posX -= x_dir_rotation;
-        if (aimCross.posX < targetMoveArea.left + aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2) {
-            aimCross.posX = targetMoveArea.left + aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2;
-            gun.posX = aimCross.posX;
-        }
-        if (aimCross.posX > targetMoveArea.right - aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2) {
-            aimCross.posX = targetMoveArea.right - aimCross.getAimCrossWidth((aimCross.animateFrame(0)))/2;
-            gun.posX = aimCross.posX;
-        }
-    }
-
-    public void userInputBySensorControlY(Float y_dir_rotation) {
-        aimCross.posY += y_dir_rotation;
-        if (aimCross.posY < targetMoveArea.top){
-            aimCross.posY = targetMoveArea.top;
-        }
-        if (aimCross.posY > targetMoveArea.bottom){
-            aimCross.posY = targetMoveArea.bottom;
-        }
-    }
-
     public void touchPointInteraction(Rect _userTouchPointer) {
+
         //GameManager inform GameView for all touch related user input
         //GameView decide on the function that response to the touch surface on GameView
-        userTouchPointer = _userTouchPointer;
 
         //Detecting click on menuButton
-        if (menuButton.isClicked(_userTouchPointer)) {
+        if (displayMenuButton.isClicked(_userTouchPointer)) {
             //Toggle Back To Menu Dialog Box
-            if (menuDialogBox.popUp) {
-                menuDialogBox.hide();
+            if (displayMenuDialogBox.popUp) {
+                displayMenuDialogBox.hide();
             } else {
-                menuDialogBox.show();
+                displayMenuDialogBox.show();
             }
         }
 
         //Detecting click on menuDialogBox when it is pop up
-        switch (menuDialogBox.isInteracted(_userTouchPointer)) {
-            case NO: menuDialogBox.hide();break;
+        switch (displayMenuDialogBox.isInteracted(_userTouchPointer)) {
+            case NO: displayMenuDialogBox.hide();break;
             case YES: backToMainMenu(); break;
             default: break;
-        }
-
-
-
-        for (Target t : targets) {
-            t.verifyShoot(gun.shoot(aimCross), t.animateFrame(t.frame));
-            shootTriggeredFrame = 3;
         }
     }
 }

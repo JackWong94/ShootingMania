@@ -10,6 +10,13 @@ public class AimCross {
     private int numberOfSprites = 2;
     private Bitmap aimCross[] = new Bitmap[numberOfSprites];
     public int posX, posY;
+    public int currentFrame = 0;
+    static int frameCounter = 0;
+    private STATE state = STATE.UNLOCKING;
+    private enum STATE {
+        LOCKING,
+        UNLOCKING,
+    }
 
     public AimCross(Context context) {
         this.context = context;
@@ -36,5 +43,23 @@ public class AimCross {
 
     public void recoil() {
         posY -= RECOIL_MOVEMENT_SPEED;
+    }
+
+    public void setAimCrossLock() {
+        state = STATE.LOCKING;
+    }
+
+    public int getCurrentFrame() {
+        if (state == STATE.LOCKING) {
+            if (frameCounter > 5) {
+                state = STATE.UNLOCKING;
+                frameCounter = 0;
+            } else {
+                frameCounter++;
+            }
+            return currentFrame = 1;
+        } else {
+            return currentFrame = 0;
+        }
     }
 }
