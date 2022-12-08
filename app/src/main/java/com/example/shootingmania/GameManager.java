@@ -24,19 +24,35 @@ public class GameManager {
         gameData.updateGameData();
     }
 
+    public void setPause() {
+        isPause = true;
+        GameRunnable.pauseAllGameRunnable();
+    }
+
+    public void setResume() {
+        isPause = false;
+        GameRunnable.resumeAllGameRunnable();
+    }
+
     public void updateTouchControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
+        if (isPause) {
+            //Set menu responsiveness during pausing game
+            gameView.touchPointInteraction(realTimeInputControlsParameters.userTouchPointer);
+            return;
+        }
         gameView.touchPointInteraction(realTimeInputControlsParameters.userTouchPointer);
         gameData.touchControlsDetected();
     }
 
     public void updateAccelerometerControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
+        if (isPause) {
+            return;
+        }
         gameData.accelerometerControlsDetected(realTimeInputControlsParameters);
     }
 }
 
 class GameData {
-
-
     private Context context;
     public Rect targetMoveArea;
     public Gun gun;
@@ -95,5 +111,35 @@ class GameData {
 
     public void accelerometerControlsDetected(RealTimeInputControlsParameters realTimeInputControlsParameters) {
         controlGunMovement(realTimeInputControlsParameters.accelerometerSensorValue.x, realTimeInputControlsParameters.accelerometerSensorValue.y);
+    }
+}
+
+abstract class GameRunnable implements Runnable{
+    private static boolean gameIsPause = false;
+    public GameRunnable() {
+
+    }
+
+    @Override
+    public void run() {
+        while(true) {
+            if (gameIsPause) {
+                //Continue keep thread alive but skipping gameRun
+                continue;
+            }
+            gameRun();
+        }
+    }
+
+    public void gameRun() {
+
+    }
+
+    public static void pauseAllGameRunnable() {
+        gameIsPause = true;
+    }
+
+    public static void resumeAllGameRunnable() {
+        gameIsPause = false;
     }
 }

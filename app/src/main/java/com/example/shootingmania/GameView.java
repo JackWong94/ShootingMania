@@ -133,15 +133,19 @@ public class GameView extends View {
         if (displayMenuButton.isClicked(_userTouchPointer)) {
             //Toggle Back To Menu Dialog Box
             if (displayMenuDialogBox.popUp) {
+                //Out of the menu, resume game
+                gameManager.setResume();
                 displayMenuDialogBox.hide();
             } else {
+                //Enter the menu, resume game
+                gameManager.setPause();
                 displayMenuDialogBox.show();
             }
         }
 
         //Detecting click on menuDialogBox when it is pop up
         switch (displayMenuDialogBox.isInteracted(_userTouchPointer)) {
-            case NO: displayMenuDialogBox.hide();break;
+            case NO: gameManager.setResume(); displayMenuDialogBox.hide();break;
             case YES: backToMainMenu(); break;
             default: break;
         }

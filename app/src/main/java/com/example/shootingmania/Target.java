@@ -7,8 +7,6 @@ import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -57,17 +55,20 @@ public class Target {
         bulletMarks = new ArrayList<>();
         spawnTimesUp();
 
-        Thread thread = new Thread(new Runnable() {
+        Thread thread = new Thread(new GameRunnable() {
             @Override
-            public void run() {
-                while(true) {
+            public void gameRun() {
+                /*while(true) {
+                    if (GameRunnable.getPauseState()==true) {
+                        continue;
+                    }*/
                     if ((System.currentTimeMillis() - previousSpawnTime) > spawnTime) {
                         if (!isVerifyingShoot) {
                             //wait for the last verifying shoot to be finish
                             spawnTimesUp();
                         }
                     }
-                }
+                //}
             }
         });
         thread.start();
