@@ -58,17 +58,12 @@ public class Target {
         Thread thread = new Thread(new GameRunnable() {
             @Override
             public void gameRun() {
-                /*while(true) {
-                    if (GameRunnable.getPauseState()==true) {
-                        continue;
-                    }*/
-                    if ((System.currentTimeMillis() - previousSpawnTime) > spawnTime) {
-                        if (!isVerifyingShoot) {
-                            //wait for the last verifying shoot to be finish
-                            spawnTimesUp();
-                        }
+                if ((System.currentTimeMillis() - previousSpawnTime) > spawnTime) {
+                    if (!isVerifyingShoot) {
+                        //wait for the last verifying shoot to be finish
+                        spawnTimesUp();
                     }
-                //}
+                }
             }
         });
         thread.start();

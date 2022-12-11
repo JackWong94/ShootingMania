@@ -3,19 +3,45 @@ package com.example.shootingmania;
 import static com.example.shootingmania.GameView.dWidth;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 
 public class GameManager {
+    public enum ACTIVITY_STATE {
+        GAME_MENU,
+        START_GAME,
+        LEADERBOARDS,
+    }
+    public ACTIVITY_STATE activityState = ACTIVITY_STATE.GAME_MENU;
+    private boolean isInitialized = false;
     private boolean isPause = false;
-    GameView gameView;
-    GameData gameData;
+    public GameView gameView;
+    public GameData gameData;
+    private Context context;
     public GameManager(GameView gameView) {
         this.gameView = gameView;
-        gameData = new GameData(gameView.getContext());
+        this.context = gameView.getContext();
+        //Loading game data
+        gameData = new GameData(context);
         gameData.reset();
     }
 
+    public void setActivityPage(ACTIVITY_STATE newActivityState) {
+        activityState = newActivityState;
+        switch (activityState) {
+            case GAME_MENU: GameActivityPage.startActivity(gameView.gameMenuActivity); break;
+            case START_GAME: gameData.reset(); setResume(); GameActivityPage.startActivity(gameView.startGameActivity); break;
+            case LEADERBOARDS: break;
+            default: break;
+        }
+    }
+
     public void run() {
+        if (!isInitialized) {
+            setActivityPage(activityState);
+            isInitialized = true;
+            return;
+        }
         if (isPause) {
             //Skip the game update for pausing moment
             return;
@@ -34,19 +60,25 @@ public class GameManager {
         GameRunnable.resumeAllGameRunnable();
     }
 
+    public void backToMainMenu() {
+        setActivityPage(ACTIVITY_STATE.GAME_MENU);
+    }
+
     public void updateTouchControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
         if (isPause) {
             //Set menu responsiveness during pausing game
-            gameView.touchPointInteraction(realTimeInputControlsParameters.userTouchPointer);
+            gameView.onTouchPointInteraction(realTimeInputControlsParameters.userTouchPointer);
             return;
+            //Pause all game related touch controls
         }
-        gameView.touchPointInteraction(realTimeInputControlsParameters.userTouchPointer);
+        gameView.onTouchPointInteraction(realTimeInputControlsParameters.userTouchPointer);
         gameData.touchControlsDetected();
     }
 
     public void updateAccelerometerControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
         if (isPause) {
             return;
+            //Pause all game related accelerometer controls
         }
         gameData.accelerometerControlsDetected(realTimeInputControlsParameters);
     }
@@ -132,7 +164,8 @@ abstract class GameRunnable implements Runnable{
     }
 
     public void gameRun() {
-
+        //Override this function in the gameRunnable implementation
+        //This function will run in a separate thread and is control under GameManager for game pausing state
     }
 
     public static void pauseAllGameRunnable() {
