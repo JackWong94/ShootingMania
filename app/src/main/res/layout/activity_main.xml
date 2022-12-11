@@ -7,46 +7,4 @@
     android:background="@drawable/home_screen"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".MainActivity">
-
-    <Button
-        android:id="@+id/buttonStartGame"
-        android:layout_width="220sp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="90dp"
-        android:backgroundTint="#8497B0"
-        android:onClick="startGame"
-        android:text="@string/start_game"
-        android:textColor="#ffffff"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/buttonLeaderboards"
-        android:layout_width="220sp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="#8497B0"
-        android:onClick="showLeaderboard"
-        android:text="@string/leaderboards"
-        android:textColor="#ffffff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonStartGame" />
-
-    <Button
-        android:id="@+id/buttonExit"
-        android:layout_width="220sp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="#8497B0"
-        android:onClick="exitGame"
-        android:text="@string/exit"
-        android:textColor="#ffffff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonLeaderboards" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    tools:context=".MainActivity"/>

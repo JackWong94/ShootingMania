@@ -28,7 +28,7 @@ public class InputControlsManager {
 
     //Touch screen user control related
     public boolean gameScreenPressedDetected(MotionEvent e) {
-        if (e.getAction() == MotionEvent.ACTION_DOWN) {
+        if (e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_DOWN) {
             realTimeInputControlsParameters.userTouchPointer = new Rect((int) e.getX()-10, (int) e.getY()-10,(int) e.getX()+10, (int) e.getY()+10);
             gameManager.updateTouchControls(realTimeInputControlsParameters);
         }
@@ -50,8 +50,9 @@ class RealTimeInputControlsParameters {
     }
     //Touch screen user control related
     public Rect userTouchPointer;
-    public FloatPoint accelerometerSensorValue;
     //Accelerometer user control related
+    public FloatPoint accelerometerSensorValue;
+
 }
 
 class AccelerometerSensor {

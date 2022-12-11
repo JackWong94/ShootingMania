@@ -2,6 +2,7 @@ package com.example.shootingmania;
 
 import static com.example.shootingmania.GameView.dWidth;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -23,13 +24,13 @@ public class GameManager {
         this.context = gameView.getContext();
         //Loading game data
         gameData = new GameData(context);
-        gameData.reset();
+        gameData.initializing();
     }
 
     public void setActivityPage(ACTIVITY_STATE newActivityState) {
         activityState = newActivityState;
         switch (activityState) {
-            case GAME_MENU: GameActivityPage.startActivity(gameView.gameMenuActivity); break;
+            case GAME_MENU: setPause(); GameActivityPage.startActivity(gameView.gameMenuActivity); break;
             case START_GAME: gameData.reset(); setResume(); GameActivityPage.startActivity(gameView.startGameActivity); break;
             case LEADERBOARDS: break;
             default: break;
@@ -64,6 +65,10 @@ public class GameManager {
         setActivityPage(ACTIVITY_STATE.GAME_MENU);
     }
 
+    public void exitGame() {
+        ((Activity)context).finish();
+    }
+
     public void updateTouchControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
         if (isPause) {
             //Set menu responsiveness during pausing game
@@ -94,6 +99,10 @@ class GameData {
 
     public GameData(Context context) {
         this.context = context;
+    }
+
+    public void initializing() {
+        reset();
     }
 
     public void reset() {

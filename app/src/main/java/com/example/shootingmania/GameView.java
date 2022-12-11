@@ -49,24 +49,59 @@ public class GameView extends View {
         inputControlsManager = new InputControlsManager(context, display, gameManager);
 
         gameMenuActivity =new GameActivityPage() {
+            private Rect gameBackground;
+            private Paint gameBackgroundColor;
+            private TextDisplay displayGameTitle1stLine;
+            private TextDisplay displayGameTitle2ndLine;
             private TextButton displayStartGameButton;
             private TextButton displayLeaderboardsGameButton;
             private TextButton displayExitGameButton;
             @Override
             public void initialize() {
-                displayStartGameButton = new TextButton(context, "Start Game", new Point(dWidth/2,dHeight/2));
+                gameBackground = new Rect(0, 0, dWidth, dHeight);
+                gameBackgroundColor = new Paint();
+                gameBackgroundColor.setColor(Color.parseColor("#DEEBF7"));
+
+                int fontSize = 150;
+                displayGameTitle1stLine = new TextDisplay(context, "SHOOTING", new Point(dWidth/2,dHeight/5));
+                displayGameTitle1stLine.setFontSize(fontSize);
+                displayGameTitle2ndLine = new TextDisplay(context, "MANIA", new Point(dWidth/2,dHeight/5 + fontSize*2));
+                displayGameTitle2ndLine.setFontSize(fontSize);
+                int offset = 300;
+                Point displayStartButtonPosition = new Point(dWidth/2,dHeight/2);
+                Point displayLeaderboardsGameButtonPosition = new Point(displayStartButtonPosition.x,displayStartButtonPosition.y + offset);
+                Point displayExitGameButtonPosition = new Point(displayStartButtonPosition.x,displayLeaderboardsGameButtonPosition.y + offset);
+                displayStartGameButton = new TextButton(context, "Start Game", displayStartButtonPosition);
+                displayStartGameButton.setButtonBoxVisibility(true);
+                displayLeaderboardsGameButton = new TextButton(context, "Leaderboards", displayLeaderboardsGameButtonPosition);
+                displayLeaderboardsGameButton.setButtonBoxVisibility(true);
+                displayExitGameButton = new TextButton(context, "Exit", displayExitGameButtonPosition);
+                displayExitGameButton.setButtonBoxVisibility(true);
             }
 
             @Override
             public void onDraw(Canvas canvas) {
+                canvas.drawRect(gameBackground, gameBackgroundColor);
+                displayGameTitle1stLine.draw(canvas);
+                displayGameTitle2ndLine.draw(canvas);
                 displayStartGameButton.draw(canvas);
+                displayLeaderboardsGameButton.draw(canvas);
+                displayExitGameButton.draw(canvas);
             }
 
             @Override
             public void onTouchInteraction(Rect _userTouchPointer) {
                 if (displayStartGameButton.isClicked(_userTouchPointer)) {
+                    //Start game
                     gameManager.activityState = GameManager.ACTIVITY_STATE.START_GAME;
                     gameManager.setActivityPage(gameManager.activityState);
+                }
+                if (displayLeaderboardsGameButton.isClicked(_userTouchPointer)) {
+                    //Show leaderboards
+                }
+                if (displayExitGameButton.isClicked(_userTouchPointer)) {
+                    //Exit Game
+                    gameManager.exitGame();
                 }
             }
         };
@@ -273,23 +308,30 @@ class DialogBox {
 class TextButton {
     private Context context;
     private Rect area;
-    private int width = 280;
+    private int width = 65;
     private int height = 100;
-    private int offsetButtonToMatchTextDisplay = 30;
+    private int offsetButtonToMatchTextDisplay = 29;
     private String text;
     private Point position;
     private int TEXT_SIZE = 80;
     private TextPaint textPaint = new TextPaint();
+    private boolean showButtonBox = false;
+    private Paint buttonBoxPaint = new Paint(Color.parseColor("#00003F"));
 
     public TextButton(Context _context, String _text, Point _position) {
         this.context = _context;
         this.text = _text;
         this.position = _position;
+        this.width = this.text.length() * this.width;
         this.area = new Rect(position.x - width/2 ,position.y - height/2 - offsetButtonToMatchTextDisplay,position.x + width/2,position.y + height/2 - offsetButtonToMatchTextDisplay);
         textPaint.setTextAlign(TextPaint.Align.CENTER);
         textPaint.setTextSize(TEXT_SIZE);
         textPaint.setColor(Color.parseColor("#EF8F3F"));
         textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
+    }
+
+    public void setButtonBoxVisibility(boolean visible) {
+        showButtonBox = visible;
     }
 
     public boolean isClicked(Rect _userTouchPointer) {
@@ -301,10 +343,41 @@ class TextButton {
     }
 
     public void draw(Canvas canvas) {
+        if (!showButtonBox) {
+            buttonBoxPaint.setAlpha(0);
+        } else {
+            buttonBoxPaint.setAlpha(255);
+        }
+        canvas.drawRect(area, buttonBoxPaint);
+        canvas.drawText(text ,position.x,position.y, textPaint);
+    }
+}
+
+class TextDisplay {
+    private Context context;
+    private String text;
+    private Point position;
+    private int TEXT_SIZE = 80;
+    private TextPaint textPaint = new TextPaint();
+
+    public TextDisplay(Context _context, String _text, Point _position) {
+        this.context = _context;
+        this.text = _text;
+        this.position = _position;
+        textPaint.setTextAlign(TextPaint.Align.CENTER);
+        textPaint.setTextSize(TEXT_SIZE);
+        textPaint.setColor(Color.parseColor("#EF8F3F"));
+        textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
+    }
+
+    public void draw(Canvas canvas) {
         Paint paint = new Paint(R.color.black);
         paint.setAlpha(0);
         canvas.drawText(text ,position.x,position.y, textPaint);
-        canvas.drawRect(area, paint);
+    }
+
+    public void setFontSize(int fontSize) {
+        textPaint.setTextSize(fontSize);
     }
 }
 

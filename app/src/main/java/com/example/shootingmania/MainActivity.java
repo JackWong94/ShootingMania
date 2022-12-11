@@ -30,22 +30,6 @@ public class MainActivity extends AppCompatActivity {
         enterFullScreen();
     }
 
-    //Start Game Function
-    public void startGame(View view) {
-        GameView gameView = new GameView(this);
-        setContentView(gameView);
-    }
-
-    //Show Leaderboard
-    public void showLeaderboard(View view) {
-    }
-
-    //Exit Game
-    public void exitGame(View view) {
-        Toast.makeText(this,"Exiting",Toast.LENGTH_SHORT).show();
-        finish();
-    }
-
     //Hide navigation bar and make full screen
     public void enterFullScreen() {
         //Make full screen and hide navigation bar
