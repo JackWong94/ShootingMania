@@ -28,8 +28,14 @@ public class InputControlsManager {
 
     //Touch screen user control related
     public boolean gameScreenPressedDetected(MotionEvent e) {
+        if (e.getAction() == MotionEvent.ACTION_UP) {
+            realTimeInputControlsParameters.userTouchPointer = new Rect((int) e.getX()-10, (int) e.getY()-10,(int) e.getX()+10, (int) e.getY()+10);
+            realTimeInputControlsParameters.userTouchType = RealTimeInputControlsParameters.TOUCH_TYPE.KEY_UP;
+            gameManager.updateTouchControls(realTimeInputControlsParameters);
+        }
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             realTimeInputControlsParameters.userTouchPointer = new Rect((int) e.getX()-10, (int) e.getY()-10,(int) e.getX()+10, (int) e.getY()+10);
+            realTimeInputControlsParameters.userTouchType = RealTimeInputControlsParameters.TOUCH_TYPE.KEY_DOWN;
             gameManager.updateTouchControls(realTimeInputControlsParameters);
         }
         return true;
@@ -49,7 +55,26 @@ class RealTimeInputControlsParameters {
 
     }
     //Touch screen user control related
+    public enum TOUCH_TYPE {
+        KEY_DOWN,
+        KEY_UP,
+    }
     public Rect userTouchPointer;
+    public TOUCH_TYPE userTouchType;
+    public Boolean onPressed() {
+        if (userTouchType == TOUCH_TYPE.KEY_DOWN) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public Boolean onReleased() {
+        if (userTouchType == TOUCH_TYPE.KEY_UP) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     //Accelerometer user control related
     public FloatPoint accelerometerSensorValue;
 

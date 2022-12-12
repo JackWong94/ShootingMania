@@ -224,11 +224,13 @@ public class GameView extends View {
         handler.postDelayed(runnable, UPDATE_MILLIS);
     }
 
-    public void onTouchPointInteraction(Rect _userTouchPointer) {
+    public void onTouchPointInteraction(RealTimeInputControlsParameters realTimeInputControlsParameters) {
         //GameManager inform GameView for all touch related user input
         //GameView decide on the function that response to the touch surface on GameView
-        gameMenuActivity.touchInteraction(_userTouchPointer);
-        startGameActivity.touchInteraction(_userTouchPointer);
+        if (realTimeInputControlsParameters.onReleased()) {
+            gameMenuActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
+            startGameActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
+        }
     }
 }
 

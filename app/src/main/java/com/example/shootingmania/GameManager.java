@@ -72,12 +72,12 @@ public class GameManager {
     public void updateTouchControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
         if (isPause) {
             //Set menu responsiveness during pausing game
-            gameView.onTouchPointInteraction(realTimeInputControlsParameters.userTouchPointer);
+            gameView.onTouchPointInteraction(realTimeInputControlsParameters);
             return;
             //Pause all game related touch controls
         }
-        gameView.onTouchPointInteraction(realTimeInputControlsParameters.userTouchPointer);
-        gameData.touchControlsDetected();
+        gameView.onTouchPointInteraction(realTimeInputControlsParameters);
+        gameData.touchControlsDetected(realTimeInputControlsParameters);
     }
 
     public void updateAccelerometerControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
@@ -145,9 +145,11 @@ class GameData {
         }
     }
 
-    public void touchControlsDetected() {
-        target.verifyShoot(gun.shoot(aimCross), target.animateFrame(target.frame));
-        aimCross.setAimCrossLock(); //Set state of AimCross for animation
+    public void touchControlsDetected(RealTimeInputControlsParameters realTimeInputControlsParameters) {
+        if (realTimeInputControlsParameters.onPressed()) {
+            target.verifyShoot(gun.shoot(aimCross), target.animateFrame(target.frame));
+            aimCross.setAimCrossLock(); //Set state of AimCross for animation
+        }
     }
 
     public void accelerometerControlsDetected(RealTimeInputControlsParameters realTimeInputControlsParameters) {
