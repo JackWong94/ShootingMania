@@ -54,7 +54,7 @@ public class Target {
         random = new Random();
         bulletMarks = new ArrayList<>();
         spawnTimesUp();
-
+        previousSpawnTime = System.currentTimeMillis();
         Thread thread = new Thread(new GameRunnable() {
             @Override
             public void gameRun() {

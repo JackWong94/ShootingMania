@@ -12,6 +12,7 @@ public class GameManager {
         GAME_MENU,
         START_GAME,
         LEADERBOARDS,
+        GAME_OVER,
     }
     public ACTIVITY_STATE activityState = ACTIVITY_STATE.GAME_MENU;
     private boolean isInitialized = false;
@@ -23,7 +24,7 @@ public class GameManager {
         this.gameView = gameView;
         this.context = gameView.getContext();
         //Loading game data
-        gameData = new GameData(context);
+        gameData = new GameData(context, this);
         gameData.initializing();
     }
 
@@ -31,8 +32,9 @@ public class GameManager {
         activityState = newActivityState;
         switch (activityState) {
             case GAME_MENU: setPause(); GameActivityPage.startActivity(gameView.gameMenuActivity); break;
-            case START_GAME: gameData.reset(); setResume(); GameActivityPage.startActivity(gameView.startGameActivity); break;
+            case START_GAME: gameData.startGame(); setResume(); GameActivityPage.startActivity(gameView.startGameActivity); break;
             case LEADERBOARDS: break;
+            case GAME_OVER: GameActivityPage.startActivity(gameView.gameOverActivity); break;
             default: break;
         }
     }
@@ -59,6 +61,10 @@ public class GameManager {
     public void setResume() {
         isPause = false;
         GameRunnable.resumeAllGameRunnable();
+    }
+
+    public void setGameOver() {
+        setActivityPage(ACTIVITY_STATE.GAME_OVER);
     }
 
     public void backToMainMenu() {
@@ -91,14 +97,23 @@ public class GameManager {
 
 class GameData {
     private Context context;
+    private GameManager gameManager;
     public Rect targetMoveArea;
     public Gun gun;
     public Target target;
     public AimCross aimCross;
     public int scorePoints;
+    public GameTimer gameTimer;
 
-    public GameData(Context context) {
+    public GameData(Context context, GameManager gameManager) {
         this.context = context;
+        this.gameManager = gameManager; //allow game data to communicate with game manager
+        gameTimer = new GameTimer() {
+            @Override
+            public void onTimesUp() {
+                gameManager.setGameOver();
+            }
+        };
     }
 
     public void initializing() {
@@ -116,6 +131,12 @@ class GameData {
         //Set single target only in the game, future levels implementation can consider add more targets
         target = new Target(context);
         target.setMovingArea(targetMoveArea);
+    }
+
+    public void startGame() {
+        reset();
+        gameTimer.setTimerTime(10000);
+        gameTimer.startCount();
     }
 
     public void updateGameData() {

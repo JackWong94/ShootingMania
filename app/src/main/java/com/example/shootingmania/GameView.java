@@ -29,6 +29,7 @@ public class GameView extends View {
     private String TAG = "GameView";
     public GameActivityPage gameMenuActivity;
     public GameActivityPage startGameActivity;
+    public GameActivityPage gameOverActivity;
     private Context context;
     private Handler handler;
     private Runnable runnable;
@@ -199,6 +200,34 @@ public class GameView extends View {
             }
         };
 
+        gameOverActivity = new GameActivityPage() {
+            private TextDisplay gameOverTextDisplay;
+            private TextDisplay yourScoreTextDisplay;
+            private TextDisplay scoreTextDisplay;
+            private Point gameOverTextDisplayPosition = new Point(dWidth/2, dHeight/4);
+            private Point yourScoreTextDisplayPosition = new Point(dWidth/3, dHeight/4*3);
+            private Point scoreTextDisplayPosition = new Point(dWidth/3*2, dHeight/4*3);
+            @Override
+            public void initialize() {
+                gameOverTextDisplay = new TextDisplay(context, "GAME OVER", gameOverTextDisplayPosition);
+                yourScoreTextDisplay = new TextDisplay(context, "YOUR SCORES : ", yourScoreTextDisplayPosition);
+                scoreTextDisplay = new TextDisplay(context, Integer.toString(gameManager.gameData.scorePoints),scoreTextDisplayPosition);
+            }
+
+            @Override
+            public void onDraw(Canvas canvas) {
+                gameOverTextDisplay.draw(canvas);
+                yourScoreTextDisplay.draw(canvas);
+                scoreTextDisplay.draw(canvas);
+            }
+
+            @Override
+            public void onTouchInteraction(Rect _userTouchPointer) {
+                //When touch screen, trigger back to main activity
+                gameManager.backToMainMenu();
+            }
+        };
+
         this.runnable = new Runnable() {
             @Override
             public void run() {
@@ -221,6 +250,7 @@ public class GameView extends View {
         super.onDraw(canvas);
         gameMenuActivity.draw(canvas);
         startGameActivity.draw(canvas);
+        gameOverActivity.draw(canvas);
         handler.postDelayed(runnable, UPDATE_MILLIS);
     }
 
@@ -230,6 +260,7 @@ public class GameView extends View {
         if (realTimeInputControlsParameters.onReleased()) {
             gameMenuActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
             startGameActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
+            gameOverActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
         }
     }
 }
