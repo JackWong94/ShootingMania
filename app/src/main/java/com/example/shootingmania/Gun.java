@@ -104,6 +104,10 @@ public class Gun {
         }
     }
 
+    public void reload() {
+        bulletsRemaining = gunCartridgeSize; //Fully filled armor during each reload
+    }
+
     public int getCurrentFrame() {
         if (state == STATE.SHOOTING) {
             if (isFirstFrame) {

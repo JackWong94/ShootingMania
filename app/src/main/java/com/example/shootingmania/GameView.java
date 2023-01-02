@@ -47,7 +47,7 @@ public class GameView extends View {
         dHeight = displaySize.y;
 
         gameManager = new GameManager(this);
-        inputControlsManager = new InputControlsManager(context, display, gameManager);
+        inputControlsManager = new InputControlsManager(context, display, gameManager, this);
 
         gameMenuActivity =new GameActivityPage() {
             private Rect gameBackground;
