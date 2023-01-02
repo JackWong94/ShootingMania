@@ -95,7 +95,7 @@ public class GameView extends View {
                 if (displayStartGameButton.isClicked(_userTouchPointer)) {
                     //Start game
                     gameManager.activityState = GameManager.ACTIVITY_STATE.START_GAME;
-                    gameManager.setActivityPage(gameManager.activityState);
+                    gameManager.isInitialized = false;
                 }
                 if (displayLeaderboardsGameButton.isClicked(_userTouchPointer)) {
                     //Show leaderboards
@@ -201,30 +201,53 @@ public class GameView extends View {
         };
 
         gameOverActivity = new GameActivityPage() {
+            private long activityUpTime;
+            private long minimumGameOverShowingTime = 2000;         //2 seconds
+            private boolean allowToSwitchActivity = false;
             private TextDisplay gameOverTextDisplay;
             private TextDisplay yourScoreTextDisplay;
             private TextDisplay scoreTextDisplay;
             private Point gameOverTextDisplayPosition = new Point(dWidth/2, dHeight/4);
-            private Point yourScoreTextDisplayPosition = new Point(dWidth/3, dHeight/4*3);
-            private Point scoreTextDisplayPosition = new Point(dWidth/3*2, dHeight/4*3);
+            private Point yourScoreTextDisplayPosition = new Point(dWidth/2, dHeight/4*2);
+            private Point scoreTextDisplayPosition = new Point(dWidth/2, dHeight/4*3);
             @Override
             public void initialize() {
+                allowToSwitchActivity = false;
                 gameOverTextDisplay = new TextDisplay(context, "GAME OVER", gameOverTextDisplayPosition);
                 yourScoreTextDisplay = new TextDisplay(context, "YOUR SCORES : ", yourScoreTextDisplayPosition);
                 scoreTextDisplay = new TextDisplay(context, Integer.toString(gameManager.gameData.scorePoints),scoreTextDisplayPosition);
+                activityUpTime = System.currentTimeMillis();
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (!allowToSwitchActivity) {
+                            if (System.currentTimeMillis() - activityUpTime > minimumGameOverShowingTime) {
+                                allowToSwitchActivity = true;
+                            }
+                        }
+                    }
+                });
+                thread.start();
             }
 
             @Override
             public void onDraw(Canvas canvas) {
                 gameOverTextDisplay.draw(canvas);
                 yourScoreTextDisplay.draw(canvas);
-                scoreTextDisplay.draw(canvas);
+
+                if (allowToSwitchActivity) {
+                    scoreTextDisplay.draw(canvas);
+
+                }
             }
 
             @Override
             public void onTouchInteraction(Rect _userTouchPointer) {
-                //When touch screen, trigger back to main activity
-                gameManager.backToMainMenu();
+                //This activity must stay for the minimumGameOverShowingTime, so that user will not miss the score display
+                if (allowToSwitchActivity) {
+                    //When touch screen, trigger back to main activity
+                    gameManager.backToMainMenu();
+                }
             }
         };
 

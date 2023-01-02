@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.util.Log;
 
 public class GameManager {
     public enum ACTIVITY_STATE {
@@ -15,7 +16,7 @@ public class GameManager {
         GAME_OVER,
     }
     public ACTIVITY_STATE activityState = ACTIVITY_STATE.GAME_MENU;
-    private boolean isInitialized = false;
+    public boolean isInitialized = false;
     private boolean isPause = false;
     public GameView gameView;
     public GameData gameData;
@@ -28,7 +29,7 @@ public class GameManager {
         gameData.initializing();
     }
 
-    public void setActivityPage(ACTIVITY_STATE newActivityState) {
+    private void setActivityPage(ACTIVITY_STATE newActivityState) {
         activityState = newActivityState;
         switch (activityState) {
             case GAME_MENU: setPause(); GameActivityPage.startActivity(gameView.gameMenuActivity); break;
@@ -64,11 +65,15 @@ public class GameManager {
     }
 
     public void setGameOver() {
-        setActivityPage(ACTIVITY_STATE.GAME_OVER);
+        activityState = ACTIVITY_STATE.GAME_OVER;
+        isInitialized = false;
+        //setActivityPage(ACTIVITY_STATE.GAME_OVER);
     }
 
     public void backToMainMenu() {
-        setActivityPage(ACTIVITY_STATE.GAME_MENU);
+        activityState = ACTIVITY_STATE.GAME_MENU;
+        isInitialized = false;
+        //setActivityPage(ACTIVITY_STATE.GAME_MENU);
     }
 
     public void exitGame() {
@@ -180,8 +185,9 @@ class GameData {
 
 abstract class GameRunnable implements Runnable{
     private static boolean gameIsPause = false;
+    private boolean resumeFromPause;
     public GameRunnable() {
-
+        resumeFromPause = false;
     }
 
     @Override
@@ -189,10 +195,20 @@ abstract class GameRunnable implements Runnable{
         while(true) {
             if (gameIsPause) {
                 //Continue keep thread alive but skipping gameRun
+                resumeFromPause = true;
                 continue;
+            }
+            if (resumeFromPause) {
+                gameResume();
+                resumeFromPause = false;
             }
             gameRun();
         }
+    }
+
+    public void gameResume() {
+        //Override this function in the gameRunnable implementation
+        //This function will run in a separate thread and is control under GameManager for game resume state
     }
 
     public void gameRun() {
