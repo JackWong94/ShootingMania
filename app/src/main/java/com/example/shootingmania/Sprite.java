@@ -13,6 +13,7 @@ public class Sprite {
     public enum NAME {
         TARGET,
         GUN, GUN_SHOOT_1, GUN_SHOOT_2, GUN_SHOOT_3, GUN_SHOOT_4,
+        GUN_RELOADING_1, GUN_RELOADING_2, GUN_RELOADING_3, GUN_RELOADING_4,
         AIM_CROSS_LOCK, AIM_CROSS_UNLOCK,
         BULLET_MARKS_1, BULLET_MARKS_2, BULLET_MARKS_3,
     }
@@ -48,6 +49,26 @@ public class Sprite {
             }
             case GUN_SHOOT_4: {
                 sprite = Bitmap.createBitmap(sprite,4*spritePixelSize*pixelRatio,(0*spritePixelSize*pixelRatio)+OFFSET_DUE_TO_ASSET_ERROR,spriteSizeInDisplay,spriteSizeInDisplay-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
+                break;
+            }
+            case GUN_RELOADING_1: {
+                sprite = Bitmap.createBitmap(sprite,0*spritePixelSize*pixelRatio,(1*spritePixelSize*pixelRatio)+OFFSET_DUE_TO_ASSET_ERROR,spriteSizeInDisplay,spriteSizeInDisplay-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
+                break;
+            }
+            case GUN_RELOADING_2: {
+                sprite = Bitmap.createBitmap(sprite,1*spritePixelSize*pixelRatio,(1*spritePixelSize*pixelRatio)+OFFSET_DUE_TO_ASSET_ERROR,spriteSizeInDisplay,spriteSizeInDisplay-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
+                break;
+            }
+            case GUN_RELOADING_3: {
+                sprite = Bitmap.createBitmap(sprite,2*spritePixelSize*pixelRatio,(1*spritePixelSize*pixelRatio)+OFFSET_DUE_TO_ASSET_ERROR,spriteSizeInDisplay,spriteSizeInDisplay-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
+                break;
+            }
+            case GUN_RELOADING_4: {
+                sprite = Bitmap.createBitmap(sprite,3*spritePixelSize*pixelRatio,(1*spritePixelSize*pixelRatio)+OFFSET_DUE_TO_ASSET_ERROR,spriteSizeInDisplay,spriteSizeInDisplay-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
