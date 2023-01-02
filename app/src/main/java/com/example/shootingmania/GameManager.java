@@ -186,13 +186,14 @@ class GameData {
 abstract class GameRunnable implements Runnable{
     private static boolean gameIsPause = false;
     private boolean resumeFromPause;
+    private boolean run = true;
     public GameRunnable() {
         resumeFromPause = false;
     }
 
     @Override
     public void run() {
-        while(true) {
+        while(run) {
             if (gameIsPause) {
                 //Continue keep thread alive but skipping gameRun
                 resumeFromPause = true;
@@ -204,6 +205,10 @@ abstract class GameRunnable implements Runnable{
             }
             gameRun();
         }
+    }
+
+    public void killRunnable() {
+        run = false;
     }
 
     public void gameResume() {

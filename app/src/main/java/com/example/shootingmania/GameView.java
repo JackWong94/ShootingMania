@@ -207,15 +207,19 @@ public class GameView extends View {
             private TextDisplay gameOverTextDisplay;
             private TextDisplay yourScoreTextDisplay;
             private TextDisplay scoreTextDisplay;
-            private Point gameOverTextDisplayPosition = new Point(dWidth/2, dHeight/4);
-            private Point yourScoreTextDisplayPosition = new Point(dWidth/2, dHeight/4*2);
-            private Point scoreTextDisplayPosition = new Point(dWidth/2, dHeight/4*3);
+            private TextDisplay pressToContinueTextDisplay;
+            private Point gameOverTextDisplayPosition = new Point(dWidth/2, dHeight/8*2);
+            private Point yourScoreTextDisplayPosition = new Point(dWidth/2, dHeight/8*4);
+            private Point scoreTextDisplayPosition = new Point(dWidth/2, dHeight/8*5);
+            private Point pressToContinueTextDisplayPosition = new Point(dWidth/2, dHeight/8*6);
             @Override
             public void initialize() {
                 allowToSwitchActivity = false;
                 gameOverTextDisplay = new TextDisplay(context, "GAME OVER", gameOverTextDisplayPosition);
                 yourScoreTextDisplay = new TextDisplay(context, "YOUR SCORES : ", yourScoreTextDisplayPosition);
                 scoreTextDisplay = new TextDisplay(context, Integer.toString(gameManager.gameData.scorePoints),scoreTextDisplayPosition);
+                pressToContinueTextDisplay = new TextDisplay(context, "Press To Continue !",pressToContinueTextDisplayPosition);
+                pressToContinueTextDisplay.setFontSize(10);
                 activityUpTime = System.currentTimeMillis();
                 Thread thread = new Thread(new Runnable() {
                     @Override
@@ -234,9 +238,10 @@ public class GameView extends View {
             public void onDraw(Canvas canvas) {
                 gameOverTextDisplay.draw(canvas);
                 yourScoreTextDisplay.draw(canvas);
+                scoreTextDisplay.draw(canvas);
 
                 if (allowToSwitchActivity) {
-                    scoreTextDisplay.draw(canvas);
+                    pressToContinueTextDisplay.draw(canvas);
 
                 }
             }

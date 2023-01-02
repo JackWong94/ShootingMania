@@ -23,6 +23,7 @@ public class GameTimer {
                 }
                 if (timeLeft < 0) {
                     onTimesUp();
+                    this.killRunnable();
                     timeLeft = timePerGame;
                 }
             }
