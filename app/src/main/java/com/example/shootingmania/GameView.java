@@ -125,6 +125,9 @@ public class GameView extends View {
             private Gun displayGun;
             private AimCross displayAimCross;
             private Target displayTarget;
+            private Point displayBulletRemainsPosition;
+            private TextDisplay reloadingInstructionsPopUp;
+            private Point reloadingInstructionsPopUpPosition;
             private int TEXT_SIZE = 80;
             @Override
             public void initialize() {
@@ -157,6 +160,11 @@ public class GameView extends View {
                 displayGun = gameManager.gameData.gun;
                 displayAimCross = gameManager.gameData.aimCross;
                 displayTarget = gameManager.gameData.target;
+                displayBulletRemainsPosition = new Point(120, dHeight - 220);
+                reloadingInstructionsPopUpPosition = new Point( dWidth/2, dHeight - 200);
+                reloadingInstructionsPopUp = new TextDisplay(context,"Slide Down To Reload !", reloadingInstructionsPopUpPosition);
+                reloadingInstructionsPopUp.setFontSize(50);
+                reloadingInstructionsPopUp.setBlinkCapability(500);
             }
 
             @Override
@@ -184,7 +192,10 @@ public class GameView extends View {
                 canvas.drawBitmap(displayGun.animateFrame(displayGun.getCurrentFrame()),displayGun.posX - displayGun.getGunWidth((displayGun.animateFrame(displayGun.getCurrentFrame())))/4, displayGun.posY - displayGun.getGunHeight((displayGun.animateFrame(displayGun.getCurrentFrame())))/2,null);
                 canvas.drawBitmap(displayAimCross.animateFrame(displayAimCross.getCurrentFrame()),displayAimCross.posX - displayAimCross.getAimCrossWidth((displayAimCross.animateFrame(0)))/2, displayAimCross.posY - displayAimCross.getAimCrossHeight((displayAimCross.animateFrame(0)))/2,null);
                 for (int i=0; i<displayGun.getRemainingBulletsCount(); i++) {
-                    canvas.drawBitmap(displayGun.animateFrameForBulletRemaining(),120 * i, dHeight - 220,null);
+                    canvas.drawBitmap(displayGun.animateFrameForBulletRemaining(),displayBulletRemainsPosition.x * i, displayBulletRemainsPosition.y,null);
+                }
+                if (displayGun.getRemainingBulletsCount() == 0) {
+                    reloadingInstructionsPopUp.draw(canvas);
                 }
             }
 
