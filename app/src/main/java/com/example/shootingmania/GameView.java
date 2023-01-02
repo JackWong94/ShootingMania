@@ -202,7 +202,7 @@ public class GameView extends View {
 
         gameOverActivity = new GameActivityPage() {
             private long activityUpTime;
-            private long minimumGameOverShowingTime = 2000;         //2 seconds
+            private long minimumGameOverShowingTime = 1500;         //2 seconds
             private boolean allowToSwitchActivity = false;
             private TextDisplay gameOverTextDisplay;
             private TextDisplay yourScoreTextDisplay;
@@ -219,7 +219,8 @@ public class GameView extends View {
                 yourScoreTextDisplay = new TextDisplay(context, "YOUR SCORES : ", yourScoreTextDisplayPosition);
                 scoreTextDisplay = new TextDisplay(context, Integer.toString(gameManager.gameData.scorePoints),scoreTextDisplayPosition);
                 pressToContinueTextDisplay = new TextDisplay(context, "Press To Continue !",pressToContinueTextDisplayPosition);
-                pressToContinueTextDisplay.setFontSize(10);
+                pressToContinueTextDisplay.setFontSize(50);
+                pressToContinueTextDisplay.setBlinkCapability(500);
                 activityUpTime = System.currentTimeMillis();
                 Thread thread = new Thread(new Runnable() {
                     @Override
@@ -420,6 +421,10 @@ class TextDisplay {
     private Point position;
     private int TEXT_SIZE = 80;
     private TextPaint textPaint = new TextPaint();
+    //Animation
+    private long blinkTiming = 1000; //Default blinking timing is 1 second
+    private boolean visible = true; //Default visibility true
+    private long previousBlinkTime = System.currentTimeMillis();
 
     public TextDisplay(Context _context, String _text, Point _position) {
         this.context = _context;
@@ -432,13 +437,31 @@ class TextDisplay {
     }
 
     public void draw(Canvas canvas) {
-        Paint paint = new Paint(R.color.black);
-        paint.setAlpha(0);
-        canvas.drawText(text ,position.x,position.y, textPaint);
+        if (visible) {
+            Paint paint = new Paint(R.color.black);
+            paint.setAlpha(0);
+            canvas.drawText(text, position.x, position.y, textPaint);
+        }
     }
 
     public void setFontSize(int fontSize) {
         textPaint.setTextSize(fontSize);
+    }
+
+    public void setBlinkCapability(long _blinkTiming) {
+        blinkTiming = _blinkTiming;
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    if (System.currentTimeMillis() - previousBlinkTime > blinkTiming) {
+                        visible = !visible;
+                        previousBlinkTime = System.currentTimeMillis();
+                    }
+                }
+            }
+        });
+        thread.start();
     }
 }
 

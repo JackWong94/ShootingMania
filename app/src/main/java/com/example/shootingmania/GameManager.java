@@ -35,7 +35,7 @@ public class GameManager {
             case GAME_MENU: setPause(); GameActivityPage.startActivity(gameView.gameMenuActivity); break;
             case START_GAME: gameData.startGame(); setResume(); GameActivityPage.startActivity(gameView.startGameActivity); break;
             case LEADERBOARDS: break;
-            case GAME_OVER: GameActivityPage.startActivity(gameView.gameOverActivity); break;
+            case GAME_OVER: setPause(); GameActivityPage.startActivity(gameView.gameOverActivity); break;
             default: break;
         }
     }
