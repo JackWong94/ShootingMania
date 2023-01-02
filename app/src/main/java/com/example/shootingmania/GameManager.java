@@ -27,6 +27,7 @@ public class GameManager {
         //Loading game data
         gameData = new GameData(context, this);
         gameData.initializing();
+
     }
 
     private void setActivityPage(ACTIVITY_STATE newActivityState) {

@@ -20,8 +20,8 @@ public class AimCross {
 
     public AimCross(Context context) {
         this.context = context;
-        aimCross[0] = Sprite.createSprite(context, Sprite.NAME.AIM_CROSS_UNLOCK);   //1st Frame
-        aimCross[1] = Sprite.createSprite(context, Sprite.NAME.AIM_CROSS_LOCK);
+        aimCross[0] = Sprite.createSpriteForAimCross(context, Sprite.NAME.AIM_CROSS_UNLOCK);   //1st Frame
+        aimCross[1] = Sprite.createSpriteForAimCross(context, Sprite.NAME.AIM_CROSS_LOCK);
     }
 
     public Bitmap animateFrame(int frame) {

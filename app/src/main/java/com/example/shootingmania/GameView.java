@@ -23,7 +23,7 @@ public class GameView extends View {
     private GameManager gameManager;
     private InputControlsManager inputControlsManager;
     private Display display;
-    final long UPDATE_MILLIS = 30;
+    final long UPDATE_MILLIS = 60;
     public static int dHeight;
     public static int dWidth;
     private String TAG = "GameView";
@@ -142,7 +142,7 @@ public class GameView extends View {
                 displayScorePointsTextPaint.setColor(Color.parseColor("#EF8F3F"));
                 displayScorePointsTextPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
                 displayGameLeftTime = (int) gameManager.gameData.gameTimer.getTimeLeft();
-                displayGameLeftTimePosition = new Point(dWidth/2 + displayGameLeftTimeTextPaintSize/4,360);
+                displayGameLeftTimePosition = new Point(dWidth/2 + displayGameLeftTimeTextPaintSize/4,380);
                 displayGameLeftTimeTextPaint = new TextPaint();
                 displayGameLeftTimeTextPaint.setTextAlign(TextPaint.Align.CENTER);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
                 displayGameLeftTimeTextPaint.setTextSize(displayGameLeftTimeTextPaintSize);
@@ -183,7 +183,9 @@ public class GameView extends View {
                 }
                 canvas.drawBitmap(displayGun.animateFrame(displayGun.getCurrentFrame()),displayGun.posX - displayGun.getGunWidth((displayGun.animateFrame(displayGun.getCurrentFrame())))/4, displayGun.posY - displayGun.getGunHeight((displayGun.animateFrame(displayGun.getCurrentFrame())))/2,null);
                 canvas.drawBitmap(displayAimCross.animateFrame(displayAimCross.getCurrentFrame()),displayAimCross.posX - displayAimCross.getAimCrossWidth((displayAimCross.animateFrame(0)))/2, displayAimCross.posY - displayAimCross.getAimCrossHeight((displayAimCross.animateFrame(0)))/2,null);
-
+                for (int i=0; i<displayGun.getRemainingBulletsCount(); i++) {
+                    canvas.drawBitmap(displayGun.animateFrameForBulletRemaining(),120 * i, dHeight - 220,null);
+                }
             }
 
             @Override
