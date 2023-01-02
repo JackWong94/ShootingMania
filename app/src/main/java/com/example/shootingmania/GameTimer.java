@@ -38,4 +38,8 @@ public class GameTimer {
         //Override this method for game implementation
     }
 
+    public long getTimeLeft() {
+        return timeLeft;
+    }
+
 }

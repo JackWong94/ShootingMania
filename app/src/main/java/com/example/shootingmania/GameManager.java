@@ -140,7 +140,7 @@ class GameData {
 
     public void startGame() {
         reset();
-        gameTimer.setTimerTime(10000);
+        gameTimer.setTimerTime(20000);
         gameTimer.startCount();
     }
 

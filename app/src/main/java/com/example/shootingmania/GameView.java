@@ -112,10 +112,14 @@ public class GameView extends View {
             private Paint gameBackgroundColor;
             private int displayScorePoints;
             private Point displayScorePointsPosition;
-            private Paint displayScorePointsPositionTextPaint;
+            private Paint displayScorePointsTextPaint;
             private TextButton displayMenuButton;
             private Point displayMenuButtonPosition;
             private DialogBox displayMenuDialogBox;
+            private int displayGameLeftTime;
+            private Point displayGameLeftTimePosition;
+            private Paint displayGameLeftTimeTextPaint;
+            private int displayGameLeftTimeTextPaintSize = 160;
             private Rect displayTargetMoveArea;
             private Paint displayTargetMoveAreaColor;
             private Gun displayGun;
@@ -132,12 +136,18 @@ public class GameView extends View {
                 //Get all display object from gameManager.gameData
                 displayScorePoints = gameManager.gameData.scorePoints;
                 displayScorePointsPosition = new Point(50,150);
-                displayScorePointsPositionTextPaint = new TextPaint();
-                displayScorePointsPositionTextPaint.setTextAlign(TextPaint.Align.LEFT);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
-                displayScorePointsPositionTextPaint.setTextSize(TEXT_SIZE);
-                displayScorePointsPositionTextPaint.setColor(Color.parseColor("#EF8F3F"));
-                displayScorePointsPositionTextPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
-                //displayScorePoints = gameManager.gameData.scorePoints; (Make scorePoints an object, so that the display can keep track
+                displayScorePointsTextPaint = new TextPaint();
+                displayScorePointsTextPaint.setTextAlign(TextPaint.Align.LEFT);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
+                displayScorePointsTextPaint.setTextSize(TEXT_SIZE);
+                displayScorePointsTextPaint.setColor(Color.parseColor("#EF8F3F"));
+                displayScorePointsTextPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
+                displayGameLeftTime = (int) gameManager.gameData.gameTimer.getTimeLeft();
+                displayGameLeftTimePosition = new Point(dWidth/2 + displayGameLeftTimeTextPaintSize/4,360);
+                displayGameLeftTimeTextPaint = new TextPaint();
+                displayGameLeftTimeTextPaint.setTextAlign(TextPaint.Align.CENTER);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
+                displayGameLeftTimeTextPaint.setTextSize(displayGameLeftTimeTextPaintSize);
+                displayGameLeftTimeTextPaint.setColor(Color.parseColor("#EF8F3F"));
+                displayGameLeftTimeTextPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
                 displayMenuButtonPosition = new Point(displayScorePointsPosition.x + 850,150);
                 displayMenuButton = new TextButton(context, "MENU",  displayMenuButtonPosition);
                 displayMenuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
@@ -159,7 +169,9 @@ public class GameView extends View {
                 //Game ui rendering
                 canvas.drawRect(gameBackground, gameBackgroundColor);
                 displayScorePoints = gameManager.gameData.scorePoints;
-                canvas.drawText("SCORE: " + Integer.toString(displayScorePoints),displayScorePointsPosition.x,displayScorePointsPosition.y, displayScorePointsPositionTextPaint);
+                canvas.drawText("SCORE: " + Integer.toString(displayScorePoints),displayScorePointsPosition.x,displayScorePointsPosition.y, displayScorePointsTextPaint);
+                displayGameLeftTime = (int) gameManager.gameData.gameTimer.getTimeLeft()/1000; //Convert Millis To Seconds
+                canvas.drawText(Integer.toString(displayGameLeftTime), displayGameLeftTimePosition.x,displayGameLeftTimePosition.y, displayGameLeftTimeTextPaint);
                 displayMenuButton.draw(canvas);
                 displayMenuDialogBox.draw(canvas);
                 canvas.drawRect(displayTargetMoveArea, displayTargetMoveAreaColor);
