@@ -89,7 +89,7 @@ public class Gun {
     }
 
     public Point shoot(AimCross aimCross){
-        if (bulletsRemaining > 0) {
+        if (bulletsRemaining > 0 && state != STATE.RELOADING) {
             state = STATE.SHOOTING;
             generateSoundEffect(shootSound);
             Point point = new Point(aimCross.posX, aimCross.posY);
@@ -105,6 +105,8 @@ public class Gun {
     }
 
     public void reload() {
+        state = STATE.RELOADING;
+        generateSoundEffect(reloadSound);
         bulletsRemaining = gunCartridgeSize; //Fully filled armor during each reload
     }
 

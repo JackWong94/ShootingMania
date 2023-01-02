@@ -5,7 +5,6 @@ import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
-import android.nfc.Tag;
 import android.util.Log;
 import android.view.Display;
 import android.view.GestureDetector;
@@ -24,7 +23,7 @@ public class InputControlsManager {
         realTimeInputControlsParameters.userTouchPointer = new Rect(0,0,0,0);
 
         //Swipe sensor
-        view.setOnTouchListener(new SwipeSensorListener(context));
+        view.setOnTouchListener(new SwipeSensorListener(context, this));
 
         //Accelerometer user control
         realTimeInputControlsParameters.accelerometerSensorValue = new FloatPoint(0,0);
@@ -47,6 +46,11 @@ public class InputControlsManager {
         return true;
     }
 
+    public void swipeMotionDetected(RealTimeInputControlsParameters.SWIPE_DIR swipeDir) {
+        realTimeInputControlsParameters.swipeDirection = swipeDir;
+        gameManager.updateSwipeMotionControls(realTimeInputControlsParameters);
+    }
+
     //Accelerometer user control related
     public void accelerometerValueChange(FloatPoint floatPoint) {
         realTimeInputControlsParameters.accelerometerSensorValue = floatPoint;
@@ -65,8 +69,17 @@ class RealTimeInputControlsParameters {
         KEY_DOWN,
         KEY_UP,
     }
+    //Swipe screen user control related
+    public enum SWIPE_DIR {
+        NONE,
+        SWIPE_UP,
+        SWIPE_DOWN,
+        SWIPE_LEFT,
+        SWIPE_RIGHT,
+    }
     public Rect userTouchPointer;
     public TOUCH_TYPE userTouchType;
+
     public Boolean onPressed() {
         if (userTouchType == TOUCH_TYPE.KEY_DOWN) {
             return true;
@@ -82,6 +95,9 @@ class RealTimeInputControlsParameters {
         }
     }
 
+    //Swipe Sensor user control related
+    public SWIPE_DIR swipeDirection = SWIPE_DIR.NONE;
+
     //Accelerometer user control related
     public FloatPoint accelerometerSensorValue;
 
@@ -90,9 +106,11 @@ class RealTimeInputControlsParameters {
 class SwipeSensorListener implements View.OnTouchListener {
     private String TAG = "SwipeSensorListener";
     private final GestureDetector gestureDetector;
+    private InputControlsManager inputControlsManager;
 
-    public SwipeSensorListener (Context ctx){
+    public SwipeSensorListener (Context ctx, InputControlsManager inputControlsManager){
         gestureDetector = new GestureDetector(ctx, new GestureListener());
+        this.inputControlsManager = inputControlsManager;
     }
 
     @Override
@@ -143,18 +161,22 @@ class SwipeSensorListener implements View.OnTouchListener {
     }
 
     public void onSwipeRight() {
+        inputControlsManager.swipeMotionDetected(RealTimeInputControlsParameters.SWIPE_DIR.SWIPE_RIGHT);
         Log.i(TAG, "SWIPE RIGHT");
     }
 
     public void onSwipeLeft() {
+        inputControlsManager.swipeMotionDetected(RealTimeInputControlsParameters.SWIPE_DIR.SWIPE_LEFT);
         Log.i(TAG, "SWIPE LEFT");
     }
 
     public void onSwipeTop() {
+        inputControlsManager.swipeMotionDetected(RealTimeInputControlsParameters.SWIPE_DIR.SWIPE_UP);
         Log.i(TAG, "SWIPE TOP");
     }
 
     public void onSwipeBottom() {
+        inputControlsManager.swipeMotionDetected(RealTimeInputControlsParameters.SWIPE_DIR.SWIPE_DOWN);
         Log.i(TAG, "SWIPE BOTTOM");
     }
 }

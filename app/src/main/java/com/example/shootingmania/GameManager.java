@@ -91,6 +91,14 @@ public class GameManager {
         gameData.touchControlsDetected(realTimeInputControlsParameters);
     }
 
+    public void updateSwipeMotionControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
+        if (isPause) {
+            return;
+            //Pause all game related touch controls
+        }
+        gameData.swipeControlsDetected(realTimeInputControlsParameters);
+    }
+
     public void updateAccelerometerControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
         if (isPause) {
             return;
@@ -175,6 +183,12 @@ class GameData {
         if (realTimeInputControlsParameters.onPressed()) {
             target.verifyShoot(gun.shoot(aimCross), target.animateFrame(target.frame));
             aimCross.setAimCrossLock(); //Set state of AimCross for animation
+        }
+    }
+
+    public void swipeControlsDetected(RealTimeInputControlsParameters realTimeInputControlsParameters) {
+        if (realTimeInputControlsParameters.swipeDirection == RealTimeInputControlsParameters.SWIPE_DIR.SWIPE_DOWN) {
+            gun.reload();
         }
     }
 
