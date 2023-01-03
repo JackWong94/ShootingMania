@@ -24,6 +24,7 @@ public class GameView extends View {
     private InputControlsManager inputControlsManager;
     private Display display;
     final long UPDATE_MILLIS = 60;
+    final long UPDATE_MILLIS_SYSTEM = 30;
     public static int dHeight;
     public static int dWidth;
     private String TAG = "GameView";
@@ -33,6 +34,7 @@ public class GameView extends View {
     private Context context;
     private Handler handler;
     private Runnable runnable;
+    private Runnable runnable_system;
 
 
     public GameView(Context context) {
@@ -286,6 +288,12 @@ public class GameView extends View {
             @Override
             public void run() {
                 invalidate();
+            }
+        };
+
+        this.runnable_system= new Runnable() {
+            @Override
+            public void run() {
                 gameManager.run();
             }
         };
@@ -305,7 +313,8 @@ public class GameView extends View {
         gameMenuActivity.draw(canvas);
         startGameActivity.draw(canvas);
         gameOverActivity.draw(canvas);
-        handler.postDelayed(runnable, UPDATE_MILLIS);
+        handler.postDelayed(runnable, UPDATE_MILLIS);   //Graphic related
+        handler.postDelayed(runnable_system, UPDATE_MILLIS_SYSTEM); //System related
     }
 
     public void onTouchPointInteraction(RealTimeInputControlsParameters realTimeInputControlsParameters) {
