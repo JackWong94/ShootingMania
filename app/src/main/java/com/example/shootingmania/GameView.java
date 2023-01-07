@@ -23,7 +23,7 @@ public class GameView extends View {
     private GameManager gameManager;
     private InputControlsManager inputControlsManager;
     private Display display;
-    final long UPDATE_MILLIS = 60;
+    final long UPDATE_MILLIS = 30;
     final long UPDATE_MILLIS_SYSTEM = 30;
     public static int dHeight;
     public static int dWidth;
