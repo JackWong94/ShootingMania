@@ -36,9 +36,9 @@ public class Target {
         this.context = context;
         if (!resourcesLoaded) {
             target[0] = Sprite.createSprite(context, Sprite.NAME.TARGET);   //1st Frame
+            hitTarget = targetRelatedSound.load(context, R.raw.hit_target,1);
+            hitTarget2 = targetRelatedSound.load(context, R.raw.hit_target2,1);
         }
-        hitTarget = targetRelatedSound.load(context, R.raw.hit_target,1);
-        hitTarget2 = targetRelatedSound.load(context, R.raw.hit_target2,1);
         random = new Random();
         bulletMarks = new ArrayList<>();
         spawnTimesUp();

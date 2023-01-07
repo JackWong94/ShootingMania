@@ -62,11 +62,11 @@ public class Gun {
             gun[15] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
             gun[16] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
             bullets[0] = Sprite.createSpriteForBullets(context, Sprite.NAME.BULLET);
+            //Sound effect
+            shootSound = gunSoundEffect.load(context, R.raw.gun_shoot,1);
+            shootEmptySound = gunSoundEffect.load(context,R.raw.gun_empty,1);
+            reloadSound = gunSoundEffect.load(context,R.raw.gun_reload,1);
         }
-        //Sound effect
-        shootSound = gunSoundEffect.load(context, R.raw.gun_shoot,1);
-        shootEmptySound = gunSoundEffect.load(context,R.raw.gun_empty,1);
-        reloadSound = gunSoundEffect.load(context,R.raw.gun_reload,1);
     }
 
     public int getRemainingBulletsCount() {
