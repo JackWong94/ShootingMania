@@ -20,8 +20,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 public class GameView extends View {
+    private final SoundManager gameSoundManager;
     private GameManager gameManager;
-    private InputControlsManager inputControlsManager;
+    private InputControlsManager gameInputControlManager;
     private Display display;
     final long UPDATE_MILLIS = 30;
     final long UPDATE_MILLIS_SYSTEM = 30;
@@ -48,8 +49,10 @@ public class GameView extends View {
         dWidth = displaySize.x;
         dHeight = displaySize.y;
 
+        //Dependency among managers are unavoidable, manager instantiation sequence is critical in this section.
+        gameSoundManager = new SoundManager();
         gameManager = new GameManager(this);
-        inputControlsManager = new InputControlsManager(context, display, gameManager, this);
+        gameInputControlManager = new InputControlsManager(context, display, gameManager, this);
 
         gameMenuActivity =new GameActivityPage() {
             private Rect gameBackground;
@@ -302,9 +305,9 @@ public class GameView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent e){
-        //GameView Class Inform InputControlsManager for touch event on the view
-        //InputControlsManager will process events and pass to GameManager to decide the actions to be done
-        return inputControlsManager.gameScreenPressedDetected(e);
+        //GameView Class Inform gameInputControlManager for touch event on the view
+        //gameInputControlManager will process events and pass to GameManager to decide the actions to be done
+        return gameInputControlManager.gameScreenPressedDetected(e);
     }
 
     @Override

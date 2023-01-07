@@ -30,7 +30,7 @@ public class Gun {
     public int posX, posY;
 
     //Sound Part
-    private SoundPool gunSoundEffect = new SoundPool(10, AudioManager.STREAM_MUSIC,0);
+    private GameSoundPool gunSoundEffect = new GameSoundPool(10, AudioManager.STREAM_MUSIC,0);
     private int shootSound;
     private int reloadSound;
     private int shootEmptySound;
@@ -38,21 +38,6 @@ public class Gun {
     //Bullet Part
     private int gunCartridgeSize  = 10; //Capable of holding 10 bullets max
     private int bulletsRemaining = gunCartridgeSize; //Fill cartridge during start game
-
-    public void generateSoundEffect(int id) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                gunSoundEffect.play(id,1.0f, 1.0f,1,0,1.0f);
-            }
-        });
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     public Gun(Context context) {
         this.context = context;
@@ -114,7 +99,7 @@ public class Gun {
     public Point shoot(AimCross aimCross){
         if (bulletsRemaining > 0 && state != STATE.RELOADING) {
             state = STATE.SHOOTING;
-            generateSoundEffect(shootSound);
+            gunSoundEffect.generateSoundEffect(shootSound);
             Point point = new Point(aimCross.posX, aimCross.posY);
             vibrator.vibrate(VibrationEffect.createOneShot(VIBRATION_STRENGTH, VibrationEffect.EFFECT_HEAVY_CLICK));
             //Recoil must only happen after the shoot point is taken
@@ -122,14 +107,14 @@ public class Gun {
             bulletsRemaining -= 1;
             return point;
         } else {
-            generateSoundEffect(shootEmptySound);
+            gunSoundEffect.generateSoundEffect(shootEmptySound);
             return new Point(-1,-1); //Return a value that not exist on the target area
         }
     }
 
     public void reload() {
         state = STATE.RELOADING;
-        generateSoundEffect(reloadSound);
+        gunSoundEffect.generateSoundEffect(reloadSound);
         bulletsRemaining = gunCartridgeSize; //Fully filled armor during each reload
     }
 

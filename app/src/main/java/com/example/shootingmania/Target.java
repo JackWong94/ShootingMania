@@ -26,24 +26,9 @@ public class Target {
     private volatile boolean isVerifyingShoot = false;
 
     //Sound Part
-    private SoundPool targetRelatedSound = new SoundPool(10, AudioManager.STREAM_MUSIC,0);
+    private GameSoundPool targetRelatedSound = new GameSoundPool(10, AudioManager.STREAM_MUSIC,0);
     private int hitTarget, hitTarget2;
     private int score;
-
-    public void generateSoundEffect(int id) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                targetRelatedSound.play(id,1.0f, 1.0f,1,0,1.0f);
-            }
-        });
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     static private Bitmap target[] = new Bitmap[numberOfSprites];
 
@@ -121,7 +106,7 @@ public class Target {
                 score += 30;
             }
             bulletMarks.add(new BulletMarks(this.context, shotPoint.x, shotPoint.y));
-            generateSoundEffect(hitTarget2);
+            targetRelatedSound.generateSoundEffect(hitTarget2);
         }
         isVerifyingShoot = false;
     }
