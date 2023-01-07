@@ -13,7 +13,8 @@ import java.util.Random;
 
 public class Target {
     private String TAG = "TARGET";
-    private int numberOfSprites = 1;
+    static boolean resourcesLoaded = false;
+    private static int numberOfSprites = 1;
     private Random random;
     private long spawnTime = 1000;
     private long previousSpawnTime = 0;
@@ -44,11 +45,13 @@ public class Target {
         }
     }
 
-    private Bitmap target[] = new Bitmap[numberOfSprites];
+    static private Bitmap target[] = new Bitmap[numberOfSprites];
 
     public Target(Context context) {
         this.context = context;
-        target[0] = Sprite.createSprite(context, Sprite.NAME.TARGET);   //1st Frame
+        if (!resourcesLoaded) {
+            target[0] = Sprite.createSprite(context, Sprite.NAME.TARGET);   //1st Frame
+        }
         hitTarget = targetRelatedSound.load(context, R.raw.hit_target,1);
         hitTarget2 = targetRelatedSound.load(context, R.raw.hit_target2,1);
         random = new Random();

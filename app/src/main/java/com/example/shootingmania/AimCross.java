@@ -5,10 +5,11 @@ import android.graphics.Bitmap;
 import android.os.Vibrator;
 
 public class AimCross {
+    static boolean resourcesLoaded = false;
     private Context context;
     private static final int RECOIL_MOVEMENT_SPEED = 50;
-    private int numberOfSprites = 2;
-    private Bitmap aimCross[] = new Bitmap[numberOfSprites];
+    static private int numberOfSprites = 2;
+    static private Bitmap aimCross[] = new Bitmap[numberOfSprites];
     public int posX, posY;
     public int currentFrame = 0;
     static int frameCounter = 0;
@@ -20,8 +21,10 @@ public class AimCross {
 
     public AimCross(Context context) {
         this.context = context;
-        aimCross[0] = Sprite.createSpriteForAimCross(context, Sprite.NAME.AIM_CROSS_UNLOCK);   //1st Frame
-        aimCross[1] = Sprite.createSpriteForAimCross(context, Sprite.NAME.AIM_CROSS_LOCK);
+        if (!resourcesLoaded) {
+            aimCross[0] = Sprite.createSpriteForAimCross(context, Sprite.NAME.AIM_CROSS_UNLOCK);   //1st Frame
+            aimCross[1] = Sprite.createSpriteForAimCross(context, Sprite.NAME.AIM_CROSS_LOCK);
+        }
     }
 
     public Bitmap animateFrame(int frame) {
