@@ -10,12 +10,13 @@ import android.os.Vibrator;
 import android.util.Log;
 
 public class Gun {
+    static boolean resourcesLoaded = false;
     private static final long VIBRATION_STRENGTH = 50;
     private Vibrator vibrator;
     private Context context;
-    private int numberOfSprites = 17;
-    private Bitmap gun[] = new Bitmap[numberOfSprites];
-    private Bitmap bullets[] = new Bitmap[1];
+    static private int numberOfSprites = 17;
+    static private Bitmap gun[] = new Bitmap[numberOfSprites];
+    static private Bitmap bullets[] = new Bitmap[1];
     private int currentFrame = 0;
     private boolean isFirstFrame = true;
 
@@ -56,25 +57,27 @@ public class Gun {
     public Gun(Context context) {
         this.context = context;
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        //Sprites assignment and animation timing
-        gun[0] = Sprite.createSprite(context, Sprite.NAME.GUN);
-        gun[1] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_1);
-        gun[2] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_2);
-        gun[3] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_3);
-        gun[4] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_4);
-        gun[5] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
-        gun[6] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
-        gun[7] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
-        gun[8] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
-        gun[9] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
-        gun[10] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
-        gun[11] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_3);
-        gun[12] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_3);
-        gun[13] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
-        gun[14] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
-        gun[15] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
-        gun[16] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
-        bullets[0] = Sprite.createSpriteForBullets(context, Sprite.NAME.BULLET);
+        if (!resourcesLoaded) {
+            //Sprites assignment and animation timing
+            gun[0] = Sprite.createSprite(context, Sprite.NAME.GUN);
+            gun[1] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_1);
+            gun[2] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_2);
+            gun[3] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_3);
+            gun[4] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_4);
+            gun[5] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
+            gun[6] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
+            gun[7] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
+            gun[8] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
+            gun[9] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
+            gun[10] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
+            gun[11] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_3);
+            gun[12] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_3);
+            gun[13] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
+            gun[14] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
+            gun[15] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
+            gun[16] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
+            bullets[0] = Sprite.createSpriteForBullets(context, Sprite.NAME.BULLET);
+        }
         //Sound effect
         shootSound = gunSoundEffect.load(context, R.raw.gun_shoot,1);
         shootEmptySound = gunSoundEffect.load(context,R.raw.gun_empty,1);
