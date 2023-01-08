@@ -24,6 +24,7 @@ public class GameView extends View {
     private GameManager gameManager;
     private InputControlsManager gameInputControlManager;
     private Display display;
+    private String ThemeColorString = "#DEEBF7";
     final long UPDATE_MILLIS = 30;
     final long UPDATE_MILLIS_SYSTEM = 30;
     public static int dHeight;
@@ -32,6 +33,7 @@ public class GameView extends View {
     public GameActivityPage gameMenuActivity;
     public GameActivityPage startGameActivity;
     public GameActivityPage gameOverActivity;
+    public GameActivityPage leaderboardActivity;
     private Context context;
     private Handler handler;
     private Runnable runnable;
@@ -104,6 +106,8 @@ public class GameView extends View {
                 }
                 if (displayLeaderboardsGameButton.isClicked(_userTouchPointer)) {
                     //Show leaderboards
+                    gameManager.activityState = GameManager.ACTIVITY_STATE.LEADERBOARDS;
+                    gameManager.isInitialized = false;
                 }
                 if (displayExitGameButton.isClicked(_userTouchPointer)) {
                     //Exit Game
@@ -139,7 +143,7 @@ public class GameView extends View {
                 //Game activity page initialize
                 gameBackground = new Rect(0, 0, dWidth, dHeight);
                 gameBackgroundColor = new Paint();
-                gameBackgroundColor.setColor(Color.parseColor("#DEEBF7"));
+                gameBackgroundColor.setColor(Color.parseColor(ThemeColorString));
 
                 //Get all display object from gameManager.gameData
                 displayScorePoints = gameManager.gameData.scorePoints;
@@ -234,23 +238,23 @@ public class GameView extends View {
             private long activityUpTime;
             private long minimumGameOverShowingTime = 1500;         //1.5 seconds
             private boolean allowToSwitchActivity = false;
-            private TextDisplay gameOverTextDisplay;
-            private TextDisplay yourScoreTextDisplay;
-            private TextDisplay scoreTextDisplay;
-            private TextDisplay pressToContinueTextDisplay;
-            private Point gameOverTextDisplayPosition = new Point(dWidth/2, dHeight/8*2);
-            private Point yourScoreTextDisplayPosition = new Point(dWidth/2, dHeight/8*4);
-            private Point scoreTextDisplayPosition = new Point(dWidth/2, dHeight/8*5);
-            private Point pressToContinueTextDisplayPosition = new Point(dWidth/2, dHeight/8*6);
+            private TextDisplay displayGameOverText;
+            private TextDisplay displayYourScoreText;
+            private TextDisplay displayScoreTextDisplay;
+            private TextDisplay displayPressToContinueTextDisplay;
+            private Point displayGameOverTextPosition = new Point(dWidth/2, dHeight/8*2);
+            private Point displayYourScoreTextPosition = new Point(dWidth/2, dHeight/8*4);
+            private Point displayScoreTextDisplayPosition = new Point(dWidth/2, dHeight/8*5);
+            private Point displayPressToContinueTextDisplayPosition = new Point(dWidth/2, dHeight/8*6);
             @Override
             public void initialize() {
                 allowToSwitchActivity = false;
-                gameOverTextDisplay = new TextDisplay(context, "GAME OVER", gameOverTextDisplayPosition);
-                yourScoreTextDisplay = new TextDisplay(context, "YOUR SCORES : ", yourScoreTextDisplayPosition);
-                scoreTextDisplay = new TextDisplay(context, Integer.toString(gameManager.gameData.scorePoints),scoreTextDisplayPosition);
-                pressToContinueTextDisplay = new TextDisplay(context, "Press To Continue !",pressToContinueTextDisplayPosition);
-                pressToContinueTextDisplay.setFontSize(50);
-                pressToContinueTextDisplay.setBlinkCapability(500);
+                displayGameOverText = new TextDisplay(context, "GAME OVER", displayGameOverTextPosition);
+                displayYourScoreText = new TextDisplay(context, "YOUR SCORES : ", displayYourScoreTextPosition);
+                displayScoreTextDisplay = new TextDisplay(context, Integer.toString(gameManager.gameData.scorePoints),displayScoreTextDisplayPosition);
+                displayPressToContinueTextDisplay = new TextDisplay(context, "Press To Continue !",displayPressToContinueTextDisplayPosition);
+                displayPressToContinueTextDisplay.setFontSize(50);
+                displayPressToContinueTextDisplay.setBlinkCapability(500);
                 activityUpTime = System.currentTimeMillis();
                 Thread thread = new Thread(new Runnable() {
                     @Override
@@ -267,12 +271,12 @@ public class GameView extends View {
 
             @Override
             public void onDraw(Canvas canvas) {
-                gameOverTextDisplay.draw(canvas);
-                yourScoreTextDisplay.draw(canvas);
-                scoreTextDisplay.draw(canvas);
+                displayGameOverText.draw(canvas);
+                displayYourScoreText.draw(canvas);
+                displayScoreTextDisplay.draw(canvas);
 
                 if (allowToSwitchActivity) {
-                    pressToContinueTextDisplay.draw(canvas);
+                    displayPressToContinueTextDisplay.draw(canvas);
 
                 }
             }
@@ -283,6 +287,60 @@ public class GameView extends View {
                 if (allowToSwitchActivity) {
                     //When touch screen, trigger back to main activity
                     gameManager.backToMainMenu();
+                }
+            }
+        };
+
+        leaderboardActivity = new GameActivityPage() {
+            private Rect gameBackground;
+            private Paint gameBackgroundColor;
+            private TextDisplay displayLeaderboardTitle;
+            private Point displayLeaderboardTitlePosition;
+            private TextButton displayMenuButton;
+            private Point displayMenuButtonPosition;
+            private DialogBox displayMenuDialogBox;
+
+            @Override
+            public void initialize() {
+                gameBackground = new Rect(0, 0, dWidth, dHeight);
+                gameBackgroundColor = new Paint();
+                gameBackgroundColor.setColor(Color.parseColor(ThemeColorString));
+                displayLeaderboardTitlePosition = new Point(dWidth/2, dHeight/6);
+                displayLeaderboardTitle = new TextDisplay(context, "Leaderboards", displayLeaderboardTitlePosition);
+                displayMenuButtonPosition = new Point(900,150);
+                displayMenuButton = new TextButton(context, "MENU",  displayMenuButtonPosition);
+                displayMenuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
+            }
+
+            @Override
+            public void onDraw(Canvas canvas) {
+                canvas.drawRect(gameBackground, gameBackgroundColor);
+                displayLeaderboardTitle.draw(canvas);
+                displayMenuButton.draw(canvas);
+                displayMenuDialogBox.draw(canvas);
+            }
+
+            @Override
+            public void onTouchInteraction(Rect _userTouchPointer) {
+                //Detecting click on menuButton
+                if (displayMenuButton.isClicked(_userTouchPointer)) {
+                    //Toggle Back To Menu Dialog Box
+                    if (displayMenuDialogBox.popUp) {
+                        //Out of the menu, resume game
+                        gameManager.setResume();
+                        displayMenuDialogBox.hide();
+                    } else {
+                        //Enter the menu, resume game
+                        gameManager.setPause();
+                        displayMenuDialogBox.show();
+                    }
+                }
+
+                //Detecting click on menuDialogBox when it is pop up
+                switch (displayMenuDialogBox.isInteracted(_userTouchPointer)) {
+                    case NO: gameManager.setResume(); displayMenuDialogBox.hide();break;
+                    case YES: gameManager.backToMainMenu(); break;
+                    default: break;
                 }
             }
         };
@@ -316,6 +374,7 @@ public class GameView extends View {
         gameMenuActivity.draw(canvas);
         startGameActivity.draw(canvas);
         gameOverActivity.draw(canvas);
+        leaderboardActivity.draw(canvas);
         handler.postDelayed(runnable, UPDATE_MILLIS);   //Graphic related
         handler.postDelayed(runnable_system, UPDATE_MILLIS_SYSTEM); //System related
     }
@@ -327,6 +386,7 @@ public class GameView extends View {
             gameMenuActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
             startGameActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
             gameOverActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
+            leaderboardActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
         }
     }
 }
