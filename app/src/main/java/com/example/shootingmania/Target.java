@@ -67,7 +67,7 @@ public class Target {
     }
 
     private void resetPosition() {
-        //Clear bullet mark first to prevent UI thread to draw bulletmarks on old location of the target
+        //Clear bullet mark first to prevent UI thread to draw bullet marks on old location of the target
         bulletMarks.clear();
         this.posX = random.nextInt(targetMovingBoundary.right - getTargetWidth(target[0])) + getTargetWidth(target[0])/2;      //Get size from 1st frame
         //this.posX = targetMovingBoundary.centerX();
