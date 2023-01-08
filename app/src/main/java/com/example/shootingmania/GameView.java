@@ -150,7 +150,7 @@ public class GameView extends View {
                 displayScorePointsTextPaint.setColor(Color.parseColor("#EF8F3F"));
                 displayScorePointsTextPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
                 displayGameLeftTime = (int) gameManager.gameData.gameTimer.getTimeLeft();
-                displayGameLeftTimePosition = new Point(dWidth/2 + displayGameLeftTimeTextPaintSize/4,380);
+                displayGameLeftTimePosition = new Point(dWidth/2-25 + displayGameLeftTimeTextPaintSize/4,380);
                 displayGameLeftTimeTextPaint = new TextPaint();
                 displayGameLeftTimeTextPaint.setTextAlign(TextPaint.Align.CENTER);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
                 displayGameLeftTimeTextPaint.setTextSize(displayGameLeftTimeTextPaintSize);
@@ -232,7 +232,7 @@ public class GameView extends View {
 
         gameOverActivity = new GameActivityPage() {
             private long activityUpTime;
-            private long minimumGameOverShowingTime = 1500;         //2 seconds
+            private long minimumGameOverShowingTime = 1500;         //1.5 seconds
             private boolean allowToSwitchActivity = false;
             private TextDisplay gameOverTextDisplay;
             private TextDisplay yourScoreTextDisplay;
@@ -407,9 +407,10 @@ class DialogBox {
 class TextButton {
     private Context context;
     private Rect area;
-    private int width = 65;
+    private int width = 50;
     private int height = 100;
-    private int offsetButtonToMatchTextDisplay = 29;
+    private int offsetButtonToMatchTextDisplay_height_height = 28;
+    private int offsetButtonToMatchTextDisplay_height_width = 2;
     private String text;
     private Point position;
     private int TEXT_SIZE = 80;
@@ -422,7 +423,7 @@ class TextButton {
         this.text = _text;
         this.position = _position;
         this.width = this.text.length() * this.width;
-        this.area = new Rect(position.x - width/2 ,position.y - height/2 - offsetButtonToMatchTextDisplay,position.x + width/2,position.y + height/2 - offsetButtonToMatchTextDisplay);
+        this.area = new Rect(position.x - width/2 + offsetButtonToMatchTextDisplay_height_width ,position.y - height/2 - offsetButtonToMatchTextDisplay_height_height,position.x + width/2 - offsetButtonToMatchTextDisplay_height_width,position.y + height/2 - offsetButtonToMatchTextDisplay_height_height);
         textPaint.setTextAlign(TextPaint.Align.CENTER);
         textPaint.setTextSize(TEXT_SIZE);
         textPaint.setColor(Color.parseColor("#EF8F3F"));
