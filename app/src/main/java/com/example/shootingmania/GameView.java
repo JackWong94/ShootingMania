@@ -305,6 +305,14 @@ public class GameView extends View {
             private TextButton displayMenuButton;
             private Point displayMenuButtonPosition;
             private DialogBox displayMenuDialogBox;
+            //Leaderboard UI Design
+            private int displayLeaderboardListSupportedSize = 10;   //Only show top 10 scores
+            private int displayLeaderboardListOffsetYFromTitle = 225;
+            private int displayLeaderboardListOffsetYBetweenList = 160;
+            private Point displayLeaderboardListPosition;
+            private ArrayList<TextDisplay> displayLeaderboardListNo;
+            private ArrayList<TextDisplay> displayLeaderboardListName;
+            private ArrayList<TextDisplay> displayLeaderboardListScore;
 
             @Override
             public void initialize() {
@@ -313,9 +321,23 @@ public class GameView extends View {
                 gameBackgroundColor.setColor(Color.parseColor(ThemeColorString));
                 displayLeaderboardTitlePosition = new Point(dWidth/2, dHeight/6);
                 displayLeaderboardTitle = new TextDisplay(context, "Leaderboards", displayLeaderboardTitlePosition);
+                displayLeaderboardTitle.setFontSize(120);
                 displayMenuButtonPosition = new Point(900,150);
                 displayMenuButton = new TextButton(context, "MENU",  displayMenuButtonPosition);
                 displayMenuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
+                //Initialize leaderboard list
+                displayLeaderboardListPosition = new Point(dWidth/9, displayLeaderboardTitlePosition.y + displayLeaderboardListOffsetYFromTitle);
+                displayLeaderboardListNo = new ArrayList<>();
+                displayLeaderboardListName = new ArrayList<>();
+                displayLeaderboardListName = new ArrayList<>();
+                displayLeaderboardListScore = new ArrayList<>();
+                for (int i=0; i<displayLeaderboardListSupportedSize; i++) {
+                    displayLeaderboardListNo.add( new TextDisplay(context, Integer.toString(i+1), new Point(displayLeaderboardListPosition.x, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
+                    displayLeaderboardListName.add( new TextDisplay(context, "WONG YU HENG", new Point(displayLeaderboardListPosition.x + 400, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
+                    displayLeaderboardListName.get(i).setFontSize(50);
+                    displayLeaderboardListScore.add( new TextDisplay(context, "_", new Point(displayLeaderboardListPosition.x + 800, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
+                    displayLeaderboardListScore.get(i).setFontSize(80);
+                }
             }
 
             @Override
@@ -323,6 +345,13 @@ public class GameView extends View {
                 canvas.drawRect(gameBackground, gameBackgroundColor);
                 displayLeaderboardTitle.draw(canvas);
                 displayMenuButton.draw(canvas);
+                //Drawing leaderboard list
+                for (int i=0; i<displayLeaderboardListSupportedSize; i++) {
+                    displayLeaderboardListNo.get(i).draw(canvas);
+                    displayLeaderboardListName.get(i).draw(canvas);
+                    displayLeaderboardListScore.get(i).draw(canvas);
+                }
+                //Menu dialog should not be obscured by other elements drawn
                 displayMenuDialogBox.draw(canvas);
             }
 
