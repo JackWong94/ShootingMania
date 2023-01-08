@@ -235,6 +235,8 @@ public class GameView extends View {
         };
 
         gameOverActivity = new GameActivityPage() {
+            private Rect gameBackground;
+            private Paint gameBackgroundColor;
             private long activityUpTime;
             private long minimumGameOverShowingTime = 1500;         //1.5 seconds
             private boolean allowToSwitchActivity = false;
@@ -248,6 +250,9 @@ public class GameView extends View {
             private Point displayPressToContinueTextDisplayPosition = new Point(dWidth/2, dHeight/8*6);
             @Override
             public void initialize() {
+                gameBackground = new Rect(0, 0, dWidth, dHeight);
+                gameBackgroundColor = new Paint();
+                gameBackgroundColor.setColor(Color.parseColor(ThemeColorString));
                 allowToSwitchActivity = false;
                 displayGameOverText = new TextDisplay(context, "GAME OVER", displayGameOverTextPosition);
                 displayYourScoreText = new TextDisplay(context, "YOUR SCORES : ", displayYourScoreTextPosition);
@@ -271,6 +276,7 @@ public class GameView extends View {
 
             @Override
             public void onDraw(Canvas canvas) {
+                canvas.drawRect(gameBackground, gameBackgroundColor);
                 displayGameOverText.draw(canvas);
                 displayYourScoreText.draw(canvas);
                 displayScoreTextDisplay.draw(canvas);
