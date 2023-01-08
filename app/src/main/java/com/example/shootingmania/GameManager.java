@@ -181,7 +181,7 @@ class GameData {
     }
 
     public void touchControlsDetected(RealTimeInputControlsParameters realTimeInputControlsParameters) {
-        if (realTimeInputControlsParameters.onPressed()) {
+        if (realTimeInputControlsParameters.onReleased()) {
             target.verifyShoot(gun.shoot(aimCross), target.animateFrame(target.frame));
             aimCross.setAimCrossLock(); //Set state of AimCross for animation
         }
