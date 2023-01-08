@@ -4,10 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 
 public class Gun {
     static boolean resourcesLoaded = false;
@@ -41,8 +39,8 @@ public class Gun {
 
     public Gun(Context context) {
         this.context = context;
-        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (!resourcesLoaded) {
+            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             //Sprites assignment and animation timing
             gun[0] = Sprite.createSprite(context, Sprite.NAME.GUN);
             gun[1] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_1);
