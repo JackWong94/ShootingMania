@@ -4,9 +4,12 @@ import static com.example.shootingmania.GameView.dWidth;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.preference.PreferenceManager;
 import android.util.Log;
+
+import java.util.ArrayList;
 
 public class GameManager {
     public enum ACTIVITY_STATE {
@@ -20,6 +23,7 @@ public class GameManager {
     private boolean isPause = false;
     public GameView gameView;
     public GameData gameData;
+    public GameScoreManager gameScoreManager;
     private Context context;
     public GameManager(GameView gameView) {
         this.gameView = gameView;
@@ -27,7 +31,8 @@ public class GameManager {
         //Loading game data
         gameData = new GameData(context, this);
         gameData.initializing();
-
+        gameScoreManager = new GameScoreManager(context, this);
+        gameScoreManager.initializing();
     }
 
     private void setActivityPage(ACTIVITY_STATE newActivityState) {
@@ -106,6 +111,90 @@ public class GameManager {
             //Pause all game related accelerometer controls
         }
         gameData.accelerometerControlsDetected(realTimeInputControlsParameters);
+    }
+}
+
+class GameScoreManager {
+    private String TAG = "GameScoreManager";
+    private int supportedScoreStoringNumber = 10; //Temporarily supporting storing 10 best scores only, rest will be discard
+    private SharedPreferences sharedPreferencesScoresData;
+    private String sharedPreferencesScoresDataKey = "SCORE_DATA";
+    private SharedPreferences mPrefs = null;
+    private GameManager gameManager;
+    private Context context;
+    public GameScoreList gameScoreList;
+    public GameScoreManager(Context context, GameManager gameManager) {
+        this.context = context;
+        this.gameManager = gameManager; //allow game score to communicate with game manager
+    }
+    public void initializing() {
+        gameScoreList = new GameScoreList();
+    }
+
+    public void checkLeadearboardEntryQualification(GameScore currentGameScore) {
+        Log.i(TAG, "Checking qualification to enter leaderboard");
+        int newHigherScoreIndex = gameScoreList.list.size();
+        int lastPlaceInTheLeaderboard = gameScoreList.list.size()-1;
+        for (int i=0; i<=lastPlaceInTheLeaderboard; i++) {
+            if (currentGameScore.playerScore > gameScoreList.list.get(i).playerScore) {
+                newHigherScoreIndex = i;
+                //Found the higher scorer that qualify for i places
+                Log.i(TAG, "New high score detected");
+                break;
+            }
+        }
+        /*  If the newHigherScoreIndex detect any score that is currently higher than the i index for the leaderboards
+            proceed to rearrange the array with the current scores. Push the rest of the array member one space after this i index.
+            If the array member exceeds supportedScoreStoringNumber, the next member from the last supportedScoreStoringNumber will be discarded.
+        */
+        if (newHigherScoreIndex != gameScoreList.list.size()) {
+            //Store this last place score to check if we need to discard or not after the adding of the newer score
+            GameScore olderLastPlaceScore = gameScoreList.list.get(lastPlaceInTheLeaderboard);
+            for (int i=lastPlaceInTheLeaderboard; i>=newHigherScoreIndex; i--) {
+                if (i!=newHigherScoreIndex) {
+                    gameScoreList.list.set(i,gameScoreList.list.get(i-1));
+                    Log.i(TAG, "Move " + Integer.toString((i-1)) + " to " + Integer.toString(i));
+                } else {
+                    //When reach the desired place, set the score and exit the loop
+                    gameScoreList.list.set(i,currentGameScore);
+                    Log.i(TAG, "Set " + Integer.toString((i)) + " to " + Integer.toString(currentGameScore.playerScore));
+                }
+            }
+            if (gameScoreList.list.size()  < supportedScoreStoringNumber) {
+                //Since there are still unfilled places in leaderboard, the olderLastPlaceScore can be stored
+                gameScoreList.list.add(olderLastPlaceScore);
+                Log.i(TAG, "Add new score to NO " + Integer.toString(gameScoreList.list.size()));
+            }
+        } else {
+            //If the leaderboard is not full, add the score to the last place
+            if(gameScoreList.list.size() < supportedScoreStoringNumber) {
+                gameScoreList.list.add(currentGameScore);
+                Log.i(TAG, "Add new score to NO" + Integer.toString(gameScoreList.list.size()));
+            }
+        }
+        for (int i =0; i<gameScoreList.list.size(); i++) {
+            Log.i(TAG, Integer.toString(gameScoreList.list.get(i).playerScore));
+        }
+        //saveScoreToSharedPreference();
+    }
+
+    public void saveScoreToSharedPreference() {
+    }
+}
+
+class GameScoreList {
+    public ArrayList<GameScore> list = new ArrayList<GameScore>();
+    public GameScoreList() {
+
+    }
+}
+
+class GameScore {
+    public String playerName = "_______________";
+    public int playerScore = 0;
+    public GameScore(String name, int score) {
+        this.playerName = name;
+        this.playerScore = score;
     }
 }
 

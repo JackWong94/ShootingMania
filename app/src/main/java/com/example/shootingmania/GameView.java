@@ -2,7 +2,6 @@ package com.example.shootingmania;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,13 +9,13 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.text.TextPaint;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 public class GameView extends View {
@@ -250,6 +249,8 @@ public class GameView extends View {
             private Point displayPressToContinueTextDisplayPosition = new Point(dWidth/2, dHeight/8*6);
             @Override
             public void initialize() {
+                //Managing score and leaderboard
+                gameManager.gameScoreManager.checkLeadearboardEntryQualification(new GameScore("UNKNOWN", gameManager.gameData.scorePoints));
                 gameBackground = new Rect(0, 0, dWidth, dHeight);
                 gameBackgroundColor = new Paint();
                 gameBackgroundColor.setColor(Color.parseColor(ThemeColorString));
@@ -333,10 +334,14 @@ public class GameView extends View {
                 displayLeaderboardListScore = new ArrayList<>();
                 for (int i=0; i<displayLeaderboardListSupportedSize; i++) {
                     displayLeaderboardListNo.add( new TextDisplay(context, Integer.toString(i+1), new Point(displayLeaderboardListPosition.x, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
-                    displayLeaderboardListName.add( new TextDisplay(context, "WONG YU HENG", new Point(displayLeaderboardListPosition.x + 400, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
+                    displayLeaderboardListName.add( new TextDisplay(context, "__________", new Point(displayLeaderboardListPosition.x + 400, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
                     displayLeaderboardListName.get(i).setFontSize(50);
                     displayLeaderboardListScore.add( new TextDisplay(context, "_", new Point(displayLeaderboardListPosition.x + 800, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
                     displayLeaderboardListScore.get(i).setFontSize(80);
+                }
+                for (int i=0; i<gameManager.gameScoreManager.gameScoreList.list.size(); i++) {
+                    displayLeaderboardListName.get(i).setText(gameManager.gameScoreManager.gameScoreList.list.get(i).playerName + Integer.toString(i));
+                    displayLeaderboardListScore.get(i).setText(Integer.toString(gameManager.gameScoreManager.gameScoreList.list.get(i).playerScore));
                 }
             }
 
@@ -579,6 +584,10 @@ class TextDisplay {
 
     public void setFontSize(int fontSize) {
         textPaint.setTextSize(fontSize);
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public void setBlinkCapability(long _blinkTiming) {
