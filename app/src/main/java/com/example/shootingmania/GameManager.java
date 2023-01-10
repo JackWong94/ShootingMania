@@ -9,6 +9,10 @@ import android.graphics.Rect;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class GameManager {
@@ -128,7 +132,19 @@ class GameScoreManager {
         this.gameManager = gameManager; //allow game score to communicate with game manager
     }
     public void initializing() {
+        /*
+            MODE_PRIVATE: File creation mode: the default mode, where the created file can only be accessed by the calling application (or all applications sharing the same user ID).
+            MODE_WORLD_READABLE: File creation mode: allow all other applications to have read access to the created file.
+            MODE_WORLD_WRITEABLE : File creation mode: allow all other applications to have write access to the created file.
+         */
+        sharedPreferencesScoresData = context.getSharedPreferences("GameSavedData", Context.MODE_PRIVATE);
+        String json = sharedPreferencesScoresData.getString(sharedPreferencesScoresDataKey, "NO DATA");
         gameScoreList = new GameScoreList();
+        Log.i(TAG, "Loading Score " + json);
+        if (json != "NO DATA") {
+            Gson gson = new Gson();
+            gameScoreList = gson.fromJson(json, GameScoreList.class);
+        }
     }
 
     public void checkLeadearboardEntryQualification(GameScore currentGameScore) {
@@ -169,16 +185,22 @@ class GameScoreManager {
             //If the leaderboard is not full, add the score to the last place
             if(gameScoreList.list.size() < supportedScoreStoringNumber) {
                 gameScoreList.list.add(currentGameScore);
-                Log.i(TAG, "Add new score to NO" + Integer.toString(gameScoreList.list.size()));
+                Log.i(TAG, "Add new score to NO " + Integer.toString(gameScoreList.list.size()));
             }
         }
         for (int i =0; i<gameScoreList.list.size(); i++) {
             Log.i(TAG, Integer.toString(gameScoreList.list.get(i).playerScore));
         }
-        //saveScoreToSharedPreference();
+        saveScoreToSharedPreference();
     }
 
     public void saveScoreToSharedPreference() {
+        SharedPreferences.Editor scoreEditor = sharedPreferencesScoresData.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(gameScoreList);
+        scoreEditor.putString(sharedPreferencesScoresDataKey, json);
+        Log.i(TAG, "Saving Score " + json);
+        scoreEditor.apply();
     }
 }
 
