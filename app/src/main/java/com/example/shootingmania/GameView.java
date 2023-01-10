@@ -333,10 +333,10 @@ public class GameView extends View {
                 displayLeaderboardListName = new ArrayList<>();
                 displayLeaderboardListScore = new ArrayList<>();
                 for (int i=0; i<displayLeaderboardListSupportedSize; i++) {
-                    displayLeaderboardListNo.add( new TextDisplay(context, Integer.toString(i+1), new Point(displayLeaderboardListPosition.x, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
-                    displayLeaderboardListName.add( new TextDisplay(context, "__________", new Point(displayLeaderboardListPosition.x + 400, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
+                    displayLeaderboardListNo.add( new TextDisplay(context, Integer.toString(i+1), new Point(displayLeaderboardListPosition.x - 10, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
+                    displayLeaderboardListName.add( new TextDisplay(context, "__________", new Point(displayLeaderboardListPosition.x + 350, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
                     displayLeaderboardListName.get(i).setFontSize(50);
-                    displayLeaderboardListScore.add( new TextDisplay(context, "_", new Point(displayLeaderboardListPosition.x + 800, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
+                    displayLeaderboardListScore.add( new TextDisplay(context, "_", new Point(displayLeaderboardListPosition.x + 750, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
                     displayLeaderboardListScore.get(i).setFontSize(80);
                 }
                 for (int i=0; i<gameManager.gameScoreManager.gameScoreList.list.size(); i++) {
