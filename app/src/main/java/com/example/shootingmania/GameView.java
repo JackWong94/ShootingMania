@@ -25,7 +25,7 @@ public class GameView extends View {
     private Display display;
     private String ThemeColorString = "#DEEBF7";
     final long UPDATE_MILLIS = 30;
-    final long UPDATE_MILLIS_SYSTEM = 30;
+    final long UPDATE_MILLIS_SYSTEM = 0;
     public static int dHeight;
     public static int dWidth;
     private String TAG = "GameView";
@@ -416,7 +416,7 @@ public class GameView extends View {
         gameOverActivity.draw(canvas);
         leaderboardActivity.draw(canvas);
         handler.postDelayed(runnable, UPDATE_MILLIS);   //Graphic related
-        handler.postDelayed(runnable_system, UPDATE_MILLIS_SYSTEM); //System related
+        handler.postDelayed(runnable_system, UPDATE_MILLIS_SYSTEM); //System related (Do not add delay as user input being process here)
     }
 
     public void onTouchPointInteraction(RealTimeInputControlsParameters realTimeInputControlsParameters) {
