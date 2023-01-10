@@ -99,7 +99,13 @@ public class Gun {
             state = STATE.SHOOTING;
             gunSoundEffect.generateSoundEffect(shootSound);
             Point point = new Point(aimCross.posX, aimCross.posY);
-            vibrator.vibrate(VibrationEffect.createOneShot(VIBRATION_STRENGTH, VibrationEffect.EFFECT_HEAVY_CLICK));
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    vibrator.vibrate(VibrationEffect.createOneShot(VIBRATION_STRENGTH, VibrationEffect.EFFECT_HEAVY_CLICK));
+                }
+            });
+            thread.start();
             //Recoil must only happen after the shoot point is taken
             aimCross.recoil();
             bulletsRemaining -= 1;
