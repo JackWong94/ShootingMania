@@ -1,19 +1,29 @@
 package com.example.shootingmania;
 
+import static androidx.core.content.ContextCompat.createDeviceProtectedStorageContext;
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
+import android.inputmethodservice.KeyboardView;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class InputControlsManager {
     RealTimeInputControlsParameters realTimeInputControlsParameters;
+    public KeyboardControl keyboardControl;
     GameManager gameManager;
 
     public InputControlsManager(Context context, Display display, GameManager gameManager, View view) {
@@ -29,6 +39,9 @@ public class InputControlsManager {
         realTimeInputControlsParameters.accelerometerSensorValue = new FloatPoint(0,0);
         AccelerometerSensor accelerometerSensor = new AccelerometerSensor();
         accelerometerSensor.registerListener(display, context, this);
+
+        //Keyboard input
+        keyboardControl = new KeyboardControl(view, context);
     }
 
     //Touch screen user control related
@@ -101,6 +114,24 @@ class RealTimeInputControlsParameters {
     //Accelerometer user control related
     public FloatPoint accelerometerSensorValue;
 
+}
+
+class KeyboardControl{
+    private InputMethodManager inputMethodManager;
+    private View view;
+    private Context context;
+    public KeyboardControl(View _view, Context _context) {
+        view = _view;
+        context = _context;
+    }
+
+    public void showKeyboard() {
+
+    }
+
+    public void hideKeyboard() {
+
+    }
 }
 
 class SwipeSensorListener implements View.OnTouchListener {

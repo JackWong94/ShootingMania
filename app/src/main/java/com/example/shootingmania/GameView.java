@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -243,10 +245,18 @@ public class GameView extends View {
             private TextDisplay displayYourScoreText;
             private TextDisplay displayScoreTextDisplay;
             private TextDisplay displayPressToContinueTextDisplay;
+            private TextDisplay displayLeaderboardPlayerNameUnderline;
+            private TextDisplay displayLeaderboardPlayerName;
+            private TextButton displayLeaderboardPlayerNameClickToEditArea;
+            private TextButton displayPressToContinueTextDisplayButtonArea;
             private Point displayGameOverTextPosition = new Point(dWidth/2, dHeight/8*2);
             private Point displayYourScoreTextPosition = new Point(dWidth/2, dHeight/8*4);
             private Point displayScoreTextDisplayPosition = new Point(dWidth/2, dHeight/8*5);
             private Point displayPressToContinueTextDisplayPosition = new Point(dWidth/2, dHeight/8*6);
+            private Point displayPressToContinueTextDisplayButtonAreaPosition = new Point(dWidth/2, dHeight/8*6);
+            private Point displayLeaderboardPlayerNamePosition = new Point(dWidth/2, dHeight/16*6);
+            private Point displayLeaderboardPlayerNameUnderlinePosition = new Point(dWidth/2, dHeight/16*7 - 100);
+
             @Override
             public void initialize() {
                 //Managing score and leaderboard
@@ -258,9 +268,17 @@ public class GameView extends View {
                 displayGameOverText = new TextDisplay(context, "GAME OVER", displayGameOverTextPosition);
                 displayYourScoreText = new TextDisplay(context, "YOUR SCORES : ", displayYourScoreTextPosition);
                 displayScoreTextDisplay = new TextDisplay(context, Integer.toString(gameManager.gameData.scorePoints),displayScoreTextDisplayPosition);
-                displayPressToContinueTextDisplay = new TextDisplay(context, "Press To Continue !",displayPressToContinueTextDisplayPosition);
+                displayPressToContinueTextDisplay = new TextDisplay(context, "Press Here To Continue !",displayPressToContinueTextDisplayPosition);
                 displayPressToContinueTextDisplay.setFontSize(50);
-                displayPressToContinueTextDisplay.setBlinkCapability(500);
+                displayPressToContinueTextDisplay.setBlinkCapability(1000);
+                displayPressToContinueTextDisplayButtonArea = new TextButton(context, "", displayPressToContinueTextDisplayButtonAreaPosition);
+                displayPressToContinueTextDisplayButtonArea.setButtonArea(800, 300);
+                displayLeaderboardPlayerName = new TextDisplay(context, "Enter Your Name !", displayLeaderboardPlayerNamePosition);
+                displayLeaderboardPlayerName.setBlinkCapability(500);
+                displayLeaderboardPlayerNameClickToEditArea = new TextButton(context, "", displayLeaderboardPlayerNamePosition);
+                displayLeaderboardPlayerNameClickToEditArea.setButtonArea(800, 300);
+                displayLeaderboardPlayerNameClickToEditArea.setButtonBoxVisibility(true);
+                displayLeaderboardPlayerNameUnderline = new TextDisplay(context, "_ _ _ _ _ _ _ _ _", displayLeaderboardPlayerNameUnderlinePosition);
                 activityUpTime = System.currentTimeMillis();
                 Thread thread = new Thread(new Runnable() {
                     @Override
@@ -281,19 +299,26 @@ public class GameView extends View {
                 displayGameOverText.draw(canvas);
                 displayYourScoreText.draw(canvas);
                 displayScoreTextDisplay.draw(canvas);
-
+                displayLeaderboardPlayerNameClickToEditArea.draw(canvas);
+                displayLeaderboardPlayerName.draw(canvas);
+                displayLeaderboardPlayerNameUnderline.draw(canvas);
                 if (allowToSwitchActivity) {
+                    displayPressToContinueTextDisplayButtonArea.draw(canvas);
                     displayPressToContinueTextDisplay.draw(canvas);
-
                 }
             }
 
             @Override
             public void onTouchInteraction(Rect _userTouchPointer) {
-                //This activity must stay for the minimumGameOverShowingTime, so that user will not miss the score display
+                if (displayLeaderboardPlayerNameClickToEditArea.isClicked(_userTouchPointer)) {
+                    gameInputControlManager.keyboardControl.showKeyboard();
+                }
+               //This activity must stay for the minimumGameOverShowingTime, so that user will not miss the score display
                 if (allowToSwitchActivity) {
                     //When touch screen, trigger back to main activity
-                    gameManager.backToMainMenu();
+                    if (displayPressToContinueTextDisplayButtonArea.isClicked(_userTouchPointer)) {
+                        gameManager.backToMainMenu();
+                    }
                 }
             }
         };
@@ -532,6 +557,12 @@ class TextButton {
 
     public void setButtonBoxVisibility(boolean visible) {
         showButtonBox = visible;
+    }
+
+    public void setButtonArea(int sizeX, int sizeY) {
+        width = sizeX;
+        height = sizeY;
+        area = new Rect(position.x - width/2 + offsetButtonToMatchTextDisplay_height_width ,position.y - height/2 - offsetButtonToMatchTextDisplay_height_height,position.x + width/2 - offsetButtonToMatchTextDisplay_height_width,position.y + height/2 - offsetButtonToMatchTextDisplay_height_height);
     }
 
     public boolean isClicked(Rect _userTouchPointer) {

@@ -1,18 +1,12 @@
 package com.example.shootingmania;
 
 import static com.example.shootingmania.GameView.dWidth;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
 import com.google.gson.Gson;
-
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 public class GameManager {
@@ -260,7 +254,7 @@ class GameData {
 
     public void startGame() {
         reset();
-        gameTimer.setTimerTime(20000);
+        gameTimer.setTimerTime(2000);
         gameTimer.startCount();
     }
 
