@@ -312,7 +312,11 @@ public class GameView extends View {
             public void onTouchInteraction(Rect _userTouchPointer) {
                 if (displayLeaderboardPlayerNameClickToEditArea.isClicked(_userTouchPointer)) {
                     gameInputControlManager.keyboardControl.showKeyboard();
+                } else {
+                    //Any other click location beside the typing box, the keboard will be hidden
+                    gameInputControlManager.keyboardControl.hideKeyboard();
                 }
+
                //This activity must stay for the minimumGameOverShowingTime, so that user will not miss the score display
                 if (allowToSwitchActivity) {
                     //When touch screen, trigger back to main activity

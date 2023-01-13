@@ -1,25 +1,21 @@
 package com.example.shootingmania;
 
-import static androidx.core.content.ContextCompat.createDeviceProtectedStorageContext;
-import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
-import android.inputmethodservice.KeyboardView;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Display;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
+import android.widget.Toast;
 
 public class InputControlsManager {
     RealTimeInputControlsParameters realTimeInputControlsParameters;
@@ -116,21 +112,47 @@ class RealTimeInputControlsParameters {
 
 }
 
-class KeyboardControl{
-    private InputMethodManager inputMethodManager;
+class KeyboardControl {
     private View view;
     private Context context;
+    private boolean keyboardShowing;
     public KeyboardControl(View _view, Context _context) {
         view = _view;
         context = _context;
+        keyboardShowing = false;
     }
 
     public void showKeyboard() {
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        InputMethodManager mgr = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        mgr.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        keyboardShowing = true;
+
 
     }
 
     public void hideKeyboard() {
+        if (keyboardShowing) {
+            // Retrieving the token if the view is hosted by the fragment.
+            IBinder windowToken = view.getWindowToken();
 
+            // Retrieving the token if the view is hosted by the activity.
+            if (windowToken == null) {
+                if (view.getContext() instanceof Activity) {
+                    final Activity activity = (Activity) view.getContext();
+                    if (activity.getWindow() != null && activity.getWindow().getDecorView() != null) {
+                        windowToken = activity.getWindow().getDecorView().getWindowToken();
+                    }
+                }
+            }
+
+            // Hide if shown before.
+            InputMethodManager inputMethodManager = (InputMethodManager) view
+                    .getContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(windowToken, 0);
+        }
     }
 }
 
