@@ -24,7 +24,7 @@ public class GameView extends View {
     private InputControlsManager gameInputControlManager;
     private Display display;
     private String ThemeColorString = "#DEEBF7";
-    final long UPDATE_MILLIS = 30;
+    final long UPDATE_MILLIS = 15; //To get around 60FPS
     final long UPDATE_MILLIS_SYSTEM = 0;
     public static int dHeight;
     public static int dWidth;
