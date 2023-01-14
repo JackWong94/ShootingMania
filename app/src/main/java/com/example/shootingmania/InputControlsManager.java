@@ -165,6 +165,7 @@ class KeyboardControl extends Activity {
                     .getContext()
                     .getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(windowToken, 0);
+            view.clearFocus();
         }
     }
 
