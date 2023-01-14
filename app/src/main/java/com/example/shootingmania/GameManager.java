@@ -276,7 +276,7 @@ class GameData {
 
     public void startGame() {
         reset();
-        gameTimer.setTimerTime(1000);
+        gameTimer.setTimerTime(10000);
         gameTimer.startCount();
     }
 

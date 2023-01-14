@@ -277,8 +277,8 @@ class SwipeSensorListener implements View.OnTouchListener {
 class AccelerometerSensor {
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    private static float sensorSensitivityX = 3;
-    private static float sensorSensitivityY = 3;
+    private static float sensorSensitivityX = 5;
+    private static float sensorSensitivityY = 5;
     private static int sensorAccelerationX = 10;    //Increase smoothness
     private static int sensorAccelerationY = 10;    //Increase smoothness
     private FloatPoint xyAxisAcceleration;
