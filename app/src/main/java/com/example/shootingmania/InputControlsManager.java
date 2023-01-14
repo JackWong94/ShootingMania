@@ -15,7 +15,8 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
+
+import java.security.Key;
 
 public class InputControlsManager {
     RealTimeInputControlsParameters realTimeInputControlsParameters;
@@ -112,7 +113,8 @@ class RealTimeInputControlsParameters {
 
 }
 
-class KeyboardControl {
+class KeyboardControl extends Activity {
+    private static final String TAG = "KeyboardControl";
     private View view;
     private Context context;
     private boolean keyboardShowing;
@@ -128,7 +130,6 @@ class KeyboardControl {
         InputMethodManager mgr = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
         keyboardShowing = true;
-
 
     }
 
@@ -154,6 +155,13 @@ class KeyboardControl {
             inputMethodManager.hideSoftInputFromWindow(windowToken, 0);
         }
     }
+
+    public void retrieveKeyboardInput(int keyCode, KeyEvent event) {
+        char key = (char)event.getUnicodeChar();
+        Log.i(TAG, Character.toString(key) + " " + keyCode);
+        //Supporting range of keyboard key input
+    }
+
 }
 
 class SwipeSensorListener implements View.OnTouchListener {

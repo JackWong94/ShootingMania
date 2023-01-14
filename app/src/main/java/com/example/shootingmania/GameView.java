@@ -11,11 +11,9 @@ import android.os.Handler;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
-
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
@@ -39,7 +37,6 @@ public class GameView extends View {
     private Handler handler;
     private Runnable runnable;
     private Runnable runnable_system;
-
 
     public GameView(Context context) {
         super(context);
@@ -272,11 +269,11 @@ public class GameView extends View {
                 displayPressToContinueTextDisplay.setFontSize(50);
                 displayPressToContinueTextDisplay.setBlinkCapability(1000);
                 displayPressToContinueTextDisplayButtonArea = new TextButton(context, "", displayPressToContinueTextDisplayButtonAreaPosition);
-                displayPressToContinueTextDisplayButtonArea.setButtonArea(800, 300);
+                displayPressToContinueTextDisplayButtonArea.setButtonArea(dWidth, 500);
                 displayLeaderboardPlayerName = new TextDisplay(context, "Enter Your Name !", displayLeaderboardPlayerNamePosition);
                 displayLeaderboardPlayerName.setBlinkCapability(500);
                 displayLeaderboardPlayerNameClickToEditArea = new TextButton(context, "", displayLeaderboardPlayerNamePosition);
-                displayLeaderboardPlayerNameClickToEditArea.setButtonArea(800, 300);
+                displayLeaderboardPlayerNameClickToEditArea.setButtonArea(800, 200);
                 displayLeaderboardPlayerNameClickToEditArea.setButtonBoxVisibility(true);
                 displayLeaderboardPlayerNameUnderline = new TextDisplay(context, "_ _ _ _ _ _ _ _ _", displayLeaderboardPlayerNameUnderlinePosition);
                 activityUpTime = System.currentTimeMillis();
@@ -395,19 +392,15 @@ public class GameView extends View {
                 if (displayMenuButton.isClicked(_userTouchPointer)) {
                     //Toggle Back To Menu Dialog Box
                     if (displayMenuDialogBox.popUp) {
-                        //Out of the menu, resume game
-                        gameManager.setResume();
                         displayMenuDialogBox.hide();
                     } else {
-                        //Enter the menu, resume game
-                        gameManager.setPause();
                         displayMenuDialogBox.show();
                     }
                 }
 
                 //Detecting click on menuDialogBox when it is pop up
                 switch (displayMenuDialogBox.isInteracted(_userTouchPointer)) {
-                    case NO: gameManager.setResume(); displayMenuDialogBox.hide();break;
+                    case NO: displayMenuDialogBox.hide();break;
                     case YES: gameManager.backToMainMenu(); break;
                     default: break;
                 }
@@ -428,6 +421,20 @@ public class GameView extends View {
             }
         };
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        super.onKeyDown(keyCode, event);
+        return true;
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event){
+        super.onKeyUp(keyCode, event);
+        gameInputControlManager.keyboardControl.retrieveKeyboardInput(keyCode, event);
+        //gameInputControlManager.keyboardControl.retrieveKeyboardInput((char)event.getUnicodeChar());
+        return true;
     }
 
     @Override
