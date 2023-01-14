@@ -177,7 +177,6 @@ class KeyboardControl extends Activity {
         //Handling special character
         if (keyCode == 67) {
             //Backspace key
-            Toast.makeText(context, "Backspace Pressed", Toast.LENGTH_SHORT).show();
             if (stringBuffer.length() > 0) {
                 stringBuffer = stringBuffer.substring(0, stringBuffer.length() - 1);
             } else {

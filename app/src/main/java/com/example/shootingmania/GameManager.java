@@ -215,11 +215,24 @@ class GameScoreList {
 }
 
 class GameScore {
+    private final int MAX_NAME_LENGTH = 16;
     public String playerName = "_______________";
     public int playerScore = 0;
     public GameScore(String name, int score) {
         this.playerName = name;
         this.playerScore = score;
+    }
+
+    public void setPlayerName(String name) {
+        playerName = name;
+        //Set limit to the length of name
+        if (name.length() > MAX_NAME_LENGTH) {
+            playerName = playerName.substring(0, MAX_NAME_LENGTH);
+        }
+        //Set default name if the string is empty
+        if (name.isEmpty()) {
+            playerName = "UNKNOWN";
+        }
     }
 }
 

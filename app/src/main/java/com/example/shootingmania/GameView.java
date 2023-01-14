@@ -287,7 +287,6 @@ public class GameView extends View {
                 displayLeaderboardPlayerName.setBlinkCapability(500);
                 displayLeaderboardPlayerNameClickToEditArea = new TextButton(context, "", displayLeaderboardPlayerNamePosition);
                 displayLeaderboardPlayerNameClickToEditArea.setButtonArea(800, 200);
-                displayLeaderboardPlayerNameClickToEditArea.setButtonBoxVisibility(true);
                 displayLeaderboardPlayerNameUnderline = new TextDisplay(context, "_ _ _ _ _ _ _ _ _", displayLeaderboardPlayerNameUnderlinePosition);
                 activityUpTime = System.currentTimeMillis();
                 Thread thread = new Thread(new Runnable() {
@@ -339,10 +338,9 @@ public class GameView extends View {
 
             @Override
             public void onKeyboardInteraction(String _string) {
+                thisSessionGameScore.setPlayerName(_string);
                 displayLeaderboardPlayerName.setBlinkCapability(0);
-                displayLeaderboardPlayerName.setText(_string);
-                thisSessionGameScore.playerName = _string;
-                Log.i("JACK", "SET INPUT STRING " + _string);
+                displayLeaderboardPlayerName.setText(thisSessionGameScore.playerName);
             }
         };
 
@@ -681,7 +679,7 @@ class TextDisplay {
     public void setBlinkCapability(long _blinkTiming) {
         blinkTiming = _blinkTiming;
         if (_blinkTiming == 0) {
-            //Make sure that this view is visible after the blinking stopsss
+            //Make sure that this view is visible after the blinking stop
             visible = true;
         }
         Thread thread = new Thread(new Runnable() {
