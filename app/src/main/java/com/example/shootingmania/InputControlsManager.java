@@ -147,9 +147,6 @@ class KeyboardControl extends Activity {
 
     public void hideKeyboard() {
         if (keyboardShowing) {
-            //Delete buffer
-            stringBuffer = "";
-
             // Retrieving the token if the view is hosted by the fragment.
             IBinder windowToken = view.getWindowToken();
 
@@ -172,7 +169,7 @@ class KeyboardControl extends Activity {
     }
 
     public char retrieveKeyboardInput(int keyCode, KeyEvent event) {
-        char key = (char)event.getUnicodeChar();
+        char key = (char) event.getUnicodeChar();
         Log.i(TAG, Character.toString(key) + " " + keyCode);
         //Supporting range of keyboard key input
         inputControlsManager.keyboardInputDetected(key);
@@ -180,14 +177,17 @@ class KeyboardControl extends Activity {
         //Handling special character
         if (keyCode == 67) {
             //Backspace key
-            Toast.makeText(context,"Backspace Pressed",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Backspace Pressed", Toast.LENGTH_SHORT).show();
             if (stringBuffer.length() > 0) {
                 stringBuffer = stringBuffer.substring(0, stringBuffer.length() - 1);
             } else {
                 stringBuffer = "";
             }
             Log.i(TAG, stringBuffer);
-        } else {
+        } else if (keyCode == 66) {
+            //Enter key
+            hideKeyboard();
+        }else {
             stringBuffer = stringBuffer.concat(Character.toString(key));
         }
 

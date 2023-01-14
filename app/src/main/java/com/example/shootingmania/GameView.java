@@ -264,11 +264,13 @@ public class GameView extends View {
             private Point displayPressToContinueTextDisplayButtonAreaPosition = new Point(dWidth/2, dHeight/8*6);
             private Point displayLeaderboardPlayerNamePosition = new Point(dWidth/2, dHeight/16*6);
             private Point displayLeaderboardPlayerNameUnderlinePosition = new Point(dWidth/2, dHeight/16*7 - 100);
+            //Activity data related
+            private GameScore thisSessionGameScore;
 
             @Override
             public void initialize() {
                 //Managing score and leaderboard
-                gameManager.gameScoreManager.checkLeadearboardEntryQualification(new GameScore("UNKNOWN", gameManager.gameData.scorePoints));
+                thisSessionGameScore = new GameScore("UNKNOWN", gameManager.gameData.scorePoints);
                 gameBackground = new Rect(0, 0, dWidth, dHeight);
                 gameBackgroundColor = new Paint();
                 gameBackgroundColor.setColor(Color.parseColor(ThemeColorString));
@@ -329,6 +331,7 @@ public class GameView extends View {
                 if (allowToSwitchActivity) {
                     //When touch screen, trigger back to main activity
                     if (displayPressToContinueTextDisplayButtonArea.isClicked(_userTouchPointer)) {
+                        gameManager.gameScoreManager.checkLeadearboardEntryQualification(thisSessionGameScore);
                         gameManager.backToMainMenu();
                     }
                 }
@@ -338,6 +341,8 @@ public class GameView extends View {
             public void onKeyboardInteraction(String _string) {
                 displayLeaderboardPlayerName.setBlinkCapability(0);
                 displayLeaderboardPlayerName.setText(_string);
+                thisSessionGameScore.playerName = _string;
+                Log.i("JACK", "SET INPUT STRING " + _string);
             }
         };
 
@@ -383,7 +388,7 @@ public class GameView extends View {
                     displayLeaderboardListScore.get(i).setFontSize(80);
                 }
                 for (int i=0; i<gameManager.gameScoreManager.gameScoreList.list.size(); i++) {
-                    displayLeaderboardListName.get(i).setText(gameManager.gameScoreManager.gameScoreList.list.get(i).playerName + Integer.toString(i));
+                    displayLeaderboardListName.get(i).setText(gameManager.gameScoreManager.gameScoreList.list.get(i).playerName);
                     displayLeaderboardListScore.get(i).setText(Integer.toString(gameManager.gameScoreManager.gameScoreList.list.get(i).playerScore));
                 }
             }
@@ -675,6 +680,10 @@ class TextDisplay {
 
     public void setBlinkCapability(long _blinkTiming) {
         blinkTiming = _blinkTiming;
+        if (_blinkTiming == 0) {
+            //Make sure that this view is visible after the blinking stopsss
+            visible = true;
+        }
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {

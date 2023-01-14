@@ -263,7 +263,7 @@ class GameData {
 
     public void startGame() {
         reset();
-        gameTimer.setTimerTime(2000);
+        gameTimer.setTimerTime(1000);
         gameTimer.startCount();
     }
 
