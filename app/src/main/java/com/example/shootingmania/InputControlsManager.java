@@ -15,8 +15,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
-import java.security.Key;
+import android.widget.Toast;
 
 public class InputControlsManager {
     RealTimeInputControlsParameters realTimeInputControlsParameters;
@@ -38,7 +37,7 @@ public class InputControlsManager {
         accelerometerSensor.registerListener(display, context, this);
 
         //Keyboard input
-        keyboardControl = new KeyboardControl(view, context);
+        keyboardControl = new KeyboardControl(view, context, this);
     }
 
     //Touch screen user control related
@@ -54,6 +53,15 @@ public class InputControlsManager {
             gameManager.updateTouchControls(realTimeInputControlsParameters);
         }
         return true;
+    }
+
+    //Keyboard Input Related
+    public void keyboardInputDetected(char key) {
+        gameManager.updateKeyboardInput(key);
+    }
+
+    public void keyboardInputStringDetected(String string) {
+        gameManager.updateKeyboardInputString(string);
     }
 
     public void swipeMotionDetected(RealTimeInputControlsParameters.SWIPE_DIR swipeDir) {
@@ -115,13 +123,16 @@ class RealTimeInputControlsParameters {
 
 class KeyboardControl extends Activity {
     private static final String TAG = "KeyboardControl";
+    private static String stringBuffer = "";
     private View view;
     private Context context;
     private boolean keyboardShowing;
-    public KeyboardControl(View _view, Context _context) {
+    private InputControlsManager inputControlsManager;
+    public KeyboardControl(View _view, Context _context, InputControlsManager _inputControlsManager) {
         view = _view;
         context = _context;
         keyboardShowing = false;
+        inputControlsManager = _inputControlsManager;
     }
 
     public void showKeyboard() {
@@ -130,11 +141,15 @@ class KeyboardControl extends Activity {
         InputMethodManager mgr = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
         keyboardShowing = true;
+        stringBuffer = "";
 
     }
 
     public void hideKeyboard() {
         if (keyboardShowing) {
+            //Delete buffer
+            stringBuffer = "";
+
             // Retrieving the token if the view is hosted by the fragment.
             IBinder windowToken = view.getWindowToken();
 
@@ -156,12 +171,29 @@ class KeyboardControl extends Activity {
         }
     }
 
-    public void retrieveKeyboardInput(int keyCode, KeyEvent event) {
+    public char retrieveKeyboardInput(int keyCode, KeyEvent event) {
         char key = (char)event.getUnicodeChar();
         Log.i(TAG, Character.toString(key) + " " + keyCode);
         //Supporting range of keyboard key input
-    }
+        inputControlsManager.keyboardInputDetected(key);
+        //Processing key to string
+        //Handling special character
+        if (keyCode == 67) {
+            //Backspace key
+            Toast.makeText(context,"Backspace Pressed",Toast.LENGTH_SHORT).show();
+            if (stringBuffer.length() > 0) {
+                stringBuffer = stringBuffer.substring(0, stringBuffer.length() - 1);
+            } else {
+                stringBuffer = "";
+            }
+            Log.i(TAG, stringBuffer);
+        } else {
+            stringBuffer = stringBuffer.concat(Character.toString(key));
+        }
 
+        inputControlsManager.keyboardInputStringDetected(stringBuffer);
+        return key;
+    }
 }
 
 class SwipeSensorListener implements View.OnTouchListener {

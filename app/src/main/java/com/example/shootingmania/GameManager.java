@@ -95,6 +95,15 @@ public class GameManager {
         gameData.touchControlsDetected(realTimeInputControlsParameters);
     }
 
+    public void updateKeyboardInput(char key) {
+        //Single key detections
+    }
+
+    public void updateKeyboardInputString(String string) {
+        //String detection
+        gameView.onKeyboardInteraction(string);
+    }
+
     public void updateSwipeMotionControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
         if (isPause) {
             return;

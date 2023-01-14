@@ -112,6 +112,12 @@ public class GameView extends View {
                     gameManager.exitGame();
                 }
             }
+
+            @Override
+            public void onKeyboardInteraction(String _string) {
+
+            }
+
         };
 
         startGameActivity = new GameActivityPage() {
@@ -230,6 +236,11 @@ public class GameView extends View {
                     default: break;
                 }
             }
+
+            @Override
+            public void onKeyboardInteraction(String _string) {
+
+            }
         };
 
         gameOverActivity = new GameActivityPage() {
@@ -243,7 +254,7 @@ public class GameView extends View {
             private TextDisplay displayScoreTextDisplay;
             private TextDisplay displayPressToContinueTextDisplay;
             private TextDisplay displayLeaderboardPlayerNameUnderline;
-            private TextDisplay displayLeaderboardPlayerName;
+            private TextInput displayLeaderboardPlayerName;
             private TextButton displayLeaderboardPlayerNameClickToEditArea;
             private TextButton displayPressToContinueTextDisplayButtonArea;
             private Point displayGameOverTextPosition = new Point(dWidth/2, dHeight/8*2);
@@ -270,7 +281,7 @@ public class GameView extends View {
                 displayPressToContinueTextDisplay.setBlinkCapability(1000);
                 displayPressToContinueTextDisplayButtonArea = new TextButton(context, "", displayPressToContinueTextDisplayButtonAreaPosition);
                 displayPressToContinueTextDisplayButtonArea.setButtonArea(dWidth, 500);
-                displayLeaderboardPlayerName = new TextDisplay(context, "Enter Your Name !", displayLeaderboardPlayerNamePosition);
+                displayLeaderboardPlayerName = new TextInput(context, "Enter Your Name !", displayLeaderboardPlayerNamePosition);
                 displayLeaderboardPlayerName.setBlinkCapability(500);
                 displayLeaderboardPlayerNameClickToEditArea = new TextButton(context, "", displayLeaderboardPlayerNamePosition);
                 displayLeaderboardPlayerNameClickToEditArea.setButtonArea(800, 200);
@@ -321,6 +332,12 @@ public class GameView extends View {
                         gameManager.backToMainMenu();
                     }
                 }
+            }
+
+            @Override
+            public void onKeyboardInteraction(String _string) {
+                displayLeaderboardPlayerName.setBlinkCapability(0);
+                displayLeaderboardPlayerName.setText(_string);
             }
         };
 
@@ -405,6 +422,11 @@ public class GameView extends View {
                     default: break;
                 }
             }
+
+            @Override
+            public void onKeyboardInteraction(String _string) {
+
+            }
         };
 
         this.runnable = new Runnable() {
@@ -433,7 +455,6 @@ public class GameView extends View {
     public boolean onKeyUp(int keyCode, KeyEvent event){
         super.onKeyUp(keyCode, event);
         gameInputControlManager.keyboardControl.retrieveKeyboardInput(keyCode, event);
-        //gameInputControlManager.keyboardControl.retrieveKeyboardInput((char)event.getUnicodeChar());
         return true;
     }
 
@@ -464,6 +485,13 @@ public class GameView extends View {
             gameOverActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
             leaderboardActivity.touchInteraction(realTimeInputControlsParameters.userTouchPointer);
         }
+    }
+
+    public void onKeyboardInteraction(String string) {
+        gameMenuActivity.keyboardInteraction(string);
+        startGameActivity.keyboardInteraction(string);
+        gameOverActivity.keyboardInteraction(string);
+        leaderboardActivity.keyboardInteraction(string);
     }
 }
 
@@ -538,6 +566,19 @@ class DialogBox {
         }
         return INTERACTION.NO_INTERACTION;
     }
+}
+
+class TextInput extends TextDisplay {
+
+    public TextInput(Context _context, String _text, Point _position) {
+        super(_context, _text, _position);
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+    }
+
 }
 
 class TextButton {
@@ -637,7 +678,7 @@ class TextDisplay {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while (blinkTiming != 0) {
                     if (System.currentTimeMillis() - previousBlinkTime > blinkTiming) {
                         visible = !visible;
                         previousBlinkTime = System.currentTimeMillis();
@@ -678,9 +719,17 @@ abstract class GameActivityPage {
         }
     }
 
+    public void keyboardInteraction(String _string) {
+        //Do not detect keyboard interaction if the activity is not currently active
+        if (isActive) {
+            onKeyboardInteraction(_string);
+        }
+    }
+
     abstract public void initialize();
     abstract public void onDraw(Canvas canvas);
     abstract public void onTouchInteraction(Rect _userTouchPointer);
+    abstract public void onKeyboardInteraction(String _string);
 
     public static void startActivity(GameActivityPage activityPage) {
         if (previousActiveActivity != null) {
