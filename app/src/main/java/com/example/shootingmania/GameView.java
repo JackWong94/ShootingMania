@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.text.TextPaint;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -149,14 +150,14 @@ public class GameView extends View {
                 gameBackgroundColor.setColor(Color.parseColor(ThemeColorString));
 
                 //Get all display object from gameManager.gameData
-                displayScorePoints = gameManager.gamePlayDesign.scorePoints;
+                displayScorePoints = gameManager.gameData.scorePoints;
                 displayScorePointsPosition = new Point(50,150);
                 displayScorePointsTextPaint = new TextPaint();
                 displayScorePointsTextPaint.setTextAlign(TextPaint.Align.LEFT);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
                 displayScorePointsTextPaint.setTextSize(TEXT_SIZE);
                 displayScorePointsTextPaint.setColor(Color.parseColor("#EF8F3F"));
                 displayScorePointsTextPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
-                displayGameLeftTime = (int) gameManager.gamePlayDesign.gameTimer.getTimeLeft();
+                displayGameLeftTime = (int) gameManager.gameData.gameTimer.getTimeLeft();
                 displayGameLeftTimePosition = new Point(dWidth/2-25 + displayGameLeftTimeTextPaintSize/4,380);
                 displayGameLeftTimeTextPaint = new TextPaint();
                 displayGameLeftTimeTextPaint.setTextAlign(TextPaint.Align.CENTER);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
@@ -166,12 +167,12 @@ public class GameView extends View {
                 displayMenuButtonPosition = new Point(displayScorePointsPosition.x + 850,150);
                 displayMenuButton = new TextButton(context, "MENU",  displayMenuButtonPosition);
                 displayMenuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
-                displayTargetMoveArea = gameManager.gamePlayDesign.targetMoveArea;
+                displayTargetMoveArea = gameManager.gameData.targetMoveArea;
                 displayTargetMoveAreaColor = new Paint();
                 displayTargetMoveAreaColor.setColor(Color.parseColor("#0AAAFF"));
-                displayGun = gameManager.gamePlayDesign.gun;
-                displayAimCross = gameManager.gamePlayDesign.aimCross;
-                displayTarget = gameManager.gamePlayDesign.target;
+                displayGun = gameManager.gameData.gun;
+                displayAimCross = gameManager.gameData.aimCross;
+                displayTarget = gameManager.gameData.target;
                 displayBulletRemainsPosition = new Point(120, dHeight - 220);
                 reloadingInstructionsPopUpPosition = new Point( dWidth/2, dHeight - 200);
                 reloadingInstructionsPopUp = new TextDisplay(context,"Slide Down To Reload !", reloadingInstructionsPopUpPosition);
@@ -188,9 +189,9 @@ public class GameView extends View {
                 //Drawing sequence affecting the overlay sequence, be cautious during changing the sequence at these draw method
                 //Game ui rendering
                 canvas.drawRect(gameBackground, gameBackgroundColor);
-                displayScorePoints = gameManager.gamePlayDesign.scorePoints;
+                displayScorePoints = gameManager.gameData.scorePoints;
                 canvas.drawText("SCORE: " + Integer.toString(displayScorePoints),displayScorePointsPosition.x,displayScorePointsPosition.y, displayScorePointsTextPaint);
-                displayGameLeftTime = (int) gameManager.gamePlayDesign.gameTimer.getTimeLeft()/1000; //Convert Millis To Seconds
+                displayGameLeftTime = (int) gameManager.gameData.gameTimer.getTimeLeft()/1000; //Convert Millis To Seconds
                 canvas.drawText(Integer.toString(displayGameLeftTime), displayGameLeftTimePosition.x,displayGameLeftTimePosition.y, displayGameLeftTimeTextPaint);
                 displayMenuButton.draw(canvas);
                 displayMenuDialogBox.draw(canvas);
@@ -269,14 +270,14 @@ public class GameView extends View {
             @Override
             public void initialize() {
                 //Managing score and leaderboard
-                thisSessionGameScore = new GameScore("UNKNOWN", gameManager.gamePlayDesign.scorePoints);
+                thisSessionGameScore = new GameScore("UNKNOWN", gameManager.gameData.scorePoints);
                 gameBackground = new Rect(0, 0, dWidth, dHeight);
                 gameBackgroundColor = new Paint();
                 gameBackgroundColor.setColor(Color.parseColor(ThemeColorString));
                 allowToSwitchActivity = false;
                 displayGameOverText = new TextDisplay(context, "GAME OVER", displayGameOverTextPosition);
                 displayYourScoreText = new TextDisplay(context, "YOUR SCORES : ", displayYourScoreTextPosition);
-                displayScoreTextDisplay = new TextDisplay(context, Integer.toString(gameManager.gamePlayDesign.scorePoints),displayScoreTextDisplayPosition);
+                displayScoreTextDisplay = new TextDisplay(context, Integer.toString(gameManager.gameData.scorePoints),displayScoreTextDisplayPosition);
                 displayPressToContinueTextDisplay = new TextDisplay(context, "Press Here To Continue !",displayPressToContinueTextDisplayPosition);
                 displayPressToContinueTextDisplay.setFontSize(50);
                 displayPressToContinueTextDisplay.setBlinkCapability(1000);
