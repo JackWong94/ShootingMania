@@ -61,7 +61,6 @@ public class GameView extends View {
             private TextDisplay displayGameTitle2ndLine;
             private TextButton displayStartGameButton;
             private TextButton displayLeaderboardsGameButton;
-            private TextButton displaySettingsButton;
             private TextButton displayExitGameButton;
             @Override
             public void initialize() {
@@ -70,22 +69,18 @@ public class GameView extends View {
                 gameBackgroundColor.setColor(Color.parseColor("#DEEBF7"));
 
                 int fontSize = 150;
-                displayGameTitle1stLine = new TextDisplay(context, "SHOOTING", new Point(dWidth/2,dHeight/6));
+                displayGameTitle1stLine = new TextDisplay(context, "SHOOTING", new Point(dWidth/2,dHeight/5));
                 displayGameTitle1stLine.setFontSize(fontSize);
-                displayGameTitle2ndLine = new TextDisplay(context, "MANIA", new Point(dWidth/2,dHeight/6 + fontSize*2));
+                displayGameTitle2ndLine = new TextDisplay(context, "MANIA", new Point(dWidth/2,dHeight/5 + fontSize*2));
                 displayGameTitle2ndLine.setFontSize(fontSize);
                 int offset = 300;
-                int offsetForFirstMenuItem = 150;
-                Point displayStartButtonPosition = new Point(dWidth/2,dHeight/2-offsetForFirstMenuItem);
+                Point displayStartButtonPosition = new Point(dWidth/2,dHeight/2);
                 Point displayLeaderboardsGameButtonPosition = new Point(displayStartButtonPosition.x,displayStartButtonPosition.y + offset);
-                Point displaySettingsButtonPosition = new Point(displayStartButtonPosition.x,displayLeaderboardsGameButtonPosition.y + offset);
-                Point displayExitGameButtonPosition = new Point(displayStartButtonPosition.x,displaySettingsButtonPosition.y + offset);
+                Point displayExitGameButtonPosition = new Point(displayStartButtonPosition.x,displayLeaderboardsGameButtonPosition.y + offset);
                 displayStartGameButton = new TextButton(context, "Start Game", displayStartButtonPosition);
                 displayStartGameButton.setButtonBoxVisibility(true);
                 displayLeaderboardsGameButton = new TextButton(context, "Leaderboards", displayLeaderboardsGameButtonPosition);
                 displayLeaderboardsGameButton.setButtonBoxVisibility(true);
-                displaySettingsButton = new TextButton(context, "Settings", displaySettingsButtonPosition);
-                displaySettingsButton.setButtonBoxVisibility(true);
                 displayExitGameButton = new TextButton(context, "Exit", displayExitGameButtonPosition);
                 displayExitGameButton.setButtonBoxVisibility(true);
             }
@@ -97,7 +92,6 @@ public class GameView extends View {
                 displayGameTitle2ndLine.draw(canvas);
                 displayStartGameButton.draw(canvas);
                 displayLeaderboardsGameButton.draw(canvas);
-                displaySettingsButton.draw(canvas);
                 displayExitGameButton.draw(canvas);
             }
 
