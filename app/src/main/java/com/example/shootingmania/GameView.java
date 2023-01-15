@@ -284,7 +284,6 @@ public class GameView extends View {
                 displayPressToContinueTextDisplayButtonArea = new TextButton(context, "", displayPressToContinueTextDisplayButtonAreaPosition);
                 displayPressToContinueTextDisplayButtonArea.setButtonArea(dWidth, 500);
                 displayLeaderboardPlayerName = new TextInput(context, "Enter Your Name !", displayLeaderboardPlayerNamePosition);
-                displayLeaderboardPlayerName.setBlinkCapability(500);
                 displayLeaderboardPlayerNameClickToEditArea = new TextButton(context, "", displayLeaderboardPlayerNamePosition);
                 displayLeaderboardPlayerNameClickToEditArea.setButtonArea(800, 200);
                 displayLeaderboardPlayerNameUnderline = new TextDisplay(context, "_ _ _ _ _ _ _ _ _", displayLeaderboardPlayerNameUnderlinePosition);
