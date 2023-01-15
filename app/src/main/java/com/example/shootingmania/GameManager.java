@@ -20,15 +20,15 @@ public class GameManager {
     public boolean isInitialized = false;
     private boolean isPause = false;
     public GameView gameView;
-    public GameData gameData;
+    public GamePlayDesign gamePlayDesign;
     public GameScoreManager gameScoreManager;
     private Context context;
     public GameManager(GameView gameView) {
         this.gameView = gameView;
         this.context = gameView.getContext();
         //Loading game data
-        gameData = new GameData(context, this);
-        gameData.initializing();
+        gamePlayDesign = new GamePlayDesign(context, this);
+        gamePlayDesign.initializing();
         gameScoreManager = new GameScoreManager(context, this);
         gameScoreManager.initializing();
     }
@@ -37,7 +37,7 @@ public class GameManager {
         activityState = newActivityState;
         switch (activityState) {
             case GAME_MENU: setPause(); GameActivityPage.startActivity(gameView.gameMenuActivity); break;
-            case START_GAME: gameData.startGame(); setResume(); GameActivityPage.startActivity(gameView.startGameActivity); break;
+            case START_GAME: gamePlayDesign.startGame(); setResume(); GameActivityPage.startActivity(gameView.startGameActivity); break;
             case LEADERBOARDS: GameActivityPage.startActivity(gameView.leaderboardActivity); break;
             case GAME_OVER: setPause(); GameActivityPage.startActivity(gameView.gameOverActivity); break;
             default: break;
@@ -55,7 +55,7 @@ public class GameManager {
             return;
         }
         //Start game loop
-        gameData.updateGameData();
+        gamePlayDesign.updateGameData();
     }
 
     public void setPause() {
@@ -92,7 +92,7 @@ public class GameManager {
             //Pause all game related touch controls
         }
         gameView.onTouchPointInteraction(realTimeInputControlsParameters);
-        gameData.touchControlsDetected(realTimeInputControlsParameters);
+        gamePlayDesign.touchControlsDetected(realTimeInputControlsParameters);
     }
 
     public void updateKeyboardInput(char key) {
@@ -109,7 +109,7 @@ public class GameManager {
             return;
             //Pause all game related touch controls
         }
-        gameData.swipeControlsDetected(realTimeInputControlsParameters);
+        gamePlayDesign.swipeControlsDetected(realTimeInputControlsParameters);
     }
 
     public void updateAccelerometerControls(RealTimeInputControlsParameters realTimeInputControlsParameters) {
@@ -117,7 +117,7 @@ public class GameManager {
             return;
             //Pause all game related accelerometer controls
         }
-        gameData.accelerometerControlsDetected(realTimeInputControlsParameters);
+        gamePlayDesign.accelerometerControlsDetected(realTimeInputControlsParameters);
     }
 }
 
@@ -236,7 +236,7 @@ class GameScore {
     }
 }
 
-class GameData {
+class GamePlayDesign {
     private Context context;
     private GameManager gameManager;
     public Rect targetMoveArea;
@@ -246,7 +246,7 @@ class GameData {
     public int scorePoints;
     public GameTimer gameTimer;
 
-    public GameData(Context context, GameManager gameManager) {
+    public GamePlayDesign(Context context, GameManager gameManager) {
         this.context = context;
         this.gameManager = gameManager; //allow game data to communicate with game manager
         gameTimer = new GameTimer() {
