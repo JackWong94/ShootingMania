@@ -37,6 +37,8 @@ public class GameView extends View {
     private Handler handler;
     private Runnable runnable;
     private Runnable runnable_system;
+    private boolean isShowingAdvertisement;
+    private Rect advertisement;
 
     public GameView(Context context) {
         super(context);
@@ -53,6 +55,10 @@ public class GameView extends View {
         gameSoundManager = new SoundManager();
         gameManager = new GameManager(this);
         gameInputControlManager = new InputControlsManager(context, display, gameManager, this);
+
+        //Advertisement coming soon
+        isShowingAdvertisement = true;
+        advertisement = new Rect(0, dHeight - 100, dWidth, dHeight); //728 x 90
 
         gameMenuActivity =new GameActivityPage() {
             private Rect gameBackground;
@@ -173,8 +179,14 @@ public class GameView extends View {
                 displayGun = gameManager.gameData.gun;
                 displayAimCross = gameManager.gameData.aimCross;
                 displayTarget = gameManager.gameData.target;
-                displayBulletRemainsPosition = new Point(120, dHeight - 220);
-                reloadingInstructionsPopUpPosition = new Point( dWidth/2, dHeight - 200);
+                if (isShowingAdvertisement) {
+                    gameManager.gameData.gun.posY -= advertisement.height();
+                    displayBulletRemainsPosition = new Point(120, dHeight - 220 - advertisement.height());
+                    reloadingInstructionsPopUpPosition = new Point( dWidth/2, dHeight - 200 - advertisement.height());
+                } else {
+                    displayBulletRemainsPosition = new Point(120, dHeight - 220);
+                    reloadingInstructionsPopUpPosition = new Point( dWidth/2, dHeight - 200);
+                }
                 reloadingInstructionsPopUp = new TextDisplay(context,"Slide Down To Reload !", reloadingInstructionsPopUpPosition);
                 reloadingInstructionsPopUp.setFontSize(50);
                 reloadingInstructionsPopUp.setBlinkCapability(500);
