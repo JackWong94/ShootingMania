@@ -12,10 +12,12 @@ public class Gun {
     private static final long VIBRATION_STRENGTH = 50;
     private Vibrator vibrator;
     private Context context;
-    static private int numberOfSprites = 17;
+    static private int numberOfSprites = 9;
     static private Bitmap gun[] = new Bitmap[numberOfSprites];
+    static private int gunFrameCountControl[] = new int[numberOfSprites];
     static private Bitmap bullets[] = new Bitmap[1];
     private int currentFrame = 0;
+    private int currentFramePlayCount = 0;
     private boolean isFirstFrame = true;
 
     private enum STATE {
@@ -43,22 +45,23 @@ public class Gun {
             vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             //Sprites assignment and animation timing
             gun[0] = Sprite.createSprite(context, Sprite.NAME.GUN);
+            gunFrameCountControl[0] = 1;
             gun[1] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_1);
+            gunFrameCountControl[1] = 5;
             gun[2] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_2);
+            gunFrameCountControl[2] = 8;
             gun[3] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_3);
+            gunFrameCountControl[3] = 10;
             gun[4] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_4);
+            gunFrameCountControl[4] = 15;
             gun[5] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
-            gun[6] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
-            gun[7] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
-            gun[8] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
-            gun[9] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
-            gun[10] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
-            gun[11] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_3);
-            gun[12] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_3);
-            gun[13] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
-            gun[14] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
-            gun[15] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
-            gun[16] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
+            gunFrameCountControl[5] = 20;
+            gun[6] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
+            gunFrameCountControl[6] = 10;
+            gun[7] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_3);
+            gunFrameCountControl[7] = 10;
+            gun[8] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
+            gunFrameCountControl[8] = 20;
             bullets[0] = Sprite.createSpriteForBullets(context, Sprite.NAME.BULLET);
             //Sound effect
             shootSound = gunSoundEffect.load(context, R.raw.gun_shoot,1);
@@ -123,7 +126,52 @@ public class Gun {
     }
 
     public int getCurrentFrame() {
-        if (state == STATE.SHOOTING) {
+        if (currentFramePlayCount != 0) {
+            currentFramePlayCount--;
+        } else {
+            switch (state) {
+                case SHOOTING: {
+                    if (isFirstFrame) {
+                        currentFrame = 1;
+                        currentFramePlayCount = gunFrameCountControl[currentFrame];
+                        isFirstFrame = false;
+                    } else {
+                        if (currentFrame < 4) {
+                            currentFrame++;
+                            currentFramePlayCount = gunFrameCountControl[currentFrame];
+                        } else {
+                            state = STATE.IDLE;
+                            isFirstFrame = true;
+                        }
+                    }
+                    break;
+                }
+                case RELOADING: {
+                    if (isFirstFrame) {
+                        currentFrame = 5;
+                        currentFramePlayCount = gunFrameCountControl[currentFrame];
+                        isFirstFrame = false;
+                    } else {
+                        if (currentFrame < 8) {
+                            currentFrame++;
+                            currentFramePlayCount = gunFrameCountControl[currentFrame];
+                        } else {
+                            state = STATE.IDLE;
+                            isFirstFrame = true;
+                        }
+                    }
+                    break;
+                }
+                default: {
+                    //IDLE frame
+                    currentFrame = 0;
+                    currentFramePlayCount = gunFrameCountControl[currentFrame];
+                    break;
+                }
+            }
+        }
+        return currentFrame;
+        /*if (state == STATE.SHOOTING) {
             if (isFirstFrame) {
                 isFirstFrame = false;
                 return currentFrame = 1; //First SHOOTING FRAME
@@ -134,6 +182,7 @@ public class Gun {
                 currentFrame = 0;
                 return currentFrame;
             }
+            currentFramePlayCount = gunFrameCountControl[currentFrame];
             return currentFrame++;
         }
         if (state == STATE.RELOADING) {
@@ -149,6 +198,6 @@ public class Gun {
             }
             return currentFrame++;
         }
-        return currentFrame;
+        return currentFrame;*/
     }
 }
