@@ -24,8 +24,8 @@ public class GameView extends View {
     private InputControlsManager gameInputControlManager;
     private Display display;
     private String ThemeColorString = "#DEEBF7";
-    final long UPDATE_MILLIS = 15; //To get around 60FPS
-    final long UPDATE_MILLIS_SYSTEM = 0;
+    final long UPDATE_MILLIS = 16;  //Make FPS around 60 HZ
+    final long UPDATE_MILLIS_SYSTEM = 1;    //Make FPS around 1000 HZ
     public static int dHeight;
     public static int dWidth;
     private String TAG = "GameView";
@@ -441,10 +441,10 @@ public class GameView extends View {
         this.runnable_system= new Runnable() {
             @Override
             public void run() {
-                gameManager.run();
+                systemUpdate();
             }
         };
-
+        systemUpdate();
     }
 
     @Override
@@ -469,13 +469,20 @@ public class GameView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        long previousMillis = System.currentTimeMillis();
         super.onDraw(canvas);
         gameMenuActivity.draw(canvas);
         startGameActivity.draw(canvas);
         gameOverActivity.draw(canvas);
         leaderboardActivity.draw(canvas);
-        handler.postDelayed(runnable, UPDATE_MILLIS);   //Graphic related
-        handler.postDelayed(runnable_system, UPDATE_MILLIS_SYSTEM); //System related (Do not add delay as user input being process here)
+        handler.postDelayed(runnable, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS) ? 0 : UPDATE_MILLIS - System.currentTimeMillis()-previousMillis);   //Graphic related
+    }
+
+    public void systemUpdate() {
+        long previousMillis = System.currentTimeMillis();
+        gameManager.run();
+        handler.postDelayed(runnable_system, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS_SYSTEM) ? 0 : UPDATE_MILLIS_SYSTEM - System.currentTimeMillis()-previousMillis); //System related
+
     }
 
     public void onTouchPointInteraction(RealTimeInputControlsParameters realTimeInputControlsParameters) {
