@@ -76,9 +76,9 @@ public class Gun {
             bullets[0] = Sprite.createSpriteForBullets(context, Sprite.NAME.BULLET);
             flames[0] = Sprite.createSprite(context, Sprite.NAME.FLAME_0);
             flames[1] = Sprite.createSprite(context, Sprite.NAME.FLAME_1);
-            gunFrameCountControlforFlame[1] = 0;
+            gunFrameCountControlforFlame[1] = 1;
             flames[2] = Sprite.createSprite(context, Sprite.NAME.FLAME_2);
-            gunFrameCountControlforFlame[2] = 0;
+            gunFrameCountControlforFlame[2] = 1;
             //Sound effect
             shootSound = gunSoundEffect.load(context, R.raw.gun_shoot,1);
             shootEmptySound = gunSoundEffect.load(context,R.raw.gun_empty,1);
