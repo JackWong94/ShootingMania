@@ -52,15 +52,15 @@ public class Gun {
             gunFrameCountControl[2] = 8;
             gun[3] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_3);
             gunFrameCountControl[3] = 10;
-            gun[4] = Sprite.createSprite(context, Sprite.NAME.GUN_SHOOT_4);
+            gun[4] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
             gunFrameCountControl[4] = 15;
-            gun[5] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_1);
+            gun[5] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
             gunFrameCountControl[5] = 20;
-            gun[6] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_2);
+            gun[6] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_3);
             gunFrameCountControl[6] = 10;
-            gun[7] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_3);
+            gun[7] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
             gunFrameCountControl[7] = 10;
-            gun[8] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_4);
+            gun[8] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_5);
             gunFrameCountControl[8] = 20;
             bullets[0] = Sprite.createSpriteForBullets(context, Sprite.NAME.BULLET);
             //Sound effect
@@ -136,7 +136,7 @@ public class Gun {
                         currentFramePlayCount = gunFrameCountControl[currentFrame];
                         isFirstFrame = false;
                     } else {
-                        if (currentFrame < 4) {
+                        if (currentFrame < 3) {
                             currentFrame++;
                             currentFramePlayCount = gunFrameCountControl[currentFrame];
                         } else {
@@ -148,7 +148,7 @@ public class Gun {
                 }
                 case RELOADING: {
                     if (isFirstFrame) {
-                        currentFrame = 5;
+                        currentFrame = 4;
                         currentFramePlayCount = gunFrameCountControl[currentFrame];
                         isFirstFrame = false;
                     } else {
