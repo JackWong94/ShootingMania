@@ -210,7 +210,7 @@ public class GameView extends View {
                 canvas.drawRect(displayTargetMoveArea, displayTargetMoveAreaColor);
 
                 //Game object rendering
-                if (displayTarget!=null) {
+                if (displayTarget.animateFrame(displayTarget.frame)!=null) {
                     canvas.drawBitmap(displayTarget.animateFrame(displayTarget.frame), displayTarget.posX - displayTarget.getTargetWidth(displayTarget.animateFrame(displayTarget.frame))/2, displayTarget.posY - displayTarget.getTargetHeight(displayTarget.animateFrame(displayTarget.frame))/2, null);
                 }
                 for (BulletMarks b : displayTarget.bulletMarks) {
@@ -218,14 +218,17 @@ public class GameView extends View {
                         canvas.drawBitmap(b.animateFrame(), b.posX - b.getTargetWidth() / 2, b.posY - b.getTargetHeight() / 2, null);
                     }
                 }
-                if (displayGun != null) {
+                if (displayGun.animateFrame(displayGun.getCurrentFrame()) != null) {
                     canvas.drawBitmap(displayGun.animateFrame(displayGun.getCurrentFrame()), displayGun.posX - displayGun.getGunWidth((displayGun.animateFrame(displayGun.getCurrentFrame()))) / 4, displayGun.posY - displayGun.getGunHeight((displayGun.animateFrame(displayGun.getCurrentFrame()))) / 2, null);
+                    if (displayGun.animateFrameForShootingFlame(displayGun.getCurrentFrameForFlame()) != null) {
+                        canvas.drawBitmap(displayGun.animateFrameForShootingFlame(displayGun.getCurrentFrameForFlame()), displayGun.posX - displayGun.getGunWidth((displayGun.animateFrame(displayGun.getCurrentFrameForFlame()))) / 4 - displayGun.flamePositionOffsetX, displayGun.posY - displayGun.getGunHeight((displayGun.animateFrame(displayGun.getCurrentFrameForFlame()))) / 2 - displayGun.flamePositionOffsetY, null);
+                    }
                 }
-                if (displayAimCross != null) {
+                if (displayAimCross.animateFrame(displayAimCross.getCurrentFrame()) != null) {
                     canvas.drawBitmap(displayAimCross.animateFrame(displayAimCross.getCurrentFrame()), displayAimCross.posX - displayAimCross.getAimCrossWidth((displayAimCross.animateFrame(0))) / 2, displayAimCross.posY - displayAimCross.getAimCrossHeight((displayAimCross.animateFrame(0))) / 2, null);
                 }
                 for (int i=0; i<displayGun.getRemainingBulletsCount(); i++) {
-                    if (displayGun != null) {
+                    if (displayGun.animateFrameForBulletRemaining() != null) {
                         canvas.drawBitmap(displayGun.animateFrameForBulletRemaining(), displayBulletRemainsPosition.x * i, displayBulletRemainsPosition.y, null);
                     }
                 }

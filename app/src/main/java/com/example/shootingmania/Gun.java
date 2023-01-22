@@ -16,9 +16,15 @@ public class Gun {
     static private Bitmap gun[] = new Bitmap[numberOfSprites];
     static private int gunFrameCountControl[] = new int[numberOfSprites];
     static private Bitmap bullets[] = new Bitmap[1];
+    static private Bitmap flames[] = new Bitmap[3];
+    static private int gunFrameCountControlforFlame[] = new int[3];
     private int currentFrame = 0;
     private int currentFramePlayCount = 0;
     private boolean isFirstFrame = true;
+
+    private int currentFrameForFlame = 0;
+    private int currentFramePlayCountForFlame = 0;
+    private boolean isFirstFrameForFlame = true;
 
     private enum STATE {
         IDLE,
@@ -39,6 +45,10 @@ public class Gun {
     //Bullet Part
     private int gunCartridgeSize  = 10; //Capable of holding 10 bullets max
     private int bulletsRemaining = gunCartridgeSize; //Fill cartridge during start game
+
+    //Gun flame part
+    public int flamePositionOffsetX = 80;
+    public int flamePositionOffsetY = 95;
 
     public Gun(Context context) {
         this.context = context;
@@ -64,6 +74,11 @@ public class Gun {
             gun[8] = Sprite.createSprite(context, Sprite.NAME.GUN_RELOADING_5);
             gunFrameCountControl[8] = 20;
             bullets[0] = Sprite.createSpriteForBullets(context, Sprite.NAME.BULLET);
+            flames[0] = Sprite.createSprite(context, Sprite.NAME.FLAME_0);
+            flames[1] = Sprite.createSprite(context, Sprite.NAME.FLAME_1);
+            gunFrameCountControlforFlame[1] = 0;
+            flames[2] = Sprite.createSprite(context, Sprite.NAME.FLAME_2);
+            gunFrameCountControlforFlame[2] = 0;
             //Sound effect
             shootSound = gunSoundEffect.load(context, R.raw.gun_shoot,1);
             shootEmptySound = gunSoundEffect.load(context,R.raw.gun_empty,1);
@@ -83,6 +98,11 @@ public class Gun {
     public Bitmap animateFrameForBulletRemaining() {
         //Animate frame passes the bitmap responding to the current frame to gameView class for draw
         return bullets[0];
+    }
+
+    public Bitmap animateFrameForShootingFlame(int frame) {
+        //Animate frame passes the bitmap responding to the current frame to gameView class for draw
+        return flames[frame];
     }
 
     public void resetGunPosition(int _posX, int _posY) {
@@ -125,6 +145,37 @@ public class Gun {
         state = STATE.RELOADING;
         gunSoundEffect.generateSoundEffect(reloadSound);
         bulletsRemaining = gunCartridgeSize; //Fully filled armor during each reload
+    }
+
+    public int getCurrentFrameForFlame() {
+        if (currentFramePlayCountForFlame != 0) {
+            currentFramePlayCountForFlame--;
+        } else {
+            switch (state) {
+                case SHOOTING: {
+                    if (isFirstFrameForFlame) {
+                        currentFrameForFlame = 0;
+                        currentFramePlayCountForFlame = gunFrameCountControl[currentFrameForFlame];
+                        isFirstFrameForFlame = false;
+                    } else {
+                        if (currentFrameForFlame < 2) {
+                            currentFrameForFlame++;
+                            currentFramePlayCountForFlame = gunFrameCountControl[currentFrameForFlame];
+                        } else {
+                            isFirstFrameForFlame = true;
+                        }
+                    }
+                    break;
+                }
+                default: {
+                    //IDLE frame
+                    currentFrameForFlame = 0;
+                    currentFramePlayCountForFlame = gunFrameCountControlforFlame[currentFrameForFlame];
+                    break;
+                }
+            }
+        }
+        return currentFrameForFlame;
     }
 
     public int getCurrentFrame() {

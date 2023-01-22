@@ -19,6 +19,7 @@ public class Sprite {
         AIM_CROSS_LOCK, AIM_CROSS_UNLOCK,
         BULLET_MARKS_1, BULLET_MARKS_2, BULLET_MARKS_3,
         BULLET,
+        FLAME_0, FLAME_1, FLAME_2,
     }
 
     public static Bitmap createSprite(Context context, NAME name) {
@@ -88,6 +89,20 @@ public class Sprite {
             case BULLET_MARKS_3: {
                 sprite = Bitmap.createBitmap(sprite,2*spritePixelSize*pixelRatio,(2*spritePixelSize*pixelRatio)+OFFSET_DUE_TO_ASSET_ERROR,spriteSizeInDisplay,spriteSizeInDisplay-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
+                break;
+            }
+            case FLAME_0: {
+                sprite = Bitmap.createBitmap(sprite,0,0,1,1);
+                break;
+            }
+            case FLAME_1: {
+                sprite = Bitmap.createBitmap(sprite,3*spritePixelSize*pixelRatio,(2*spritePixelSize*pixelRatio)+OFFSET_DUE_TO_ASSET_ERROR,spriteSizeInDisplay,spriteSizeInDisplay-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize*6/10,scaleUpSize*6/10,true);
+                break;
+            }
+            case FLAME_2: {
+                sprite = Bitmap.createBitmap(sprite,4*spritePixelSize*pixelRatio,(2*spritePixelSize*pixelRatio)+OFFSET_DUE_TO_ASSET_ERROR,spriteSizeInDisplay,spriteSizeInDisplay-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize*6/10,scaleUpSize*6/10,true);
                 break;
             }
             default: break;
