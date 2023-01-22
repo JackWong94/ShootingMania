@@ -24,6 +24,7 @@ public class Gun {
         IDLE,
         SHOOTING,
         RELOADING,
+        SHOOTING_FAIL
     }
     private STATE state = STATE.IDLE;
 
@@ -115,6 +116,7 @@ public class Gun {
             return point;
         } else {
             gunSoundEffect.generateSoundEffect(shootEmptySound);
+            state = STATE.SHOOTING_FAIL;
             return new Point(-1,-1); //Return a value that not exist on the target area
         }
     }
@@ -162,6 +164,22 @@ public class Gun {
                     }
                     break;
                 }
+                case SHOOTING_FAIL: {
+                    if (isFirstFrame) {
+                        currentFrame = 1;
+                        currentFramePlayCount = gunFrameCountControl[currentFrame];
+                        isFirstFrame = false;
+                    } else {
+                        if (currentFrame < 1) {
+                            currentFrame++;
+                            currentFramePlayCount = gunFrameCountControl[currentFrame];
+                        } else {
+                            state = STATE.IDLE;
+                            isFirstFrame = true;
+                        }
+                    }
+                    break;
+                }
                 default: {
                     //IDLE frame
                     currentFrame = 0;
@@ -171,33 +189,5 @@ public class Gun {
             }
         }
         return currentFrame;
-        /*if (state == STATE.SHOOTING) {
-            if (isFirstFrame) {
-                isFirstFrame = false;
-                return currentFrame = 1; //First SHOOTING FRAME
-            }
-            if (currentFrame == 4) {//LAST SHOOTING FRAME
-                state = STATE.IDLE;
-                isFirstFrame = true;
-                currentFrame = 0;
-                return currentFrame;
-            }
-            currentFramePlayCount = gunFrameCountControl[currentFrame];
-            return currentFrame++;
-        }
-        if (state == STATE.RELOADING) {
-            if (isFirstFrame) {
-                isFirstFrame = false;
-                return currentFrame = 5; //First SHOOTING FRAME
-            }
-            if (currentFrame == 16) {//LAST Reloading Frame
-                state = STATE.IDLE;
-                isFirstFrame = true;
-                currentFrame = 0;
-                return currentFrame;
-            }
-            return currentFrame++;
-        }
-        return currentFrame;*/
     }
 }
