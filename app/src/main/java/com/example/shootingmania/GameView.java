@@ -25,7 +25,7 @@ public class GameView extends View {
     private Display display;
     private String ThemeColorString = "#DEEBF7";
     final long UPDATE_MILLIS = 16;  //Make FPS around 60 HZ
-    final long UPDATE_MILLIS_SYSTEM = 1;    //Make FPS around 1000 HZ
+    final long UPDATE_MILLIS_SYSTEM = 10;    //Make FPS around 100 HZ
     public static int dHeight;
     public static int dWidth;
     private String TAG = "GameView";
