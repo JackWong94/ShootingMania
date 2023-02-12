@@ -2,7 +2,7 @@ package com.example.shootingmania;
 
 public class GameTimer {
     private long timePerGame = 10000; //10 seconds default game time
-    private long timeLeft = timePerGame;
+    private volatile long timeLeft = timePerGame;
     private long prevTime = timeLeft;
     private long countDownResolution = 100; //count down each 100 ms
     private boolean timerStatus = false;
@@ -50,5 +50,9 @@ public class GameTimer {
 
     public void stopCount() {
         timerStatus = false;
+    }
+
+    public void addTimeAccumulate(long bonusTimeAccumulate) {
+        timeLeft += bonusTimeAccumulate*1000;
     }
 }

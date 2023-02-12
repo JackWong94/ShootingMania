@@ -292,6 +292,7 @@ class GameData {
             gameTimer.startCount();
         }
         scorePoints = tempScore;
+        gameTimer.addTimeAccumulate(target.updateBonusTimeAccumulate());
         FontEffects.updateAll();
     }
 

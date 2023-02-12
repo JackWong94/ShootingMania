@@ -23,6 +23,7 @@ public class Target {
     public ArrayList<BulletMarks> bulletMarks;
     private Context context;
     private volatile boolean isVerifyingShoot = false;
+    private long bonusTimeAccumulate;
 
     //Sound Part
     private GameSoundPool targetRelatedSound = new GameSoundPool(10, AudioManager.STREAM_MUSIC,0);
@@ -32,6 +33,7 @@ public class Target {
     static private Bitmap target[] = new Bitmap[numberOfSprites];
 
     public Target(Context context) {
+        this.bonusTimeAccumulate = 0;
         this.context = context;
         if (!resourcesLoaded) {
             target[0] = Sprite.createSprite(context, Sprite.NAME.TARGET);   //1st Frame
@@ -98,9 +100,11 @@ public class Target {
             if (accuracy >= 0 && accuracy < 15) {
                 score += 100;
                 new FontEffects("PERFECT + 3s", targetLocation.x, targetLocation.y);
+                bonusTimeAccumulate = 3;
             } else if (accuracy >= 15 && accuracy < 35) {
                 score += 80;
                 new FontEffects("NICE + 1s", targetLocation.x, targetLocation.y);
+                bonusTimeAccumulate = 1;
             } else if (accuracy >= 35 && accuracy < 80) {
                 score += 50;
                 new FontEffects("GOOD", targetLocation.x, targetLocation.y);
@@ -121,5 +125,11 @@ public class Target {
     private int calculateDistance(Point point1, Point point2) {
         double distance = Math.sqrt(Math.pow((point1.x-point2.x),2) + Math.pow((point1.y-point2.y),2));
         return (int)distance;
+    }
+
+    public long updateBonusTimeAccumulate() {
+        long temp = bonusTimeAccumulate;
+        bonusTimeAccumulate = 0;
+        return temp;
     }
 }
