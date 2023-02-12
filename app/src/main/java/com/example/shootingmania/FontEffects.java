@@ -10,7 +10,7 @@ public class FontEffects {
     public String fontsContent;
     public int x;
     public int y;
-    public long spawnTime = 1000;
+    public long spawnTime = 1250;
     public long prevTime;
     public Paint paint;
     public boolean active;
@@ -40,7 +40,7 @@ public class FontEffects {
     }
 
     public void effectMovementUpdate() {
-        y--;
+        y-=2;
     }
 
     public void effectEnded() {

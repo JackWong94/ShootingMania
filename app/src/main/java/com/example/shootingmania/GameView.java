@@ -241,7 +241,9 @@ public class GameView extends View {
                 }
                 if (displayFontEffectsList != null) {
                     for (FontEffects f:displayFontEffectsList) {
-                        canvas.drawText(f.fontsContent, f.x, f.y, f.paint);
+                        if (f!=null) {
+                            canvas.drawText(f.fontsContent, f.x, f.y, f.paint);
+                        }
                     }
                 }
             }
