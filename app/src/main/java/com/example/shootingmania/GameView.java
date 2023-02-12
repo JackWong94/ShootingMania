@@ -148,6 +148,7 @@ public class GameView extends View {
             private TextDisplay reloadingInstructionsPopUp;
             private Point reloadingInstructionsPopUpPosition;
             private int TEXT_SIZE = 80;
+            private ArrayList<FontEffects> displayFontEffectsList;
             @Override
             public void initialize() {
                 //Game activity page initialize
@@ -190,6 +191,7 @@ public class GameView extends View {
                 reloadingInstructionsPopUp = new TextDisplay(context,"Slide Down To Reload !", reloadingInstructionsPopUpPosition);
                 reloadingInstructionsPopUp.setFontSize(50);
                 reloadingInstructionsPopUp.setBlinkCapability(500);
+                displayFontEffectsList = FontEffects.activeFontEffectsList;
             }
 
             @Override
@@ -235,6 +237,11 @@ public class GameView extends View {
                 if (displayGun != null) {
                     if (displayGun.getRemainingBulletsCount() == 0) {
                         reloadingInstructionsPopUp.draw(canvas);
+                    }
+                }
+                if (displayFontEffectsList != null) {
+                    for (FontEffects f:displayFontEffectsList) {
+                        canvas.drawText(f.fontsContent, f.x, f.y, f.paint);
                     }
                 }
             }

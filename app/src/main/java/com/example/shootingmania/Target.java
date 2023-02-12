@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.media.AudioManager;
-import android.media.SoundPool;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class Target {
     static boolean resourcesLoaded = false;
     private static int numberOfSprites = 1;
     private Random random;
-    private long spawnTime = 1000;
+    private long spawnTime = 1500;
     private long previousSpawnTime = 0;
     public Rect targetMovingBoundary = new Rect(0,0,GameView.dWidth,GameView.dHeight);
     public volatile int posX, posY;
@@ -96,13 +95,15 @@ public class Target {
         } else {
             //Target Consist Of 4 Area BULLEYES 100 points, CENTER 80, SECOND LAYER 50, OUTER LAYER 30
             Log.i(TAG,"PERFECT" + accuracy);
-            if (accuracy >= 0 && accuracy < 10) {
+            if (accuracy >= 0 && accuracy < 15) {
                 score += 100;
-            } else if (accuracy >= 10 && accuracy < 30) {
+                new FontEffects("PERFECT + 10S", targetLocation.x, targetLocation.y);
+            } else if (accuracy >= 15 && accuracy < 35) {
                 score += 80;
-            }
-            if (accuracy >= 30 && accuracy < 80) {
+                new FontEffects("NICE", targetLocation.x, targetLocation.y);
+            } else if (accuracy >= 35 && accuracy < 80) {
                 score += 50;
+                new FontEffects("GOOD", targetLocation.x, targetLocation.y);
             } else {
                 score += 30;
             }

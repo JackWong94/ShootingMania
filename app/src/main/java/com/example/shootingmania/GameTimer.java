@@ -9,6 +9,7 @@ public class GameTimer {
     public GameTimer() {
 
     }
+
     public void setTimerTime(long duration) {
         timeLeft = duration;
     }

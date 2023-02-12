@@ -4,6 +4,7 @@ import static com.example.shootingmania.GameView.dWidth;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 import com.google.gson.Gson;
@@ -274,6 +275,7 @@ class GameData {
         target = new Target(context);
         target.setMovingArea(targetMoveArea);
         gameTimer.stopCount();
+        FontEffects.reset();
     }
 
     public void startGame() {
@@ -290,6 +292,7 @@ class GameData {
             gameTimer.startCount();
         }
         scorePoints = tempScore;
+        FontEffects.updateAll();
     }
 
     public void controlGunMovement(float x_dir_movement, float y_dir_movement){
