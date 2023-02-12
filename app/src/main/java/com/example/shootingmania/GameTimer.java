@@ -5,6 +5,7 @@ public class GameTimer {
     private long timeLeft = timePerGame;
     private long prevTime = timeLeft;
     private long countDownResolution = 100; //count down each 100 ms
+    private boolean timerStatus = false;
     public GameTimer() {
 
     }
@@ -13,18 +14,21 @@ public class GameTimer {
     }
     public void startCount() {
         prevTime = System.currentTimeMillis();
+        timerStatus = true;
         //Create a new game runnable and track for time decrement
         Thread thread = new Thread(new GameRunnable() {
             @Override
             public void gameRun() {
-                if (System.currentTimeMillis() - prevTime > countDownResolution) {
-                    timeLeft -= countDownResolution;
-                    prevTime = System.currentTimeMillis();
-                }
-                if (timeLeft < 0) {
-                    onTimesUp();
-                    this.killRunnable();
-                    timeLeft = timePerGame;
+                if (timerStatus) {
+                    if (System.currentTimeMillis() - prevTime > countDownResolution) {
+                        timeLeft -= countDownResolution;
+                        prevTime = System.currentTimeMillis();
+                    }
+                    if (timeLeft < 0) {
+                        timesUp();
+                        this.killRunnable();
+                        timeLeft = timePerGame;
+                    }
                 }
             }
         });
@@ -36,10 +40,14 @@ public class GameTimer {
     }
     public void onTimesUp() {
         //Override this method for game implementation
+        stopCount();
     }
 
     public long getTimeLeft() {
         return timeLeft;
     }
 
+    public void stopCount() {
+        timerStatus = false;
+    }
 }

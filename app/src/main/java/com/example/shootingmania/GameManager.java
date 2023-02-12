@@ -245,6 +245,7 @@ class GameData {
     public AimCross aimCross;
     public int scorePoints;
     public GameTimer gameTimer;
+    private boolean userFirstShooting;
 
     public GameData(Context context, GameManager gameManager) {
         this.context = context;
@@ -272,17 +273,22 @@ class GameData {
         //Set single target only in the game, future levels implementation can consider add more targets
         target = new Target(context);
         target.setMovingArea(targetMoveArea);
+        gameTimer.stopCount();
     }
 
     public void startGame() {
         reset();
+        userFirstShooting = true;
         gameTimer.setTimerTime(20000);
-        gameTimer.startCount();
     }
 
     public void updateGameData() {
         int tempScore = 0;
         tempScore += target.returnTotalScore();
+        if (userFirstShooting && tempScore != 0) {
+            userFirstShooting = false;
+            gameTimer.startCount();
+        }
         scorePoints = tempScore;
     }
 
