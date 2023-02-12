@@ -22,7 +22,7 @@ public class FontEffects {
         this.y =  y;
         this.paint = new TextPaint();
         this.paint.setColor(Color.parseColor("#00FF00"));
-        this.paint.setTextSize(60);
+        this.paint.setTextSize(50);
         this.prevTime = System.currentTimeMillis();
         this.active = true;
         Thread thread = new Thread(new Runnable() {

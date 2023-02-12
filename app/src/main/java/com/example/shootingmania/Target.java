@@ -97,15 +97,16 @@ public class Target {
             Log.i(TAG,"PERFECT" + accuracy);
             if (accuracy >= 0 && accuracy < 15) {
                 score += 100;
-                new FontEffects("PERFECT + 10S", targetLocation.x, targetLocation.y);
+                new FontEffects("PERFECT + 3s", targetLocation.x, targetLocation.y);
             } else if (accuracy >= 15 && accuracy < 35) {
                 score += 80;
-                new FontEffects("NICE", targetLocation.x, targetLocation.y);
+                new FontEffects("NICE + 1s", targetLocation.x, targetLocation.y);
             } else if (accuracy >= 35 && accuracy < 80) {
                 score += 50;
                 new FontEffects("GOOD", targetLocation.x, targetLocation.y);
             } else {
                 score += 30;
+                new FontEffects("GOOD", targetLocation.x, targetLocation.y);
             }
             bulletMarks.add(new BulletMarks(this.context, shotPoint.x, shotPoint.y));
             targetRelatedSound.generateSoundEffect(hitTarget2);
