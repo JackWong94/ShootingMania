@@ -49,7 +49,9 @@ public class FontEffects {
 
     public static void updateAll() {
         for (FontEffects f:activeFontEffectsList) {
-            f.effectMovementUpdate();
+            if (f!=null) {
+                f.effectMovementUpdate();
+            }
         }
     }
 

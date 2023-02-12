@@ -15,7 +15,7 @@ public class Target {
     static boolean resourcesLoaded = false;
     private static int numberOfSprites = 1;
     private Random random;
-    private long spawnTime = 1500;
+    private long spawnTime = 1800;
     private long previousSpawnTime = 0;
     public Rect targetMovingBoundary = new Rect(0,0,GameView.dWidth,GameView.dHeight);
     public volatile int posX, posY;
@@ -131,5 +131,26 @@ public class Target {
         long temp = bonusTimeAccumulate;
         bonusTimeAccumulate = 0;
         return temp;
+    }
+
+    public void getLatestScore(int scorePoints) {
+        //The higher score player get, the faster the target refresh
+        if (scorePoints < 250) {
+            spawnTime = 1800;
+        } else if (scorePoints < 500) {
+            spawnTime = 1600;
+        } else if (scorePoints < 700) {
+            spawnTime = 1400;
+        } else if (scorePoints < 1000) {
+            spawnTime = 1300;
+        } else if (scorePoints < 1300) {
+            spawnTime = 1200;
+        }  else if (scorePoints < 1500) {
+            spawnTime = 1000;
+        } else if (scorePoints < 2000) {
+            spawnTime = 900;
+        } else {
+            spawnTime = 800;
+        }
     }
 }
