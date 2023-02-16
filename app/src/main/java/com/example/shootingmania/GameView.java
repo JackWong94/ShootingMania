@@ -511,13 +511,13 @@ public class GameView extends View {
         startGameActivity.draw(canvas);
         gameOverActivity.draw(canvas);
         leaderboardActivity.draw(canvas);
-        handler.postDelayed(runnable, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS) ? 0 : UPDATE_MILLIS - System.currentTimeMillis()-previousMillis);   //Graphic related
+        handler.postDelayed(runnable, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS) ? 0 : UPDATE_MILLIS - (System.currentTimeMillis()-previousMillis));   //Graphic related
     }
 
     public void systemUpdate() {
         long previousMillis = System.currentTimeMillis();
         gameManager.run();
-        handler.postDelayed(runnable_system, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS_SYSTEM) ? 0 : UPDATE_MILLIS_SYSTEM - System.currentTimeMillis()-previousMillis); //System related
+        handler.postDelayed(runnable_system, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS_SYSTEM) ? 0 : UPDATE_MILLIS_SYSTEM - (System.currentTimeMillis()-previousMillis)); //System related
 
     }
 
