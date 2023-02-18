@@ -1,6 +1,3 @@
 <resources>
     <string name="app_name">ShootingMania</string>
-    <string name="leaderboards">Leaderboards</string>
-    <string name="start_game">Start Game</string>
-    <string name="exit">Exit</string>
 </resources>
