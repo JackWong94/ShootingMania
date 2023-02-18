@@ -37,7 +37,7 @@ public class GameView extends View {
     private Handler handler;
     private Runnable runnable;
     private Runnable runnable_system;
-    private boolean isShowingAdvertisement;
+    public static boolean isShowingAdvertisement;
     private Rect advertisement;
 
     public GameView(Context context) {
@@ -58,7 +58,7 @@ public class GameView extends View {
 
         //Advertisement coming soon
         isShowingAdvertisement = true;
-        advertisement = new Rect(0, dHeight - 100, dWidth, dHeight); //728 x 90
+        advertisement = new Rect(0, dHeight - 150, dWidth, dHeight); //728 x 90
 
         gameMenuActivity =new GameActivityPage() {
             private Rect gameBackground;
