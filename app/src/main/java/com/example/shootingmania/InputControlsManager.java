@@ -278,7 +278,7 @@ class AccelerometerSensor {
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private static float sensorSensitivityX = 5;
-    private static float sensorSensitivityY = 5;
+    private static float sensorSensitivityY = 3;
     private static int sensorAccelerationX = 10;    //Increase smoothness
     private static int sensorAccelerationY = 10;    //Increase smoothness
     private FloatPoint xyAxisAcceleration;
@@ -324,6 +324,7 @@ class AccelerometerSensor {
         //Set the center of the sensor
         rawData.x -= centerX;
         rawData.y -= centerY;
+
         //Tune accelerometer sensitivity and acceleration base on preset value
         //Sensitivity of sensor controls the range of angle rotation from center X axis
         if (rawData.x > AccelerometerSensor.sensorSensitivityX) {
