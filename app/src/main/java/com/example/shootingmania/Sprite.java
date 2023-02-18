@@ -94,6 +94,7 @@ public class Sprite {
             }
             case FLAME_0: {
                 sprite = Bitmap.createBitmap(sprite,0,0,1,1);
+                sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize*6/10,scaleUpSize*6/10,true);
                 break;
             }
             case FLAME_1: {
