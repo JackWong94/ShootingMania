@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShootingMania"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-9979894094727885~8135950205"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

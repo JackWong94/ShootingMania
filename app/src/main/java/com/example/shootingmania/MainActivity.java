@@ -3,17 +3,30 @@ package com.example.shootingmania;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 public class MainActivity extends AppCompatActivity {
+
+    private String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+                Log.i(TAG, "Initialize Ad Succesfully");
+            }
+        });
         enterFullScreen();
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
+
         GameView gameView = new GameView(this);
         setContentView(gameView);
     }
