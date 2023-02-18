@@ -1,4 +1,4 @@
-package com.example.shootingmania;
+package com.shootingmania;
 
 import androidx.appcompat.app.AppCompatActivity;
 

@@ -1,4 +1,4 @@
-package com.example.shootingmania;
+package com.shootingmania;
 
 import android.media.AudioManager;
 import android.media.SoundPool;

@@ -1,4 +1,4 @@
-package com.example.shootingmania;
+package com.shootingmania;
 
 public class GameTimer {
     private long timePerGame = 10000; //10 seconds default game time

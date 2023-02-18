@@ -1,6 +1,6 @@
-package com.example.shootingmania;
+package com.shootingmania;
 
-import static com.example.shootingmania.GameView.dWidth;
+import static com.shootingmania.GameView.dWidth;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;

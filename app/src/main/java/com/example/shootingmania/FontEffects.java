@@ -1,4 +1,4 @@
-package com.example.shootingmania;
+package com.shootingmania;
 
 import android.graphics.Color;
 import android.graphics.Paint;

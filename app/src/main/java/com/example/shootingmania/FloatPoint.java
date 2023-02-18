@@ -1,4 +1,4 @@
-package com.example.shootingmania;
+package com.shootingmania;
 
 public class FloatPoint {
     public float x = 0f;
