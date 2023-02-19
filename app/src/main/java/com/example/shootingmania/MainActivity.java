@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String TAG = "MainActivity";
     private static final String TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
-    private static final String AD_UNIT_ID = "";
+    private static final String AD_UNIT_ID = "ca-app-pub-9979894094727885/2125075622";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         //Ad view
         AdView adView = new AdView(this);
         adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId(TEST_AD_UNIT_ID);
+        adView.setAdUnitId(AD_UNIT_ID);
         adView.setBackgroundColor(Color.TRANSPARENT);
         // Add the AdView to the view hierarchy. The view will have no size
         // until the ad is loaded.
