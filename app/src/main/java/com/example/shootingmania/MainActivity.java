@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         //Ad view
         AdView adView = new AdView(this);
         adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId(AD_UNIT_ID);
+        adView.setAdUnitId(TEST_AD_UNIT_ID);
         adView.setBackgroundColor(Color.TRANSPARENT);
         // Add the AdView to the view hierarchy. The view will have no size
         // until the ad is loaded.
