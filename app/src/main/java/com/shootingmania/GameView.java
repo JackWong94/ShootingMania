@@ -2,11 +2,7 @@ package com.shootingmania;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Rect;
+import android.graphics.*;
 import android.os.Handler;
 import android.text.TextPaint;
 import android.util.Log;
@@ -25,7 +21,7 @@ public class GameView extends View {
     private Display display;
     private String ThemeColorString = "#DEEBF7";
     final long UPDATE_MILLIS = 16;  //Make FPS around 60 HZ
-    final long UPDATE_MILLIS_SYSTEM = 10;    //Make FPS around 100 HZ
+    final long UPDATE_MILLIS_SYSTEM = 16;    //Make FPS around 100 HZ
     public static int dHeight;
     public static int dWidth;
     private String TAG = "GameView";
@@ -39,6 +35,7 @@ public class GameView extends View {
     private Runnable runnable_system;
     public static boolean isShowingAdvertisement;
     private Rect advertisement;
+    private TextDisplay systemUpsFpsDisplay;
 
     public GameView(Context context) {
         super(context);
@@ -59,6 +56,11 @@ public class GameView extends View {
         //Advertisement coming soon
         isShowingAdvertisement = true;
         advertisement = new Rect(0, dHeight - 150, dWidth, dHeight); //728 x 90
+
+        systemUpsFpsDisplay = new TextDisplay(context, "fps=          ups=         ", new Point(dWidth*80/100,dHeight*2/100));
+        systemUpsFpsDisplay.setFontSize(40);
+        systemUpsFpsDisplay.setDefaultTypeFace();
+        systemUpsFpsDisplay.setColor("#00FF00");
 
         gameMenuActivity =new GameActivityPage() {
             private Rect gameBackground;
@@ -511,6 +513,7 @@ public class GameView extends View {
         startGameActivity.draw(canvas);
         gameOverActivity.draw(canvas);
         leaderboardActivity.draw(canvas);
+        systemUpsFpsDisplay.draw(canvas);
         handler.postDelayed(runnable, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS) ? 0 : UPDATE_MILLIS - (System.currentTimeMillis()-previousMillis));   //Graphic related
     }
 
@@ -693,13 +696,22 @@ class TextDisplay {
     private long previousBlinkTime = System.currentTimeMillis();
 
     public TextDisplay(Context _context, String _text, Point _position) {
+        //This class is created defaulted to game style text
         this.context = _context;
         this.text = _text;
         this.position = _position;
         textPaint.setTextAlign(TextPaint.Align.CENTER);
         textPaint.setTextSize(TEXT_SIZE);
         textPaint.setColor(Color.parseColor("#EF8F3F"));
-        textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
+        textPaint.setTypeface(ResourcesCompat.getFont(context, R.font.kenney_blocks));
+    }
+
+    public void setDefaultTypeFace() {
+        textPaint.setTypeface(Typeface.create("Arial",Typeface.NORMAL));
+    }
+
+    public void setColor(String  colorString) {
+        textPaint.setColor(Color.parseColor(colorString));
     }
 
     public void draw(Canvas canvas) {
