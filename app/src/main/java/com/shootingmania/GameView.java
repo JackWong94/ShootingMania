@@ -516,7 +516,7 @@ public class GameView extends View {
         gameOverActivity.draw(canvas);
         leaderboardActivity.draw(canvas);
         systemUpsFpsDisplay.setText(new String("FPS= " + Long.toString(systemFPS) + " UPS= " + Long.toString(systemUPS) ));
-        systemUpsFpsDisplay.draw(canvas);
+        //systemUpsFpsDisplay.draw(canvas);
         handler.postDelayed(runnable, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS) ? 0 : UPDATE_MILLIS - (System.currentTimeMillis()-previousMillis));   //Graphic related
     }
 
