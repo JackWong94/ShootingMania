@@ -40,7 +40,7 @@ public class FontEffects {
     }
 
     public void effectMovementUpdate() {
-        y-=4;
+        y-=7;
     }
 
     public void effectEnded() {
