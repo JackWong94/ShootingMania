@@ -5,22 +5,20 @@ import android.content.Context;
 import android.graphics.*;
 import android.os.Handler;
 import android.text.TextPaint;
-import android.view.Display;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
+import android.util.*;
+import android.view.*;
+
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
 
-public class GameView extends View {
+public class GameView extends SurfaceView implements SurfaceHolder.Callback {
+    public GameThread gameThread;
     private final SoundManager gameSoundManager;
     private GameManager gameManager;
     private InputControlsManager gameInputControlManager;
     private Display display;
     private String ThemeColorString = "#DEEBF7";
-    final long UPDATE_MILLIS = 16;  //Make FPS around 60 HZ
-    final long UPDATE_MILLIS_SYSTEM = 10;    //Make FPS around 100 HZ
     public static int dHeight;
     public static int dWidth;
     private String TAG = "GameView";
@@ -30,8 +28,6 @@ public class GameView extends View {
     public GameActivityPage leaderboardActivity;
     private Context context;
     private Handler handler;
-    private Runnable runnable;
-    private Runnable runnable_system;
     public static boolean isShowingAdvertisement;
     private Rect advertisement;
     private TextDisplay systemUpsFpsDisplay;
@@ -48,6 +44,11 @@ public class GameView extends View {
         dWidth = displaySize.x;
         dHeight = displaySize.y;
 
+        //Implement game thread
+        getHolder().addCallback(this);
+        gameThread = new GameThread(getHolder(), this);
+        setFocusable(true);
+
         //Dependency among managers are unavoidable, manager instantiation sequence is critical in this section.
         gameSoundManager = new SoundManager();
         gameManager = new GameManager(this);
@@ -63,6 +64,11 @@ public class GameView extends View {
         systemUpsFpsDisplay.setColor("#00FF00");
         systemUPS = 0;
         systemFPS = 0;
+
+        designNewActivity();
+    }
+    //Design new activity here
+    private void designNewActivity() {
 
         gameMenuActivity =new GameActivityPage() {
             private Rect gameBackground;
@@ -365,7 +371,7 @@ public class GameView extends View {
                     gameInputControlManager.keyboardControl.hideKeyboard();
                 }
 
-               //This activity must stay for the minimumGameOverShowingTime, so that user will not miss the score display
+                //This activity must stay for the minimumGameOverShowingTime, so that user will not miss the score display
                 if (allowToSwitchActivity) {
                     //When touch screen, trigger back to main activity
                     if (displayPressToContinueTextDisplayButtonArea.isClicked(_userTouchPointer)) {
@@ -470,21 +476,37 @@ public class GameView extends View {
 
             }
         };
+    }
 
-        this.runnable = new Runnable() {
-            @Override
-            public void run() {
-                invalidate();
-            }
-        };
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        if (gameThread.isAlive()) {
+            System.out.println("Thread is still running.");
+        } else {
+            System.out.println("Thread has stopped.");
+            gameThread = new GameThread(getHolder(), this);
+        }
+        gameThread.setRunning(true);
+        gameThread.start();
+    }
 
-        this.runnable_system= new Runnable() {
-            @Override
-            public void run() {
-                systemUpdate();
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        // Not used
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        boolean retry = true;
+        while (retry) {
+            try {
+                gameThread.setRunning(false);
+                gameThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        };
-        systemUpdate();
+            retry = false;
+        }
     }
 
     @Override
@@ -508,23 +530,16 @@ public class GameView extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    public void draw(Canvas canvas) {
         long previousMillis = System.currentTimeMillis();
-        super.onDraw(canvas);
+        gameManager.run();
+        super.draw(canvas);
         gameMenuActivity.draw(canvas);
         startGameActivity.draw(canvas);
         gameOverActivity.draw(canvas);
         leaderboardActivity.draw(canvas);
-        systemUpsFpsDisplay.setText(new String("FPS= " + Long.toString(systemFPS) + " UPS= " + Long.toString(systemUPS) ));
+        systemUpsFpsDisplay.setText(new String("FPS= " + Long.toString(systemFPS) + " UPS= " + Long.toString(systemUPS)));
         //systemUpsFpsDisplay.draw(canvas);
-        handler.postDelayed(runnable, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS) ? 0 : UPDATE_MILLIS - (System.currentTimeMillis()-previousMillis));   //Graphic related
-    }
-
-    public void systemUpdate() {
-        long previousMillis = System.currentTimeMillis();
-        gameManager.run();
-        handler.postDelayed(runnable_system, (System.currentTimeMillis()-previousMillis >= UPDATE_MILLIS_SYSTEM) ? 0 : UPDATE_MILLIS_SYSTEM - (System.currentTimeMillis()-previousMillis)); //System related
-
     }
 
     public void onTouchPointInteraction(RealTimeInputControlsParameters realTimeInputControlsParameters) {
@@ -809,3 +824,4 @@ abstract class GameActivityPage {
     }
 
 }
+

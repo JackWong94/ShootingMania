@@ -19,7 +19,7 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 public class MainActivity extends AppCompatActivity {
-
+    private GameView gameView;
     private String TAG = "MainActivity";
     private static final String TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
     private static final String AD_UNIT_ID = "ca-app-pub-9979894094727885/2125075622";
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         // Start loading the ad in the background.
         adView.loadAd(adRequest);
 
-        GameView gameView = new GameView(this);
+        gameView = new GameView(this);
         RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
@@ -67,6 +67,11 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         enterFullScreen();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
