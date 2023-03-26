@@ -590,8 +590,9 @@ class DialogBox {
     public void draw(Canvas canvas) {
         if (popUp) {
             //Dialog box UI
-            dialogBoxPaint.setColor(Color.parseColor("#FFFFFF"));
-            canvas.drawRect(dialogBox, dialogBoxPaint);
+            dialogBoxPaint.setColor(Color.parseColor("#e0e0d0"));
+            RectF rectF = new RectF(dialogBox);
+            canvas.drawRoundRect(rectF,20,20, dialogBoxPaint);
             yesButton.draw(canvas);
             noButton.draw(canvas);
 
@@ -645,6 +646,7 @@ class TextButton {
     private int TEXT_SIZE = 80;
     private TextPaint textPaint = new TextPaint();
     private boolean showButtonBox = false;
+    private boolean isRoundedEdge = true;
     private Paint buttonBoxPaint = new Paint(Color.parseColor("#00003F"));
 
     public TextButton(Context _context, String _text, Point _position) {
@@ -683,7 +685,12 @@ class TextButton {
         } else {
             buttonBoxPaint.setAlpha(255);
         }
-        canvas.drawRect(area, buttonBoxPaint);
+        if (isRoundedEdge) {
+            RectF rectF = new RectF(area);
+            canvas.drawRoundRect(rectF, 10, 10, buttonBoxPaint);
+        } else {
+            canvas.drawRect(area, buttonBoxPaint);
+        }
         canvas.drawText(text ,position.x,position.y, textPaint);
     }
 }
