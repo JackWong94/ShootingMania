@@ -5,33 +5,28 @@ import android.content.Context;
 import android.graphics.*;
 import android.os.Handler;
 import android.text.TextPaint;
-import android.util.*;
 import android.view.*;
-
 import androidx.core.content.res.ResourcesCompat;
-
 import java.util.ArrayList;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    public GameThread gameThread;
-    private final SoundManager gameSoundManager;
-    private GameManager gameManager;
-    private InputControlsManager gameInputControlManager;
-    private Display display;
-    private String ThemeColorString = "#DEEBF7";
+    private String TAG = "GameView";
     public static int dHeight;
     public static int dWidth;
-    private String TAG = "GameView";
+    private Context context;
+    private Handler handler;
+    private Display display;
+    private GameThread gameThread;
+    private SoundManager gameSoundManager;
+    private GameManager gameManager;
+    private InputControlsManager gameInputControlManager;
+    private String ThemeColorString = "#DEEBF7";
     public GameActivityPage gameMenuActivity;
     public GameActivityPage startGameActivity;
     public GameActivityPage gameOverActivity;
     public GameActivityPage leaderboardActivity;
-    private Context context;
-    private Handler handler;
     public static boolean isShowingAdvertisement;
     private Rect advertisement;
-    private TextDisplay systemUpsFpsDisplay;
-    private long systemUPS, systemFPS;
 
     public GameView(Context context) {
         super(context);
@@ -57,13 +52,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         //Advertisement coming soon
         isShowingAdvertisement = true;
         advertisement = new Rect(0, dHeight - 150, dWidth, dHeight); //728 x 90
-
-        systemUpsFpsDisplay = new TextDisplay(context, "fps=          ups=         ", new Point(dWidth*82/100,dHeight*2/100));
-        systemUpsFpsDisplay.setFontSize(40);
-        systemUpsFpsDisplay.setDefaultTypeFace();
-        systemUpsFpsDisplay.setColor("#00FF00");
-        systemUPS = 0;
-        systemFPS = 0;
 
         designNewActivity();
     }
@@ -538,8 +526,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         startGameActivity.draw(canvas);
         gameOverActivity.draw(canvas);
         leaderboardActivity.draw(canvas);
-        systemUpsFpsDisplay.setText(new String("FPS= " + Long.toString(systemFPS) + " UPS= " + Long.toString(systemUPS)));
-        //systemUpsFpsDisplay.draw(canvas);
     }
 
     public void onTouchPointInteraction(RealTimeInputControlsParameters realTimeInputControlsParameters) {
