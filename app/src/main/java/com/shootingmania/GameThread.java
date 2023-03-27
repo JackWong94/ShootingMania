@@ -30,17 +30,12 @@ public class GameThread extends Thread {
         long totalTime = 0;
         long averageFPS = 0;
         Canvas canvas;
-
-        long previousTime = System.nanoTime();
-        double elapsedTime = 0;
-
         while (running) {
             startTime = System.nanoTime();
             canvas = null;
             try {
                 canvas = surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
-                    gameView.update(elapsedTime); // Update the game state using elapsed time
                     gameView.draw(canvas);
                 }
             } catch (Exception e) {
@@ -65,11 +60,6 @@ public class GameThread extends Thread {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            // Calculate elapsed time in seconds
-            long currentTime = System.nanoTime();
-            elapsedTime = (currentTime - previousTime) / 1000000000.0;
-            previousTime = currentTime;
 
             totalTime += System.nanoTime() - startTime;
             frameCount++;

@@ -519,15 +519,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void draw(Canvas canvas) {
+        long previousMillis = System.currentTimeMillis();
+        gameManager.run();
         super.draw(canvas);
         gameMenuActivity.draw(canvas);
         startGameActivity.draw(canvas);
         gameOverActivity.draw(canvas);
         leaderboardActivity.draw(canvas);
-    }
-
-    public void update(double elapsedTime) {
-        gameManager.run(elapsedTime);
     }
 
     public void onTouchPointInteraction(RealTimeInputControlsParameters realTimeInputControlsParameters) {
@@ -547,7 +545,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         gameOverActivity.keyboardInteraction(string);
         leaderboardActivity.keyboardInteraction(string);
     }
-
 }
 
 class DialogBox {
