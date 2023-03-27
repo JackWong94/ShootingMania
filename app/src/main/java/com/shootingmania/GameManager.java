@@ -4,7 +4,6 @@ import static com.shootingmania.GameView.dWidth;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 import com.google.gson.Gson;
@@ -45,7 +44,7 @@ public class GameManager {
         }
     }
 
-    public void run() {
+    public void run(double elapsedTime) {
         if (!isInitialized) {
             setActivityPage(activityState);
             isInitialized = true;
@@ -56,7 +55,7 @@ public class GameManager {
             return;
         }
         //Start game loop
-        gameData.updateGameData();
+        gameData.updateGameData(elapsedTime);
     }
 
     public void setPause() {
@@ -247,6 +246,7 @@ class GameData {
     public int scorePoints;
     public GameTimer gameTimer;
     private boolean userFirstShooting;
+    private double elapsedTime;
 
     public GameData(Context context, GameManager gameManager) {
         this.context = context;
@@ -284,7 +284,8 @@ class GameData {
         gameTimer.setTimerTime(20000);
     }
 
-    public void updateGameData() {
+    public void updateGameData(double elapsedTime) {
+        this.elapsedTime = elapsedTime;
         int tempScore = 0;
         tempScore += target.returnTotalScore();
         if (userFirstShooting && tempScore != 0) {
@@ -294,13 +295,13 @@ class GameData {
         scorePoints = tempScore;
         gameTimer.addTimeAccumulate(target.updateBonusTimeAccumulate());
         target.getLatestScore(scorePoints);
-        FontEffects.updateAll();
+        FontEffects.updateAll(this.elapsedTime);
     }
 
     public void controlGunMovement(float x_dir_movement, float y_dir_movement){
-        aimCross.posY += y_dir_movement;
-        aimCross.posX -= x_dir_movement;
-        gun.posX -= x_dir_movement;
+        aimCross.posY += y_dir_movement * this.elapsedTime;
+        aimCross.posX -= x_dir_movement * this.elapsedTime;
+        gun.posX -= x_dir_movement * this.elapsedTime;
         //Aim cross and gun out of screen prevention
         if (aimCross.posY < targetMoveArea.top){
             aimCross.posY = targetMoveArea.top;

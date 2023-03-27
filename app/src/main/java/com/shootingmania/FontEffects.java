@@ -39,18 +39,18 @@ public class FontEffects {
         activeFontEffectsList.add(this);
     }
 
-    public void effectMovementUpdate() {
-        y-=7;
+    public void effectMovementUpdate(double elapsedTime) {
+        y-=250*elapsedTime;
     }
 
     public void effectEnded() {
         activeFontEffectsList.remove(this);
     }
 
-    public static void updateAll() {
+    public static void updateAll(double elapsedTime) {
         for (FontEffects f:activeFontEffectsList) {
             if (f!=null) {
-                f.effectMovementUpdate();
+                f.effectMovementUpdate(elapsedTime);
             }
         }
     }
