@@ -246,7 +246,7 @@ class GameData {
     public int scorePoints;
     public GameTimer gameTimer;
     private boolean userFirstShooting;
-    private double elapsedTime;
+    public double elapsedTime;
 
     public GameData(Context context, GameManager gameManager) {
         this.context = context;

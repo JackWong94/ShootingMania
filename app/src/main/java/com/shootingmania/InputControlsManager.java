@@ -279,8 +279,8 @@ class AccelerometerSensor {
     private Sensor accelerometer;
     private static float sensorSensitivityX = 5;     //Tuned value, don't simply change
     private static float sensorSensitivityY = 3;     //Tuned value, don't simply change
-    private static int sensorAccelerationX = 450;    //Increase smoothness
-    private static int sensorAccelerationY = 400;    //Increase smoothness
+    private static int sensorAccelerationX = 18000;    //Increase smoothness
+    private static int sensorAccelerationY = 18000;    //Increase smoothness
     private FloatPoint xyAxisAcceleration;
     FloatPoint tunedData;
     //Effective X sensing range = -9 ~ 9 +-sensor sensitivity
@@ -303,7 +303,7 @@ class AccelerometerSensor {
                 switch (display.getRotation()) {
                     case Surface.ROTATION_0:
                         xyAxisAcceleration.set(event.values[0], event.values[1]);
-                        xyAxisAcceleration = fineTuning(xyAxisAcceleration);
+                        xyAxisAcceleration = fineTuning(xyAxisAcceleration, inputControlsManager.gameManager.gameData.elapsedTime);
                         inputControlsManager.accelerometerValueChange(xyAxisAcceleration);
                         break;
                     case Surface.ROTATION_90:
@@ -320,7 +320,7 @@ class AccelerometerSensor {
         sensorManager.registerListener(sensorControlListener, accelerometer, SensorManager.SENSOR_DELAY_UI);
     }
 
-    private FloatPoint fineTuning(FloatPoint rawData){
+    private FloatPoint fineTuning(FloatPoint rawData, double elapsedTime){
         //Set the center of the sensor
         rawData.x -= centerX;
         rawData.y -= centerY;
@@ -342,8 +342,8 @@ class AccelerometerSensor {
         }
 
         //Acceleration to amplify the direction changes speeds proportional to rotation angle
-        rawData.x = AccelerometerSensor.sensorSensitivityX*AccelerometerSensor.sensorAccelerationX*rawData.x;
-        rawData.y = AccelerometerSensor.sensorSensitivityY*AccelerometerSensor.sensorAccelerationY*rawData.y;
+        rawData.x = (float) (AccelerometerSensor.sensorSensitivityX*AccelerometerSensor.sensorAccelerationX*rawData.x*elapsedTime);
+        rawData.y = (float) (AccelerometerSensor.sensorSensitivityY*AccelerometerSensor.sensorAccelerationY*rawData.y*elapsedTime);
 
         tunedData = new FloatPoint(rawData.x, rawData.y);
 
