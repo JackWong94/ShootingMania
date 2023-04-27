@@ -7,7 +7,8 @@ import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.util.Log;
 import com.google.gson.Gson;
-import java.util.ArrayList;
+
+import java.util.*;
 
 public class GameManager {
     public enum ACTIVITY_STATE {
@@ -22,14 +23,14 @@ public class GameManager {
     public GameView gameView;
     public GameData gameData;
     public GameScoreManager gameScoreManager;
-    private Context context;
+    private final Context context;
     public GameManager(GameView gameView) {
         this.gameView = gameView;
         this.context = gameView.getContext();
         //Loading game data
         gameData = new GameData(context, this);
         gameData.initializing();
-        gameScoreManager = new GameScoreManager(context, this);
+        gameScoreManager = new GameScoreManager(context);
         gameScoreManager.initializing();
     }
 
@@ -95,7 +96,7 @@ public class GameManager {
         gameData.touchControlsDetected(realTimeInputControlsParameters);
     }
 
-    public void updateKeyboardInput(char key) {
+    public void updateKeyboardInput() {
         //Single key detections
     }
 
@@ -122,17 +123,13 @@ public class GameManager {
 }
 
 class GameScoreManager {
-    private String TAG = "GameScoreManager";
-    private int supportedScoreStoringNumber = 10; //Temporarily supporting storing 10 best scores only, rest will be discard
+    private final String TAG = "GameScoreManager";
     private SharedPreferences sharedPreferencesScoresData;
-    private String sharedPreferencesScoresDataKey = "SCORE_DATA";
-    private SharedPreferences mPrefs = null;
-    private GameManager gameManager;
-    private Context context;
+    private final String sharedPreferencesScoresDataKey = "SCORE_DATA";
+    private final Context context;
     public GameScoreList gameScoreList;
-    public GameScoreManager(Context context, GameManager gameManager) {
+    public GameScoreManager(Context context) {
         this.context = context;
-        this.gameManager = gameManager; //allow game score to communicate with game manager
     }
     public void initializing() {
         /*
@@ -144,7 +141,7 @@ class GameScoreManager {
         String json = sharedPreferencesScoresData.getString(sharedPreferencesScoresDataKey, "NO DATA");
         gameScoreList = new GameScoreList();
         Log.i(TAG, "Loading Score " + json);
-        if (json != "NO DATA") {
+        if (!Objects.equals(json, "NO DATA")) {
             Gson gson = new Gson();
             gameScoreList = gson.fromJson(json, GameScoreList.class);
         }
@@ -166,29 +163,31 @@ class GameScoreManager {
             proceed to rearrange the array with the current scores. Push the rest of the array member one space after this i index.
             If the array member exceeds supportedScoreStoringNumber, the next member from the last supportedScoreStoringNumber will be discarded.
         */
+        //Temporarily supporting storing 10 best scores only, rest will be discard
+        int supportedScoreStoringNumber = 10;
         if (newHigherScoreIndex != gameScoreList.list.size()) {
             //Store this last place score to check if we need to discard or not after the adding of the newer score
             GameScore olderLastPlaceScore = gameScoreList.list.get(lastPlaceInTheLeaderboard);
             for (int i=lastPlaceInTheLeaderboard; i>=newHigherScoreIndex; i--) {
                 if (i!=newHigherScoreIndex) {
                     gameScoreList.list.set(i,gameScoreList.list.get(i-1));
-                    Log.i(TAG, "Move " + Integer.toString((i-1)) + " to " + Integer.toString(i));
+                    Log.i(TAG, "Move " + (i - 1) + " to " + i);
                 } else {
                     //When reach the desired place, set the score and exit the loop
                     gameScoreList.list.set(i,currentGameScore);
-                    Log.i(TAG, "Set " + Integer.toString((i)) + " to " + Integer.toString(currentGameScore.playerScore));
+                    Log.i(TAG, "Set " + i + " to " + currentGameScore.playerScore);
                 }
             }
             if (gameScoreList.list.size()  < supportedScoreStoringNumber) {
                 //Since there are still unfilled places in leaderboard, the olderLastPlaceScore can be stored
                 gameScoreList.list.add(olderLastPlaceScore);
-                Log.i(TAG, "Add new score to NO " + Integer.toString(gameScoreList.list.size()));
+                Log.i(TAG, "Add new score to NO " + gameScoreList.list.size());
             }
         } else {
             //If the leaderboard is not full, add the score to the last place
             if(gameScoreList.list.size() < supportedScoreStoringNumber) {
                 gameScoreList.list.add(currentGameScore);
-                Log.i(TAG, "Add new score to NO " + Integer.toString(gameScoreList.list.size()));
+                Log.i(TAG, "Add new score to NO " + gameScoreList.list.size());
             }
         }
         for (int i =0; i<gameScoreList.list.size(); i++) {
@@ -208,16 +207,15 @@ class GameScoreManager {
 }
 
 class GameScoreList {
-    public ArrayList<GameScore> list = new ArrayList<GameScore>();
+    public ArrayList<GameScore> list = new ArrayList<>();
     public GameScoreList() {
 
     }
 }
 
 class GameScore {
-    private final int MAX_NAME_LENGTH = 16;
-    public String playerName = "_______________";
-    public int playerScore = 0;
+    public String playerName;
+    public int playerScore;
     public GameScore(String name, int score) {
         this.playerName = name;
         this.playerScore = score;
@@ -226,6 +224,7 @@ class GameScore {
     public void setPlayerName(String name) {
         playerName = name;
         //Set limit to the length of name
+        int MAX_NAME_LENGTH = 16;
         if (name.length() > MAX_NAME_LENGTH) {
             playerName = playerName.substring(0, MAX_NAME_LENGTH);
         }
@@ -237,8 +236,7 @@ class GameScore {
 }
 
 class GameData {
-    private Context context;
-    private GameManager gameManager;
+    private final Context context;
     public Rect targetMoveArea;
     public Gun gun;
     public Target target;
@@ -250,7 +248,6 @@ class GameData {
 
     public GameData(Context context, GameManager gameManager) {
         this.context = context;
-        this.gameManager = gameManager; //allow game data to communicate with game manager
         gameTimer = new GameTimer() {
             @Override
             public void onTimesUp() {

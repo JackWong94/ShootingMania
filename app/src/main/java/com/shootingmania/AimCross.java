@@ -1,15 +1,13 @@
 package com.shootingmania;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Vibrator;
+import android.content.*;
+import android.graphics.*;
 
 public class AimCross {
     static boolean resourcesLoaded = false;
-    private Context context;
     private static final int RECOIL_MOVEMENT_SPEED = 50;
-    static private int numberOfSprites = 2;
-    static private Bitmap aimCross[] = new Bitmap[numberOfSprites];
+    static private final int numberOfSprites = 2;
+    static private final Bitmap[] aimCross = new Bitmap[numberOfSprites];
     public int posX, posY;
     public int currentFrame = 0;
     static int frameCounter = 0;
@@ -20,7 +18,6 @@ public class AimCross {
     }
 
     public AimCross(Context context) {
-        this.context = context;
         if (!resourcesLoaded) {
             aimCross[0] = Sprite.createSpriteForAimCross(context, Sprite.NAME.AIM_CROSS_UNLOCK);   //1st Frame
             aimCross[1] = Sprite.createSpriteForAimCross(context, Sprite.NAME.AIM_CROSS_LOCK);

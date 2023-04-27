@@ -1,25 +1,16 @@
 package com.shootingmania;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.graphics.Color;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import android.graphics.*;
+import android.os.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
+import androidx.appcompat.app.*;
+import com.google.android.gms.ads.*;
 
 public class MainActivity extends AppCompatActivity {
-    private GameView gameView;
-    private String TAG = "MainActivity";
-    private static final String TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
+    private final String TAG = "MainActivity";
+    //private static final String TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
     private static final String AD_UNIT_ID = "ca-app-pub-9979894094727885/2125075622";
 
     @Override
@@ -28,12 +19,9 @@ public class MainActivity extends AppCompatActivity {
         enterFullScreen();
 
         //Ad view
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-                Log.i(TAG, "Initialize Ad Successfully");
-                GameView.isShowingAdvertisement = true;
-            }
+        MobileAds.initialize(this, initializationStatus -> {
+            Log.i(TAG, "Initialize Ad Successfully");
+            GameView.isShowingAdvertisement = true;
         });
 
         AdView adView = new AdView(this);
@@ -51,10 +39,8 @@ public class MainActivity extends AppCompatActivity {
         // Start loading the ad in the background.
         adView.loadAd(adRequest);
 
-        gameView = new GameView(this);
-        RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-
+        GameView gameView = new GameView(this);
+        RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         adParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         layout.addView(gameView);

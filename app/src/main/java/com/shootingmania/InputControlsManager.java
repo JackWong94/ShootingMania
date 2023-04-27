@@ -1,21 +1,14 @@
 package com.shootingmania;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Rect;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorManager;
-import android.os.IBinder;
-import android.util.Log;
-import android.view.Display;
-import android.view.GestureDetector;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.Surface;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
+import android.annotation.*;
+import android.app.*;
+import android.content.*;
+import android.graphics.*;
+import android.hardware.*;
+import android.os.*;
+import android.util.*;
+import android.view.*;
+import android.view.inputmethod.*;
 
 public class InputControlsManager {
     RealTimeInputControlsParameters realTimeInputControlsParameters;
@@ -57,7 +50,7 @@ public class InputControlsManager {
 
     //Keyboard Input Related
     public void keyboardInputDetected(char key) {
-        gameManager.updateKeyboardInput(key);
+        gameManager.updateKeyboardInput();
     }
 
     public void keyboardInputStringDetected(String string) {
@@ -98,19 +91,16 @@ class RealTimeInputControlsParameters {
     public Rect userTouchPointer;
     public TOUCH_TYPE userTouchType;
 
-    public Boolean onPressed() {
+    /*public Boolean onPressed() {
         if (userTouchType == TOUCH_TYPE.KEY_DOWN) {
             return true;
         } else {
             return false;
         }
-    }
+    }*/
+
     public Boolean onReleased() {
-        if (userTouchType == TOUCH_TYPE.KEY_UP) {
-            return true;
-        } else {
-            return false;
-        }
+        return userTouchType == TOUCH_TYPE.KEY_UP;
     }
 
     //Swipe Sensor user control related
@@ -124,10 +114,10 @@ class RealTimeInputControlsParameters {
 class KeyboardControl extends Activity {
     private static final String TAG = "KeyboardControl";
     private static String stringBuffer = "";
-    private View view;
-    private Context context;
+    private final View view;
+    private final Context context;
     private boolean keyboardShowing;
-    private InputControlsManager inputControlsManager;
+    private final InputControlsManager inputControlsManager;
     public KeyboardControl(View _view, Context _context, InputControlsManager _inputControlsManager) {
         view = _view;
         context = _context;
@@ -169,9 +159,9 @@ class KeyboardControl extends Activity {
         }
     }
 
-    public char retrieveKeyboardInput(int keyCode, KeyEvent event) {
+    public void retrieveKeyboardInput(int keyCode, KeyEvent event) {
         char key = (char) event.getUnicodeChar();
-        Log.i(TAG, Character.toString(key) + " " + keyCode);
+        Log.i(TAG, key + " " + keyCode);
         //Supporting range of keyboard key input
         inputControlsManager.keyboardInputDetected(key);
         //Processing key to string
@@ -192,20 +182,20 @@ class KeyboardControl extends Activity {
         }
 
         inputControlsManager.keyboardInputStringDetected(stringBuffer);
-        return key;
     }
 }
 
 class SwipeSensorListener implements View.OnTouchListener {
-    private String TAG = "SwipeSensorListener";
+    private final String TAG = "SwipeSensorListener";
     private final GestureDetector gestureDetector;
-    private InputControlsManager inputControlsManager;
+    private final InputControlsManager inputControlsManager;
 
     public SwipeSensorListener (Context ctx, InputControlsManager inputControlsManager){
         gestureDetector = new GestureDetector(ctx, new GestureListener());
         this.inputControlsManager = inputControlsManager;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
@@ -275,12 +265,10 @@ class SwipeSensorListener implements View.OnTouchListener {
 }
 
 class AccelerometerSensor {
-    private SensorManager sensorManager;
-    private Sensor accelerometer;
-    private static float sensorSensitivityX = 5;     //Tuned value, don't simply change
-    private static float sensorSensitivityY = 3;     //Tuned value, don't simply change
-    private static int sensorAccelerationX = 18000;    //Increase smoothness
-    private static int sensorAccelerationY = 18000;    //Increase smoothness
+    private static final float sensorSensitivityX = 5;     //Tuned value, don't simply change
+    private static final float sensorSensitivityY = 3;     //Tuned value, don't simply change
+    private static final int sensorAccelerationX = 18000;    //Increase smoothness
+    private static final int sensorAccelerationY = 18000;    //Increase smoothness
     private FloatPoint xyAxisAcceleration;
     FloatPoint tunedData;
     //Effective X sensing range = -9 ~ 9 +-sensor sensitivity
@@ -307,16 +295,14 @@ class AccelerometerSensor {
                         inputControlsManager.accelerometerValueChange(xyAxisAcceleration);
                         break;
                     case Surface.ROTATION_90:
-                        break;
                     case Surface.ROTATION_180:
-                        break;
                     case Surface.ROTATION_270:
                         break;
                 }
             }
         };
-        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(sensorControlListener, accelerometer, SensorManager.SENSOR_DELAY_UI);
     }
 

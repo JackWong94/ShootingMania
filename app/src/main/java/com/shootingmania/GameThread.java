@@ -8,8 +8,8 @@ public class GameThread extends Thread {
 
     private static final long TARGET_FPS = 60; // target frames per second
     private static final long TARGET_FRAME_TIME = 1000 / TARGET_FPS; // target time per frame in milliseconds
-    private SurfaceHolder surfaceHolder;
-    private GameView gameView;
+    private final SurfaceHolder surfaceHolder;
+    private final GameView gameView;
     private boolean running;
 
     public GameThread(SurfaceHolder surfaceHolder, GameView gameView) {
