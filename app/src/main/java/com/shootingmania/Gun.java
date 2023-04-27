@@ -1,23 +1,20 @@
 package com.shootingmania;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.media.AudioManager;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
+import android.content.*;
+import android.graphics.*;
+import android.media.*;
+import android.os.*;
 
 public class Gun {
     static boolean resourcesLoaded = false;
     private static final long VIBRATION_STRENGTH = 50;
     private Vibrator vibrator;
-    private Context context;
-    static private int numberOfSprites = 9;
-    static private Bitmap gun[] = new Bitmap[numberOfSprites];
-    static private int gunFrameCountControl[] = new int[numberOfSprites];
-    static private Bitmap bullets[] = new Bitmap[1];
-    static private Bitmap flames[] = new Bitmap[3];
-    static private int gunFrameCountControlforFlame[] = new int[3];
+    static private final int numberOfSprites = 9;
+    static private final Bitmap[] gun = new Bitmap[numberOfSprites];
+    static private final int[] gunFrameCountControl = new int[numberOfSprites];
+    static private final Bitmap[] bullets = new Bitmap[1];
+    static private final Bitmap[] flames = new Bitmap[3];
+    static private final int[] gunFrameCountControlforFlame = new int[3];
     private int currentFrame = 0;
     private int currentFramePlayCount = 0;
     private boolean isFirstFrame = true;
@@ -37,13 +34,13 @@ public class Gun {
     public int posX, posY;
 
     //Sound Part
-    private GameSoundPool gunSoundEffect = new GameSoundPool(10, AudioManager.STREAM_MUSIC,0);
+    private final GameSoundPool gunSoundEffect = new GameSoundPool(10, AudioManager.STREAM_MUSIC,0);
     private int shootSound;
     private int reloadSound;
     private int shootEmptySound;
 
     //Bullet Part
-    private int gunCartridgeSize  = 10; //Capable of holding 10 bullets max
+    private final int gunCartridgeSize  = 10; //Capable of holding 10 bullets max
     private int bulletsRemaining = gunCartridgeSize; //Fill cartridge during start game
 
     //Gun flame part
@@ -51,7 +48,6 @@ public class Gun {
     public int flamePositionOffsetY = 95;
 
     public Gun(Context context) {
-        this.context = context;
         if (!resourcesLoaded) {
             vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             //Sprites assignment and animation timing
@@ -123,10 +119,11 @@ public class Gun {
             state = STATE.SHOOTING;
             gunSoundEffect.generateSoundEffect(shootSound);
             Point point = new Point(aimCross.posX, aimCross.posY);
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    vibrator.vibrate(VibrationEffect.createOneShot(VIBRATION_STRENGTH, VibrationEffect.EFFECT_HEAVY_CLICK));
+            Thread thread = new Thread(() -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(VIBRATION_STRENGTH, VibrationEffect.EFFECT_HEAVY_CLICK));
+                    }
                 }
             });
             thread.start();
@@ -167,6 +164,7 @@ public class Gun {
                     }
                     break;
                 }
+                case IDLE:
                 default: {
                     //IDLE frame
                     currentFrameForFlame = 0;
@@ -221,13 +219,8 @@ public class Gun {
                         currentFramePlayCount = gunFrameCountControl[currentFrame];
                         isFirstFrame = false;
                     } else {
-                        if (currentFrame < 1) {
-                            currentFrame++;
-                            currentFramePlayCount = gunFrameCountControl[currentFrame];
-                        } else {
-                            state = STATE.IDLE;
-                            isFirstFrame = true;
-                        }
+                        state = STATE.IDLE;
+                        isFirstFrame = true;
                     }
                     break;
                 }
