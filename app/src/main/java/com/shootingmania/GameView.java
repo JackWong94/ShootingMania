@@ -204,21 +204,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
                 //Game object rendering
                 if (displayTarget.animateFrame(displayTarget.frame)!=null) {
-                    canvas.drawBitmap(displayTarget.animateFrame(displayTarget.frame), displayTarget.posX - displayTarget.getTargetWidth(displayTarget.animateFrame(displayTarget.frame))/2, displayTarget.posY - displayTarget.getTargetHeight(displayTarget.animateFrame(displayTarget.frame))/2, null);
+                    canvas.drawBitmap(displayTarget.animateFrame(displayTarget.frame), displayTarget.posX - displayTarget.getTargetWidth(displayTarget.animateFrame(displayTarget.frame))/2f, displayTarget.posY - displayTarget.getTargetHeight(displayTarget.animateFrame(displayTarget.frame))/2f, null);
                 }
                 for (BulletMarks b : displayTarget.bulletMarks) {
                     if (b!=null) {
-                        canvas.drawBitmap(b.animateFrame(), b.posX - b.getTargetWidth() / 2, b.posY - b.getTargetHeight() / 2, null);
+                        canvas.drawBitmap(b.animateFrame(), b.posX - b.getTargetWidth() / 2f, b.posY - b.getTargetHeight() / 2f, null);
                     }
                 }
                 if (displayGun.animateFrame(displayGun.getCurrentFrame()) != null) {
-                    canvas.drawBitmap(displayGun.animateFrame(displayGun.getCurrentFrame()), displayGun.posX - displayGun.getGunWidth((displayGun.animateFrame(displayGun.getCurrentFrame()))) / 4, displayGun.posY - displayGun.getGunHeight((displayGun.animateFrame(displayGun.getCurrentFrame()))) / 2, null);
+                    canvas.drawBitmap(displayGun.animateFrame(displayGun.getCurrentFrame()), displayGun.posX - displayGun.getGunWidth((displayGun.animateFrame(displayGun.getCurrentFrame()))) / 4f, displayGun.posY - displayGun.getGunHeight((displayGun.animateFrame(displayGun.getCurrentFrame()))) / 2f, null);
                     if (displayGun.animateFrameForShootingFlame(displayGun.getCurrentFrameForFlame()) != null) {
-                        canvas.drawBitmap(displayGun.animateFrameForShootingFlame(displayGun.getCurrentFrameForFlame()), displayGun.posX - displayGun.getGunWidth((displayGun.animateFrame(displayGun.getCurrentFrameForFlame()))) / 4 - displayGun.flamePositionOffsetX, displayGun.posY - displayGun.getGunHeight((displayGun.animateFrame(displayGun.getCurrentFrameForFlame()))) / 2 - displayGun.flamePositionOffsetY, null);
+                        canvas.drawBitmap(displayGun.animateFrameForShootingFlame(displayGun.getCurrentFrameForFlame()), displayGun.posX - displayGun.getGunWidth((displayGun.animateFrame(displayGun.getCurrentFrameForFlame()))) / 4f - displayGun.flamePositionOffsetX, displayGun.posY - displayGun.getGunHeight((displayGun.animateFrame(displayGun.getCurrentFrameForFlame()))) / 2f - displayGun.flamePositionOffsetY, null);
                     }
                 }
                 if (displayAimCross.animateFrame(displayAimCross.getCurrentFrame()) != null) {
-                    canvas.drawBitmap(displayAimCross.animateFrame(displayAimCross.getCurrentFrame()), displayAimCross.posX - displayAimCross.getAimCrossWidth((displayAimCross.animateFrame(0))) / 2, displayAimCross.posY - displayAimCross.getAimCrossHeight((displayAimCross.animateFrame(0))) / 2, null);
+                    canvas.drawBitmap(displayAimCross.animateFrame(displayAimCross.getCurrentFrame()), displayAimCross.posX - displayAimCross.getAimCrossWidth((displayAimCross.animateFrame(0))) / 2f, displayAimCross.posY - displayAimCross.getAimCrossHeight((displayAimCross.animateFrame(0))) / 2f, null);
                 }
                 for (int i=0; i<displayGun.getRemainingBulletsCount(); i++) {
                     if (displayGun.animateFrameForBulletRemaining() != null) {
@@ -586,7 +586,7 @@ class DialogBox {
             yesButton.draw(canvas);
             noButton.draw(canvas);
 
-            canvas.drawText(this.dialogString, centerXY.x, centerXY.y - dialogBoxHeight / 4, textPaint);
+            canvas.drawText(this.dialogString, centerXY.x, centerXY.y - dialogBoxHeight / 4f, textPaint);
         }
     }
 

@@ -9,7 +9,7 @@ public class BulletMarks {
     static boolean resourcesLoaded = false;
     static private final int numberOfSprites = 3;
     public int posX, posY;
-    private int frame;
+    private final int frame;
 
 
     static private final Bitmap[] bulletMarks = new Bitmap[numberOfSprites];
