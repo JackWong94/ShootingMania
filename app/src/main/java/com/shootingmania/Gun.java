@@ -14,7 +14,7 @@ public class Gun {
     static private final int[] gunFrameCountControl = new int[numberOfSprites];
     static private final Bitmap[] bullets = new Bitmap[1];
     static private final Bitmap[] flames = new Bitmap[3];
-    static private final int[] gunFrameCountControlforFlame = new int[3];
+    static private final int[] gunFrameCountControlForFlame = new int[3];
     private int currentFrame = 0;
     private int currentFramePlayCount = 0;
     private boolean isFirstFrame = true;
@@ -72,9 +72,9 @@ public class Gun {
             bullets[0] = Sprite.createSpriteForBullets(context, Sprite.NAME.BULLET);
             flames[0] = Sprite.createSprite(context, Sprite.NAME.FLAME_0);
             flames[1] = Sprite.createSprite(context, Sprite.NAME.FLAME_1);
-            gunFrameCountControlforFlame[1] = 1;
+            gunFrameCountControlForFlame[1] = 1;
             flames[2] = Sprite.createSprite(context, Sprite.NAME.FLAME_2);
-            gunFrameCountControlforFlame[2] = 1;
+            gunFrameCountControlForFlame[2] = 1;
             //Sound effect
             shootSound = gunSoundEffect.load(context, R.raw.gun_shoot,1);
             shootEmptySound = gunSoundEffect.load(context,R.raw.gun_empty,1);
@@ -168,7 +168,7 @@ public class Gun {
                 default: {
                     //IDLE frame
                     currentFrameForFlame = 0;
-                    currentFramePlayCountForFlame = gunFrameCountControlforFlame[currentFrameForFlame];
+                    currentFramePlayCountForFlame = gunFrameCountControlForFlame[currentFrameForFlame];
                     break;
                 }
             }

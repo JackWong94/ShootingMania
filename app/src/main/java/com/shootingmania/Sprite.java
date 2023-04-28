@@ -1,14 +1,11 @@
 package com.shootingmania;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.util.Log;
+import android.content.*;
+import android.graphics.*;
 
 public class Sprite {
-    private static int OFFSET_DUE_TO_ASSET_ERROR = 1;
-    private static int scaleUpSize = 300;
+    private static final int OFFSET_DUE_TO_ASSET_ERROR = 1;
+    private static final int scaleUpSize = 300;
 
     public enum NAME {
         TARGET,
@@ -26,62 +23,62 @@ public class Sprite {
         
         switch (name) {
             case TARGET: {
-                sprite = Bitmap.createBitmap(sprite,4*sprite.getWidth()/5,(1*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR);
+                sprite = Bitmap.createBitmap(sprite,4*sprite.getWidth()/5,(sprite.getWidth() /5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case GUN: {
-                sprite = Bitmap.createBitmap(sprite,0*sprite.getWidth()/5,(0*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite, 0 /5, OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case GUN_SHOOT_1: {
-                sprite = Bitmap.createBitmap(sprite,1*sprite.getWidth()/5,(0*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite, sprite.getWidth() /5, OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case GUN_SHOOT_2: {
-                sprite = Bitmap.createBitmap(sprite,2*sprite.getWidth()/5,(0*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite,2*sprite.getWidth()/5, OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case GUN_SHOOT_3: {
-                sprite = Bitmap.createBitmap(sprite,3*sprite.getWidth()/5,(0*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite,3*sprite.getWidth()/5, OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case GUN_RELOADING_1: {
-                sprite = Bitmap.createBitmap(sprite,4*sprite.getWidth()/5,(0*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite,4*sprite.getWidth()/5, OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case GUN_RELOADING_2: {
-                sprite = Bitmap.createBitmap(sprite,0*sprite.getWidth()/5,(1*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite, 0 /5,(sprite.getWidth() /5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case GUN_RELOADING_3: {
-                sprite = Bitmap.createBitmap(sprite,1*sprite.getWidth()/5,(1*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite, sprite.getWidth() /5,(sprite.getWidth() /5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case GUN_RELOADING_4: {
-                sprite = Bitmap.createBitmap(sprite,2*sprite.getWidth()/5,(1*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite,2*sprite.getWidth()/5,(sprite.getWidth() /5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case GUN_RELOADING_5: {
-                sprite = Bitmap.createBitmap(sprite,3*sprite.getWidth()/5,(1*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite,3*sprite.getWidth()/5,(sprite.getWidth() /5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case BULLET_MARKS_1: {
-                sprite = Bitmap.createBitmap(sprite,0*sprite.getWidth()/5,(2*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
+                sprite = Bitmap.createBitmap(sprite, 0 /5,(2*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR*2);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
             case BULLET_MARKS_2: {
-                sprite = Bitmap.createBitmap(sprite,1*sprite.getWidth()/5,(2*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR);
+                sprite = Bitmap.createBitmap(sprite, sprite.getWidth() /5,(2*sprite.getWidth()/5)+OFFSET_DUE_TO_ASSET_ERROR,sprite.getWidth()/5,sprite.getWidth()/5-OFFSET_DUE_TO_ASSET_ERROR);
                 sprite = Bitmap.createScaledBitmap(sprite, scaleUpSize,scaleUpSize,true);
                 break;
             }
@@ -131,14 +128,8 @@ public class Sprite {
     public static Bitmap createSpriteForBullets(Context context, NAME name) {
         Bitmap spriteBullet;
         spriteBullet = BitmapFactory.decodeResource(context.getResources(),R.drawable.bullet);
-        switch (name) {
-            case BULLET: {
-                //Scale down size
-                spriteBullet = Bitmap.createScaledBitmap(spriteBullet, 100,100,true);
-                break;
-            }
-
-            default: break;
+        if (name == NAME.BULLET) {//Scale down size
+            spriteBullet = Bitmap.createScaledBitmap(spriteBullet, 100, 100, true);
         }
         return spriteBullet;
     }

@@ -11,34 +11,32 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Target {
-    private String TAG = "TARGET";
     static boolean resourcesLoaded = false;
-    private static int numberOfSprites = 1;
-    private Random random;
+    private static final int numberOfSprites = 1;
+    private final Random random;
     private long spawnTime = 1800;
-    private long previousSpawnTime = 0;
+    private long previousSpawnTime;
     public Rect targetMovingBoundary = new Rect(0,0,GameView.dWidth,GameView.dHeight);
     public volatile int posX, posY;
     public int frame = 0;
     public ArrayList<BulletMarks> bulletMarks;
-    private Context context;
+    private final Context context;
     private volatile boolean isVerifyingShoot = false;
     private long bonusTimeAccumulate;
 
     //Sound Part
-    private GameSoundPool targetRelatedSound = new GameSoundPool(10, AudioManager.STREAM_MUSIC,0);
-    private int hitTarget, hitTarget2;
+    private final GameSoundPool targetRelatedSound = new GameSoundPool(10, AudioManager.STREAM_MUSIC,0);
+    private int hitTarget;
     private int score;
 
-    static private Bitmap target[] = new Bitmap[numberOfSprites];
+    static private final Bitmap[] target = new Bitmap[numberOfSprites];
 
     public Target(Context context) {
         this.bonusTimeAccumulate = 0;
         this.context = context;
         if (!resourcesLoaded) {
             target[0] = Sprite.createSprite(context, Sprite.NAME.TARGET);   //1st Frame
-            hitTarget = targetRelatedSound.load(context, R.raw.hit_target,1);
-            hitTarget2 = targetRelatedSound.load(context, R.raw.hit_target2,1);
+            hitTarget = targetRelatedSound.load(context, R.raw.hit_target2,1);
         }
         random = new Random();
         bulletMarks = new ArrayList<>();
@@ -92,10 +90,11 @@ public class Target {
         isVerifyingShoot = true;
         Point targetLocation = new Point(this.posX,this.posY);
         int accuracy = calculateDistance(shotPoint,targetLocation);
+        String TAG = "TARGET";
         if (accuracy > getTargetWidth(currentFrame)/2 - 30) {
             Log.i(TAG,"MISSED");
         } else {
-            //Target Consist Of 4 Area BULLEYES 100 points, CENTER 80, SECOND LAYER 50, OUTER LAYER 30
+            //Target Consist Of 4 Area BULLSEYE 100 points, CENTER 80, SECOND LAYER 50, OUTER LAYER 30
             Log.i(TAG,"PERFECT" + accuracy);
             if (accuracy >= 0 && accuracy < 15) {
                 score += 100;
@@ -113,7 +112,7 @@ public class Target {
                 new FontEffects("GOOD", targetLocation.x, targetLocation.y);
             }
             bulletMarks.add(new BulletMarks(this.context, shotPoint.x, shotPoint.y));
-            targetRelatedSound.generateSoundEffect(hitTarget2);
+            targetRelatedSound.generateSoundEffect(hitTarget);
         }
         isVerifyingShoot = false;
     }

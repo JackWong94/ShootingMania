@@ -1,38 +1,35 @@
 package com.shootingmania;
 
-import android.app.Activity;
-import android.content.Context;
+import android.annotation.*;
+import android.app.*;
+import android.content.*;
 import android.graphics.*;
-import android.os.Handler;
-import android.text.TextPaint;
+import android.text.*;
 import android.view.*;
-import androidx.core.content.res.ResourcesCompat;
-import java.util.ArrayList;
+
+import androidx.core.content.res.*;
+
+import java.util.*;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    private String TAG = "GameView";
     public static int dHeight;
     public static int dWidth;
-    private Context context;
-    private Handler handler;
-    private Display display;
+    private final Context context;
     private GameThread gameThread;
-    private SoundManager gameSoundManager;
-    private GameManager gameManager;
-    private InputControlsManager gameInputControlManager;
-    private String ThemeColorString = "#DEEBF7";
+    private final GameManager gameManager;
+    private final InputControlsManager gameInputControlManager;
+    private final String ThemeColorString = "#DEEBF7";
     public GameActivityPage gameMenuActivity;
     public GameActivityPage startGameActivity;
     public GameActivityPage gameOverActivity;
     public GameActivityPage leaderboardActivity;
     public static boolean isShowingAdvertisement;
-    private Rect advertisement;
+    private final Rect advertisement;
 
     public GameView(Context context) {
         super(context);
         this.context = context;
-        this.handler = new Handler();
-        display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
+        Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
         //Display background settings
         Point displaySize = new Point();
         display.getRealSize(displaySize);
@@ -45,7 +42,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
 
         //Dependency among managers are unavoidable, manager instantiation sequence is critical in this section.
-        gameSoundManager = new SoundManager();
         gameManager = new GameManager(this);
         gameInputControlManager = new InputControlsManager(context, display, gameManager, this);
 
@@ -131,12 +127,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             private Point displayScorePointsPosition;
             private Paint displayScorePointsTextPaint;
             private TextButton displayMenuButton;
-            private Point displayMenuButtonPosition;
             private DialogBox displayMenuDialogBox;
             private int displayGameLeftTime;
             private Point displayGameLeftTimePosition;
             private Paint displayGameLeftTimeTextPaint;
-            private int displayGameLeftTimeTextPaintSize = 160;
             private Rect displayTargetMoveArea;
             private Paint displayTargetMoveAreaColor;
             private Gun displayGun;
@@ -144,8 +138,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             private Target displayTarget;
             private Point displayBulletRemainsPosition;
             private TextDisplay reloadingInstructionsPopUp;
-            private Point reloadingInstructionsPopUpPosition;
-            private int TEXT_SIZE = 80;
             private ArrayList<FontEffects> displayFontEffectsList;
             @Override
             public void initialize() {
@@ -159,18 +151,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 displayScorePointsPosition = new Point(50,150);
                 displayScorePointsTextPaint = new TextPaint();
                 displayScorePointsTextPaint.setTextAlign(TextPaint.Align.LEFT);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
+                int TEXT_SIZE = 80;
                 displayScorePointsTextPaint.setTextSize(TEXT_SIZE);
                 displayScorePointsTextPaint.setColor(Color.parseColor("#EF8F3F"));
                 displayScorePointsTextPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
                 displayGameLeftTime = (int) gameManager.gameData.gameTimer.getTimeLeft();
-                displayGameLeftTimePosition = new Point(dWidth/2-25 + displayGameLeftTimeTextPaintSize/4,380);
+                int displayGameLeftTimeTextPaintSize = 160;
+                displayGameLeftTimePosition = new Point(dWidth/2-25 + displayGameLeftTimeTextPaintSize /4,380);
                 displayGameLeftTimeTextPaint = new TextPaint();
                 displayGameLeftTimeTextPaint.setTextAlign(TextPaint.Align.CENTER);   //For Text That Updates It Self CENTER Align may cause unwanted swift in display if Text become longer
                 displayGameLeftTimeTextPaint.setTextSize(displayGameLeftTimeTextPaintSize);
                 displayGameLeftTimeTextPaint.setColor(Color.parseColor("#EF8F3F"));
                 displayGameLeftTimeTextPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
-                displayMenuButtonPosition = new Point(displayScorePointsPosition.x + 850,150);
-                displayMenuButton = new TextButton(context, "MENU",  displayMenuButtonPosition);
+                Point displayMenuButtonPosition = new Point(displayScorePointsPosition.x + 850, 150);
+                displayMenuButton = new TextButton(context, "MENU", displayMenuButtonPosition);
                 displayMenuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
                 displayTargetMoveArea = gameManager.gameData.targetMoveArea;
                 displayTargetMoveAreaColor = new Paint();
@@ -178,6 +172,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 displayGun = gameManager.gameData.gun;
                 displayAimCross = gameManager.gameData.aimCross;
                 displayTarget = gameManager.gameData.target;
+                Point reloadingInstructionsPopUpPosition;
                 if (isShowingAdvertisement) {
                     gameManager.gameData.gun.posY -= advertisement.height();
                     displayBulletRemainsPosition = new Point(120, dHeight - 220 - advertisement.height());
@@ -195,14 +190,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             @Override
             public void onDraw(Canvas canvas) {
                 //Game activity page onDraw
-                Paint paint = new Paint();
-                paint.setStyle(Paint.Style.FILL);
 
                 //Drawing sequence affecting the overlay sequence, be cautious during changing the sequence at these draw method
                 //Game ui rendering
                 canvas.drawRect(gameBackground, gameBackgroundColor);
                 displayScorePoints = gameManager.gameData.scorePoints;
-                canvas.drawText("SCORE: " + Integer.toString(displayScorePoints),displayScorePointsPosition.x,displayScorePointsPosition.y, displayScorePointsTextPaint);
+                canvas.drawText("SCORE: " + displayScorePoints,displayScorePointsPosition.x,displayScorePointsPosition.y, displayScorePointsTextPaint);
                 displayGameLeftTime = (int) gameManager.gameData.gameTimer.getTimeLeft()/1000; //Convert Millis To Seconds
                 canvas.drawText(Integer.toString(displayGameLeftTime), displayGameLeftTimePosition.x,displayGameLeftTimePosition.y, displayGameLeftTimeTextPaint);
                 displayMenuButton.draw(canvas);
@@ -281,7 +274,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             private Rect gameBackground;
             private Paint gameBackgroundColor;
             private long activityUpTime;
-            private long minimumGameOverShowingTime = 1500;         //1.5 seconds
+            private final long minimumGameOverShowingTime = 1500;         //1.5 seconds
             private boolean allowToSwitchActivity = false;
             private TextDisplay displayGameOverText;
             private TextDisplay displayYourScoreText;
@@ -291,13 +284,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             private TextInput displayLeaderboardPlayerName;
             private TextButton displayLeaderboardPlayerNameClickToEditArea;
             private TextButton displayPressToContinueTextDisplayButtonArea;
-            private Point displayGameOverTextPosition = new Point(dWidth/2, dHeight/8*2);
-            private Point displayYourScoreTextPosition = new Point(dWidth/2, dHeight/8*4);
-            private Point displayScoreTextDisplayPosition = new Point(dWidth/2, dHeight/8*5);
-            private Point displayPressToContinueTextDisplayPosition = new Point(dWidth/2, dHeight/8*6);
-            private Point displayPressToContinueTextDisplayButtonAreaPosition = new Point(dWidth/2, dHeight/8*6);
-            private Point displayLeaderboardPlayerNamePosition = new Point(dWidth/2, dHeight/16*6);
-            private Point displayLeaderboardPlayerNameUnderlinePosition = new Point(dWidth/2, dHeight/16*7 - 100);
+            private final Point displayGameOverTextPosition = new Point(dWidth/2, dHeight/8*2);
+            private final Point displayYourScoreTextPosition = new Point(dWidth/2, dHeight/8*4);
+            private final Point displayScoreTextDisplayPosition = new Point(dWidth/2, dHeight/8*5);
+            private final Point displayPressToContinueTextDisplayPosition = new Point(dWidth/2, dHeight/8*6);
+            private final Point displayPressToContinueTextDisplayButtonAreaPosition = new Point(dWidth/2, dHeight/8*6);
+            private final Point displayLeaderboardPlayerNamePosition = new Point(dWidth/2, dHeight/16*6);
+            private final Point displayLeaderboardPlayerNameUnderlinePosition = new Point(dWidth/2, dHeight/16*7 - 100);
             //Activity data related
             private GameScore thisSessionGameScore;
 
@@ -322,13 +315,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 displayLeaderboardPlayerNameClickToEditArea.setButtonArea(800, 200);
                 displayLeaderboardPlayerNameUnderline = new TextDisplay(context, "_ _ _ _ _ _ _ _ _", displayLeaderboardPlayerNameUnderlinePosition);
                 activityUpTime = System.currentTimeMillis();
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (!allowToSwitchActivity) {
-                            if (System.currentTimeMillis() - activityUpTime > minimumGameOverShowingTime) {
-                                allowToSwitchActivity = true;
-                            }
+                Thread thread = new Thread(() -> {
+                    while (!allowToSwitchActivity) {
+                        if (System.currentTimeMillis() - activityUpTime > minimumGameOverShowingTime) {
+                            allowToSwitchActivity = true;
                         }
                     }
                 });
@@ -355,7 +345,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 if (displayLeaderboardPlayerNameClickToEditArea.isClicked(_userTouchPointer)) {
                     gameInputControlManager.keyboardControl.showKeyboard();
                 } else {
-                    //Any other click location beside the typing box, the keboard will be hidden
+                    //Any other click location beside the typing box, the keyboard will be hidden
                     gameInputControlManager.keyboardControl.hideKeyboard();
                 }
 
@@ -381,15 +371,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             private Rect gameBackground;
             private Paint gameBackgroundColor;
             private TextDisplay displayLeaderboardTitle;
-            private Point displayLeaderboardTitlePosition;
             private TextButton displayMenuButton;
-            private Point displayMenuButtonPosition;
             private DialogBox displayMenuDialogBox;
             //Leaderboard UI Design
-            private int displayLeaderboardListSupportedSize = 10;   //Only show top 10 scores
-            private int displayLeaderboardListOffsetYFromTitle = 225;
-            private int displayLeaderboardListOffsetYBetweenList = 160;
-            private Point displayLeaderboardListPosition;
+            private final int displayLeaderboardListSupportedSize = 10;   //Only show top 10 scores
             private ArrayList<TextDisplay> displayLeaderboardListNo;
             private ArrayList<TextDisplay> displayLeaderboardListName;
             private ArrayList<TextDisplay> displayLeaderboardListScore;
@@ -399,23 +384,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 gameBackground = new Rect(0, 0, dWidth, dHeight);
                 gameBackgroundColor = new Paint();
                 gameBackgroundColor.setColor(Color.parseColor(ThemeColorString));
-                displayLeaderboardTitlePosition = new Point(dWidth/2, dHeight/6);
+                Point displayLeaderboardTitlePosition = new Point(dWidth / 2, dHeight / 6);
                 displayLeaderboardTitle = new TextDisplay(context, "Leaderboards", displayLeaderboardTitlePosition);
                 displayLeaderboardTitle.setFontSize(120);
-                displayMenuButtonPosition = new Point(900,150);
-                displayMenuButton = new TextButton(context, "MENU",  displayMenuButtonPosition);
+                Point displayMenuButtonPosition = new Point(900, 150);
+                displayMenuButton = new TextButton(context, "MENU", displayMenuButtonPosition);
                 displayMenuDialogBox = new DialogBox(context, new Point(dWidth/2,dHeight/2), "BACK TO MENU ?");
                 //Initialize leaderboard list
-                displayLeaderboardListPosition = new Point(dWidth/9, displayLeaderboardTitlePosition.y + displayLeaderboardListOffsetYFromTitle);
+                int displayLeaderboardListOffsetYFromTitle = 225;
+                Point displayLeaderboardListPosition = new Point(dWidth / 9, displayLeaderboardTitlePosition.y + displayLeaderboardListOffsetYFromTitle);
                 displayLeaderboardListNo = new ArrayList<>();
                 displayLeaderboardListName = new ArrayList<>();
                 displayLeaderboardListName = new ArrayList<>();
                 displayLeaderboardListScore = new ArrayList<>();
                 for (int i=0; i<displayLeaderboardListSupportedSize; i++) {
-                    displayLeaderboardListNo.add( new TextDisplay(context, Integer.toString(i+1), new Point(displayLeaderboardListPosition.x - 10, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
-                    displayLeaderboardListName.add( new TextDisplay(context, "__________", new Point(displayLeaderboardListPosition.x + 350, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
+                    int displayLeaderboardListOffsetYBetweenList = 160;
+                    displayLeaderboardListNo.add( new TextDisplay(context, Integer.toString(i+1), new Point(displayLeaderboardListPosition.x - 10, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList *i)));
+                    displayLeaderboardListName.add( new TextDisplay(context, "__________", new Point(displayLeaderboardListPosition.x + 350, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList *i)));
                     displayLeaderboardListName.get(i).setFontSize(50);
-                    displayLeaderboardListScore.add( new TextDisplay(context, "_", new Point(displayLeaderboardListPosition.x + 750, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList*i)));
+                    displayLeaderboardListScore.add( new TextDisplay(context, "_", new Point(displayLeaderboardListPosition.x + 750, displayLeaderboardListPosition.y + displayLeaderboardListOffsetYBetweenList *i)));
                     displayLeaderboardListScore.get(i).setFontSize(80);
                 }
                 for (int i=0; i<gameManager.gameScoreManager.gameScoreList.list.size(); i++) {
@@ -510,6 +497,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         return true;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent e){
         //GameView Class Inform gameInputControlManager for touch event on the view
@@ -551,28 +539,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 }
 
 class DialogBox {
-    public enum INTERACTION {YES, NO_INTERACTION, NO};
-    private String dialogString;
+    public enum INTERACTION {YES, NO_INTERACTION, NO}
+
+    private final String dialogString;
     public Rect dialogBox;
     TextButton yesButton, noButton;
-    private Point centerXY;
-    private Point yesButtonCenterXY, noButtonCenterXY;
-    private Paint dialogBoxPaint;
-    private TextPaint textPaint;
-    private Paint yesNoButtonPaint;
-    private int TEXT_SIZE = 80;
-    private int dialogBoxWidth = 800;
-    private int dialogBoxHeight = 500;
+    private final Point centerXY;
+    private final Paint dialogBoxPaint;
+    private final TextPaint textPaint;
+    private final int dialogBoxHeight = 500;
     public boolean popUp = false;
 
     public DialogBox(Context context, Point _centerXY, String _dialogString) {
         //Center position of dialog box
         this.dialogString = _dialogString;
         this.centerXY = _centerXY;
-        yesButtonCenterXY = new Point(centerXY.x - centerXY.x/3, centerXY.y + centerXY.y/10);
-        noButtonCenterXY = new Point(centerXY.x + centerXY.x/3, centerXY.y + centerXY.y/10);
+        Point yesButtonCenterXY = new Point(centerXY.x - centerXY.x / 3, centerXY.y + centerXY.y / 10);
+        Point noButtonCenterXY = new Point(centerXY.x + centerXY.x / 3, centerXY.y + centerXY.y / 10);
 
-        dialogBox = new Rect(centerXY.x - dialogBoxWidth/2, centerXY.y - dialogBoxHeight/2, centerXY.x + dialogBoxWidth/2, centerXY.y + dialogBoxHeight/2);
+        int dialogBoxWidth = 800;
+        dialogBox = new Rect(centerXY.x - dialogBoxWidth /2, centerXY.y - dialogBoxHeight/2, centerXY.x + dialogBoxWidth /2, centerXY.y + dialogBoxHeight/2);
 
         yesButton = new TextButton(context,"YES", new Point(yesButtonCenterXY.x, yesButtonCenterXY.y));
         noButton = new TextButton(context,"NO", new Point(noButtonCenterXY.x, noButtonCenterXY.y));
@@ -581,11 +567,12 @@ class DialogBox {
 
         textPaint = new TextPaint();
         textPaint.setTextAlign(TextPaint.Align.CENTER);
-        textPaint.setTextSize(this.TEXT_SIZE);
+        int TEXT_SIZE = 80;
+        textPaint.setTextSize(TEXT_SIZE);
         textPaint.setColor(Color.parseColor("#EF8F3F"));
         textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
 
-        yesNoButtonPaint = new Paint();
+        Paint yesNoButtonPaint = new Paint();
         yesNoButtonPaint.setColor(Color.parseColor("#EF8F3F"));
         yesNoButtonPaint.setAlpha(255);    //Set Transparent
     }
@@ -638,30 +625,27 @@ class TextInput extends TextDisplay {
 }
 
 class TextButton {
-    private Context context;
     private Rect area;
     private int width = 50;
     private int height = 100;
-    private int offsetButtonToMatchTextDisplay_height_height = 28;
-    private int offsetButtonToMatchTextDisplay_height_width = 2;
-    private String text;
-    private Point position;
-    private int TEXT_SIZE = 80;
-    private TextPaint textPaint = new TextPaint();
+    private final int offsetButtonToMatchTextDisplay_height_height = 28;
+    private final int offsetButtonToMatchTextDisplay_height_width = 2;
+    private final String text;
+    private final Point position;
+    private final TextPaint textPaint = new TextPaint();
     private boolean showButtonBox = false;
-    private boolean isRoundedEdge = true;
-    private Paint buttonBoxPaint = new Paint(Color.parseColor("#00003F"));
+    private final Paint buttonBoxPaint = new Paint(Color.parseColor("#00003F"));
 
     public TextButton(Context _context, String _text, Point _position) {
-        this.context = _context;
         this.text = _text;
         this.position = _position;
         this.width = this.text.length() * this.width;
         this.area = new Rect(position.x - width/2 + offsetButtonToMatchTextDisplay_height_width ,position.y - height/2 - offsetButtonToMatchTextDisplay_height_height,position.x + width/2 - offsetButtonToMatchTextDisplay_height_width,position.y + height/2 - offsetButtonToMatchTextDisplay_height_height);
         textPaint.setTextAlign(TextPaint.Align.CENTER);
+        int TEXT_SIZE = 80;
         textPaint.setTextSize(TEXT_SIZE);
         textPaint.setColor(Color.parseColor("#EF8F3F"));
-        textPaint.setTypeface(ResourcesCompat.getFont(context,R.font.kenney_blocks));
+        textPaint.setTypeface(ResourcesCompat.getFont(_context,R.font.kenney_blocks));
     }
 
     public void setButtonBoxVisibility(boolean visible) {
@@ -675,11 +659,7 @@ class TextButton {
     }
 
     public boolean isClicked(Rect _userTouchPointer) {
-        if (Rect.intersects(area, _userTouchPointer)) {
-            return true;
-        } else {
-            return false;
-        }
+        return Rect.intersects(area, _userTouchPointer);
     }
 
     public void draw(Canvas canvas) {
@@ -688,22 +668,16 @@ class TextButton {
         } else {
             buttonBoxPaint.setAlpha(255);
         }
-        if (isRoundedEdge) {
-            RectF rectF = new RectF(area);
-            canvas.drawRoundRect(rectF, 10, 10, buttonBoxPaint);
-        } else {
-            canvas.drawRect(area, buttonBoxPaint);
-        }
+        RectF rectF = new RectF(area);
+        canvas.drawRoundRect(rectF, 10, 10, buttonBoxPaint);
         canvas.drawText(text ,position.x,position.y, textPaint);
     }
 }
 
 class TextDisplay {
-    private Context context;
     private String text;
-    private Point position;
-    private int TEXT_SIZE = 80;
-    private TextPaint textPaint = new TextPaint();
+    private final Point position;
+    private final TextPaint textPaint = new TextPaint();
     //Animation
     private long blinkTiming = 1000; //Default blinking timing is 1 second
     private boolean visible = true; //Default visibility true
@@ -711,17 +685,13 @@ class TextDisplay {
 
     public TextDisplay(Context _context, String _text, Point _position) {
         //This class is created defaulted to game style text
-        this.context = _context;
         this.text = _text;
         this.position = _position;
         textPaint.setTextAlign(TextPaint.Align.CENTER);
+        int TEXT_SIZE = 80;
         textPaint.setTextSize(TEXT_SIZE);
         textPaint.setColor(Color.parseColor("#EF8F3F"));
-        textPaint.setTypeface(ResourcesCompat.getFont(context, R.font.kenney_blocks));
-    }
-
-    public void setDefaultTypeFace() {
-        textPaint.setTypeface(Typeface.create("Arial",Typeface.NORMAL));
+        textPaint.setTypeface(ResourcesCompat.getFont(_context, R.font.kenney_blocks));
     }
 
     public void setColor(String  colorString) {
@@ -750,14 +720,11 @@ class TextDisplay {
             //Make sure that this view is visible after the blinking stop
             visible = true;
         }
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (blinkTiming != 0) {
-                    if (System.currentTimeMillis() - previousBlinkTime > blinkTiming) {
-                        visible = !visible;
-                        previousBlinkTime = System.currentTimeMillis();
-                    }
+        Thread thread = new Thread(() -> {
+            while (blinkTiming != 0) {
+                if (System.currentTimeMillis() - previousBlinkTime > blinkTiming) {
+                    visible = !visible;
+                    previousBlinkTime = System.currentTimeMillis();
                 }
             }
         });

@@ -1,21 +1,18 @@
 package com.shootingmania;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.util.Log;
+import android.content.*;
+import android.graphics.*;
 
-import java.util.ConcurrentModificationException;
-import java.util.Random;
+import java.util.*;
 
 public class BulletMarks {
     static boolean resourcesLoaded = false;
-    static private int numberOfSprites = 3;
-    private Random random;
+    static private final int numberOfSprites = 3;
     public int posX, posY;
-    private int frame = 0;
+    private int frame;
 
 
-    static private Bitmap bulletMarks[] = new Bitmap[numberOfSprites];
+    static private final Bitmap[] bulletMarks = new Bitmap[numberOfSprites];
 
     public BulletMarks(Context context, int posX, int posY) {
         this.posX = posX;
@@ -27,7 +24,7 @@ public class BulletMarks {
             bulletMarks[2] = Sprite.createSprite(context, Sprite.NAME.BULLET_MARKS_3);
             resourcesLoaded = true;
         }
-        random = new Random();
+        Random random = new Random();
         frame = random.nextInt(numberOfSprites);
     }
 
