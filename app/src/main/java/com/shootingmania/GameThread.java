@@ -12,6 +12,11 @@ public class GameThread extends Thread {
     private final GameView gameView;
     private boolean running;
 
+    //Stabilize elapsed time
+    private static final int MOVING_AVERAGE_WINDOW_SIZE = 15;
+    private final double[] elapsedTimes = new double[MOVING_AVERAGE_WINDOW_SIZE];
+    private int elapsedTimesIndex = 0;
+
     public GameThread(SurfaceHolder surfaceHolder, GameView gameView) {
         this.surfaceHolder = surfaceHolder;
         this.gameView = gameView;
@@ -28,7 +33,7 @@ public class GameThread extends Thread {
         long waitTime;
         long frameCount = 0;
         long totalTime = 0;
-        long averageFPS = 0;
+        long averageFPS;
         Canvas canvas;
 
         long previousTime = System.nanoTime();
@@ -37,10 +42,22 @@ public class GameThread extends Thread {
         while (running) {
             startTime = System.nanoTime();
             canvas = null;
+            elapsedTimes[elapsedTimesIndex] = elapsedTime;
+            elapsedTimesIndex = (elapsedTimesIndex + 1) % MOVING_AVERAGE_WINDOW_SIZE;
+
+            double weightedAverageElapsedTime = 0;
+            double weightSum = 0;
+            for (int i = 0; i < MOVING_AVERAGE_WINDOW_SIZE; i++) {
+                double weight = 1.0 / (i + 1);
+                weightedAverageElapsedTime += elapsedTimes[(elapsedTimesIndex + i) % MOVING_AVERAGE_WINDOW_SIZE] * weight;
+                weightSum += weight;
+            }
+            double stableElapsedTime = weightedAverageElapsedTime / weightSum;
+
             try {
                 canvas = surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
-                    gameView.update(elapsedTime); // Update the game state using elapsed time
+                    gameView.update(stableElapsedTime); // Update the game state using elapsed time
                     gameView.draw(canvas);
                 }
             } catch (Exception e) {
