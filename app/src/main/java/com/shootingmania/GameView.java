@@ -542,10 +542,11 @@ class DialogBox {
     public enum INTERACTION {YES, NO_INTERACTION, NO}
 
     private final String dialogString;
-    public Rect dialogBox;
+    public Rect dialogBox, dialogBoxOuter;
+    public final int outerLineSize;
     TextButton yesButton, noButton;
     private final Point centerXY;
-    private final Paint dialogBoxPaint;
+    private final Paint dialogBoxPaint, dialogBoxOuterPaint;
     private final TextPaint textPaint;
     private final int dialogBoxHeight = 500;
     public boolean popUp = false;
@@ -559,11 +560,14 @@ class DialogBox {
 
         int dialogBoxWidth = 800;
         dialogBox = new Rect(centerXY.x - dialogBoxWidth /2, centerXY.y - dialogBoxHeight/2, centerXY.x + dialogBoxWidth /2, centerXY.y + dialogBoxHeight/2);
+        outerLineSize = 4;
+        dialogBoxOuter = new Rect(dialogBox.left - outerLineSize, dialogBox.top - outerLineSize, dialogBox.right + outerLineSize, dialogBox.bottom + outerLineSize);
 
         yesButton = new TextButton(context,"YES", new Point(yesButtonCenterXY.x, yesButtonCenterXY.y));
         noButton = new TextButton(context,"NO", new Point(noButtonCenterXY.x, noButtonCenterXY.y));
 
         dialogBoxPaint = new Paint();
+        dialogBoxOuterPaint = new Paint();
 
         textPaint = new TextPaint();
         textPaint.setTextAlign(TextPaint.Align.CENTER);
@@ -580,8 +584,11 @@ class DialogBox {
     public void draw(Canvas canvas) {
         if (popUp) {
             //Dialog box UI
-            dialogBoxPaint.setColor(Color.parseColor("#e0e0d0"));
+            dialogBoxPaint.setColor(Color.parseColor("#FFFFFF"));
+            dialogBoxOuterPaint.setColor(Color.parseColor("#EF8F3F"));
             RectF rectF = new RectF(dialogBox);
+            RectF rectFOuter = new RectF(dialogBoxOuter);
+            canvas.drawRoundRect(rectFOuter,20,20, dialogBoxOuterPaint);
             canvas.drawRoundRect(rectF,20,20, dialogBoxPaint);
             yesButton.draw(canvas);
             noButton.draw(canvas);
