@@ -138,15 +138,15 @@ public class Target {
         if (scorePoints < 250) {
             spawnTime = 1800;
         } else if (scorePoints < 500) {
-            spawnTime = 1600;
+            spawnTime = 1700;
         } else if (scorePoints < 700) {
-            spawnTime = 1400;
+            spawnTime = 1600;
         } else if (scorePoints < 1000) {
-            spawnTime = 1300;
+            spawnTime = 1400;
         } else if (scorePoints < 1300) {
-            spawnTime = 1200;
+            spawnTime = 1300;
         }  else if (scorePoints < 1500) {
-            spawnTime = 1000;
+            spawnTime = 1100;
         } else if (scorePoints < 2000) {
             spawnTime = 900;
         } else {
