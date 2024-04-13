@@ -70,7 +70,8 @@ public class Target {
         bulletMarks.clear();
         this.posX = random.nextInt(targetMovingBoundary.right - getTargetWidth(target[0])) + getTargetWidth(target[0])/2;      //Get size from 1st frame
         //this.posX = targetMovingBoundary.centerX();
-        this.posY = targetMovingBoundary.centerY();
+        //this.posY = targetMovingBoundary.centerY();
+        this.posY = random.nextInt((targetMovingBoundary.bottom - targetMovingBoundary.top) - getTargetHeight(target[0])) + getTargetHeight(target[0])/2 + targetMovingBoundary.top;      //Get size from 1st frame
     }
 
     public int getTargetWidth(Bitmap _target) {

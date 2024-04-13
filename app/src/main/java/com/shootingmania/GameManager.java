@@ -290,8 +290,18 @@ class GameData {
             gameTimer.startCount();
         }
         scorePoints = tempScore;
+        //Level data management
         gameTimer.addTimeAccumulate(target.updateBonusTimeAccumulate());
         target.getLatestScore(scorePoints);
+        if (scorePoints > 400) {
+            targetMoveArea.bottom = 1100;
+        }
+        if (scorePoints > 700) {
+            targetMoveArea.bottom = 1300;
+        }
+        if (scorePoints > 1000) {
+            targetMoveArea.bottom = 1500;
+        }
         FontEffects.updateAll(this.elapsedTime);
     }
 
