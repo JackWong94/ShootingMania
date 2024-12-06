@@ -10,8 +10,8 @@ import com.google.android.gms.ads.*;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
-    //private static final String TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
-    private static final String AD_UNIT_ID = "ca-app-pub-9979894094727885/2125075622";
+    private static final String TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
+    //private static final String AD_UNIT_ID = "ca-app-pub-9979894094727885/2125075622";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
