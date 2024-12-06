@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace 'com.shootingmania'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.shootingmania"
         minSdk 21
-        targetSdk 33
-        versionCode 13
-        versionName "1.13"
+        targetSdk 34
+        versionCode 15
+        versionName "1.15"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -30,9 +30,6 @@ android {
         }
     }
 
-    aaptOptions {
-        cruncherEnabled = false
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

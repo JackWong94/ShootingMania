@@ -5,6 +5,7 @@ import android.app.*;
 import android.content.*;
 import android.graphics.*;
 import android.text.*;
+import android.util.Log;
 import android.view.*;
 
 import androidx.core.content.res.*;
@@ -83,6 +84,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 displayLeaderboardsGameButton.setButtonBoxVisibility(true);
                 displayExitGameButton = new TextButton(context, "Exit", displayExitGameButtonPosition);
                 displayExitGameButton.setButtonBoxVisibility(true);
+                Log.i("JACK", "Screen Size Width : " + dWidth + "   Height :" + dHeight );
             }
 
             @Override
